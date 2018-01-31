@@ -1,0 +1,398 @@
+import os
+import random
+import time
+
+import numpy as np
+
+from ml.configuration.Config import Config
+from ml.datasets.DataSetBasic import DataSetBasic
+from ml.tools.dboost.DBoostMe import DBoostMe
+
+
+def run_gaussian_stat(gaussian, statistical, sample_file = "/tmp/data_sample.csv", result_file = "/tmp/dboostres.csv"):
+    command = "python3 " + Config.get("dboost.py") + " -F ','  --gaussian " + str(
+        gaussian) + " --statistical " + str(statistical) + " " + sample_file + " > " + result_file
+
+    os.system(command)
+
+
+def run_histogram_stat(peak, outlier, statistical, sample_file = "/tmp/data_sample.csv", result_file = "/tmp/dboostres.csv"):
+    command = "python3 " + Config.get("dboost.py") + " -F ','  --histogram " + str(
+        peak) + " " + str(outlier) + " --statistical " + str(statistical) + " " + sample_file + " > " + result_file
+
+    os.system(command)
+
+def run_histogram_mixture(n_subpops, threshold, statistical, sample_file = "/tmp/data_sample.csv", result_file = "/tmp/dboostres.csv"):
+    command = "python3 -W ignore " + Config.get("dboost.py") + " -F ','  --mixture " + str(
+        n_subpops) + " " + str(threshold) + " --statistical " + str(statistical) + " " + sample_file + " > " + result_file
+
+    os.system(command)
+
+
+def sample(x, n):
+    random_index = random.sample(x.index, n)
+    return x.ix[random_index], random_index
+
+
+def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file, gaussian_range, statistical_range):
+    best_params = {}
+    best_fscore = 0.0
+    precision = 0.0
+    recall = 0.0
+
+    for g in gaussian_range:
+        for s in statistical_range:
+            run_gaussian_stat(g, s)
+
+            our_sample_data = DataSetBasic(data.name + " random" + str(data_sample.shape[0]), data_sample, data_sample_ground_truth)
+
+            run = DBoostMe(our_sample_data, result_file)
+
+            current_fscore = run.calculate_total_fscore()
+            current_precision = run.calculate_total_precision()
+            current_recall = run.calculate_total_recall()
+
+            print "--gaussian " + str(g) + " --statistical " + str(s)
+            print "Fscore: " + str(current_fscore)
+            print "Precision: " + str(run.calculate_total_precision())
+            print "Recall: " + str(run.calculate_total_recall())
+
+            #remove result file:
+            os.remove(result_file)
+
+            if current_fscore >= best_fscore:
+                best_fscore = current_fscore
+                precision = current_precision
+                recall = current_recall
+                best_params['gaussian'] = g
+                best_params['statistical'] = s
+
+    return best_params, best_fscore, precision, recall
+
+
+def search_histogram_stat(data, data_sample, data_sample_ground_truth,result_file, peak_s, outlier_s, statistical_range):
+    best_params = {}
+    best_fscore = 0.0
+    precision = 0.0
+    recall = 0.0
+
+    for p in peak_s:
+        for o in outlier_s:
+            for s in statistical_range:
+                run_histogram_stat(p, o, s)
+
+                our_sample_data = DataSetBasic(data.name + " random" + str(data_sample.shape[0]), data_sample, data_sample_ground_truth)
+
+                run = DBoostMe(our_sample_data, result_file)
+
+                current_fscore = run.calculate_total_fscore()
+                current_precision = run.calculate_total_precision()
+                current_recall = run.calculate_total_recall()
+
+                print "peak: " + str(p) + " outlier: " + str(o) + " --statistical " + str(s)
+                print "Fscore: " + str(current_fscore)
+                print "Precision: " + str(run.calculate_total_precision())
+                print "Recall: " + str(run.calculate_total_recall())
+
+                #remove result file:
+                os.remove(result_file)
+
+                if current_fscore >= best_fscore:
+                    best_fscore = current_fscore
+                    precision = current_precision
+                    recall = current_recall
+                    best_params['peak'] = p
+                    best_params['outlier'] = o
+                    best_params['statistical'] = s
+
+    return best_params, best_fscore, precision, recall
+
+
+def search_mixture_stat(data, data_sample, data_sample_ground_truth,result_file, n_subpops_s, threshold_s, statistical_range):
+    best_params = {}
+    best_fscore = 0.0
+    precision = 0.0
+    recall = 0.0
+
+    for p in n_subpops_s:
+        for t in threshold_s:
+            for s in statistical_range:
+                run_histogram_mixture(p, t, s)
+
+                our_sample_data = DataSetBasic(data.name + " random" + str(data_sample.shape[0]), data_sample, data_sample_ground_truth)
+
+                run = DBoostMe(our_sample_data, result_file)
+
+                current_fscore = run.calculate_total_fscore()
+                current_precision = run.calculate_total_precision()
+                current_recall = run.calculate_total_recall()
+
+                print "n_subpops: " + str(p) + " threshold: " + str(t) + " --statistical " + str(s)
+                print "Fscore: " + str(current_fscore)
+                print "Precision: " + str(run.calculate_total_precision())
+                print "Recall: " + str(run.calculate_total_recall())
+
+                #remove result file:
+                os.remove(result_file)
+
+                if current_fscore >= best_fscore:
+                    best_fscore = current_fscore
+                    precision = current_precision
+                    recall = current_recall
+                    best_params['n_subpops'] = p
+                    best_params['threshold'] = t
+                    best_params['statistical'] = s
+
+    return best_params, best_fscore, precision, recall
+
+
+
+
+def grid_search_by_sample_gaussian(data, sample_size, steps):
+
+    n = sample_size
+
+    data_sample, random_index = sample(data.dirty_pd, n)
+
+    data_sample_ground_truth = data.matrix_is_error[random_index]
+
+    sample_file = "/tmp/data_sample.csv"
+    result_file = "/tmp/dboostres.csv"
+
+    data_sample.to_csv(sample_file, index=False)
+
+
+    total_start_time = time.time()
+
+    gaussian_range = [((4.0 - 0.0) / steps) * step for step in range(steps)]
+    statistical_range = [0.5]
+
+    best_params, best_fscore_1, precision_1, recall_1 = search_gaussian_stat(data, data_sample, data_sample_ground_truth, result_file, gaussian_range, statistical_range)
+
+
+    runtime = (time.time() - total_start_time)
+
+    print "grid search runtime: " + str(runtime)
+
+    return best_params
+
+
+def grid_search_by_sample_hist(data, sample_size, steps):
+
+    n = sample_size
+
+    data_sample, random_index = sample(data.dirty_pd, n)
+
+    data_sample_ground_truth = data.matrix_is_error[random_index]
+
+    sample_file = "/tmp/data_sample.csv"
+    result_file = "/tmp/dboostres.csv"
+
+    data_sample.to_csv(sample_file, index=False)
+
+
+    total_start_time = time.time()
+
+    peak_range = [0.3, 0.5, 0.6, 0.7, 0.8, 0.9]
+    outlier_range = [0.001, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+    statistical_range = [0.5]
+
+    best_params, best_fscore_1, precision_1, recall_1 = search_histogram_stat(data, data_sample, data_sample_ground_truth, result_file, peak_range, outlier_range, statistical_range)
+
+
+    runtime = (time.time() - total_start_time)
+
+    print "grid search runtime: " + str(runtime)
+
+    return best_params
+
+
+def grid_search_by_sample_mixture(data, sample_size, steps):
+
+    n = sample_size
+
+    data_sample, random_index = sample(data.dirty_pd, n)
+
+    data_sample_ground_truth = data.matrix_is_error[random_index]
+
+    sample_file = "/tmp/data_sample.csv"
+    result_file = "/tmp/dboostres.csv"
+
+    data_sample.to_csv(sample_file, index=False)
+
+
+    total_start_time = time.time()
+
+    n_subpops_range = [1,2,3]
+    threshold_range = [0.01, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]
+    statistical_range = [0.5]
+
+    best_params, best_fscore_1, precision_1, recall_1 = search_mixture_stat(data, data_sample, data_sample_ground_truth, result_file, n_subpops_range, threshold_range, statistical_range)
+
+
+    runtime = (time.time() - total_start_time)
+
+    print "grid search runtime: " + str(runtime)
+
+    return best_params
+
+
+def run_params_gaussian(data, params):
+    n = data.shape[0]
+
+    data_sample, random_index = sample(data.dirty_pd, n)
+
+    data_sample_ground_truth = data.matrix_is_error[random_index]
+
+    sample_file = "/tmp/data_sample.csv"
+    result_file = "/tmp/dboostres.csv"
+
+    data_sample.to_csv(sample_file, index=False)
+
+    total_start_time = time.time()
+
+    gaussian_range = [params['gaussian']]
+    statistical_range = [params['statistical']]
+
+    print "Run on all: "
+    _, best_fscore, precision, recall = search_gaussian_stat(data, data_sample, data_sample_ground_truth, result_file, gaussian_range,
+                                       statistical_range)
+
+    runtime = (time.time() - total_start_time)
+
+    print "runtime for one run on all data: " + str(runtime)
+
+    return best_fscore, precision, recall
+
+def run_params_hist(data, params):
+    n = data.shape[0]
+
+    data_sample, random_index = sample(data.dirty_pd, n)
+
+    data_sample_ground_truth = data.matrix_is_error[random_index]
+
+    sample_file = "/tmp/data_sample.csv"
+    result_file = "/tmp/dboostres.csv"
+
+    data_sample.to_csv(sample_file, index=False)
+
+    total_start_time = time.time()
+
+    peak_range = [params['peak']]
+    outlier_range = [params['outlier']]
+    statistical_range = [params['statistical']]
+
+    print "Run on all: "
+    _, best_fscore, precision, recall = search_histogram_stat(data, data_sample, data_sample_ground_truth, result_file, peak_range, outlier_range,
+                                       statistical_range)
+
+    runtime = (time.time() - total_start_time)
+
+    print "runtime for one run on all data: " + str(runtime)
+
+    return best_fscore, precision, recall
+
+
+def run_params_mixture(data, params):
+    n = data.shape[0]
+
+    data_sample, random_index = sample(data.dirty_pd, n)
+
+    data_sample_ground_truth = data.matrix_is_error[random_index]
+
+    sample_file = "/tmp/data_sample.csv"
+    result_file = "/tmp/dboostres.csv"
+
+    data_sample.to_csv(sample_file, index=False)
+
+    total_start_time = time.time()
+
+    n_subpops_range = [params['n_subpops']]
+    threshold_range = [params['threshold']]
+    statistical_range = [params['statistical']]
+
+    print "Run on all: "
+    _, best_fscore, precision, recall = search_mixture_stat(data, data_sample, data_sample_ground_truth, result_file, n_subpops_range, threshold_range,
+                                       statistical_range)
+
+    runtime = (time.time() - total_start_time)
+
+    print "runtime for one run on all data: " + str(runtime)
+
+    return best_fscore, precision, recall
+
+
+def test_gaussian(data, sample_size, steps):
+    print "test"
+    best_params = grid_search_by_sample_gaussian(data, sample_size, steps)
+    best_fscore_all, precision, recall = run_params_gaussian(data, best_params)
+    return best_fscore_all, precision, recall, best_params
+
+def test_hist(data, sample_size, steps):
+    best_params = grid_search_by_sample_hist(data, sample_size, steps)
+
+    best_fscore_all, precision, recall = run_params_hist(data, best_params)
+    return best_fscore_all, precision, recall, best_params
+
+def test_mixture(data, sample_size, steps):
+    best_params = grid_search_by_sample_mixture(data, sample_size, steps)
+    best_fscore_all, precision, recall = run_params_mixture(data, best_params)
+
+    return best_fscore_all, precision, recall, best_params
+
+def test_multiple_sizes(data, steps, N=3, sizes = [10, 100, 1000], run_algo_function = test_gaussian, log_file=None):
+    avg_times = []
+    avg_fscores = []
+    avg_precision = []
+    avg_recall = []
+
+    for t in sizes:
+        times = []
+        fscore = []
+        prec_list = []
+        rec_list = []
+
+        with open(log_file, "a") as myfile:
+            myfile.write("training size: " + str(t) + "\n\n")
+
+        for i in range(N):
+            total_start_time = time.time()
+
+            best_fscore_all, precision, recall, best_params = run_algo_function(data=data, sample_size=t, steps=steps)
+            runtime = (time.time() - total_start_time)
+
+            times.append(runtime)
+            fscore.append(best_fscore_all)
+            prec_list.append(precision)
+            rec_list.append(recall)
+
+            if log_file != None:
+                with open(log_file, "a") as myfile:
+                    myfile.write(str(best_params) + ", " +
+                                 str(runtime) + ", " +
+                                 str(precision) + ", " +
+                                 str(recall) + ", " +
+                                 str(best_fscore_all) + "\n")
+
+
+        avg_times.append(np.mean(times))
+        avg_fscores.append(np.mean(fscore))
+        avg_precision.append(np.mean(prec_list))
+        avg_recall.append(np.mean(rec_list))
+
+    print "labelled rows: " + str(sizes)
+    print "time: " + str(avg_times)
+    print "fscore: " + str(avg_fscores)
+    print "precision: " + str(avg_precision)
+    print "recall: " + str(avg_recall)
+
+
+def test_multiple_sizes_gaussian(data, steps, N=3, sizes = [10, 100, 1000], log_file=None):
+    test_multiple_sizes(data, steps, N, sizes, test_gaussian, log_file)
+
+def test_multiple_sizes_hist(data, steps, N=3, sizes = [10, 100, 1000], log_file=None):
+    test_multiple_sizes(data, steps, N, sizes, test_hist, log_file)
+
+def test_multiple_sizes_mixture(data, steps, N=3, sizes = [10, 100, 1000], log_file=None):
+    test_multiple_sizes(data, steps, N, sizes, test_mixture, log_file)
+

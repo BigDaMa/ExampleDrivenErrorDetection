@@ -1,1 +1,1 @@
-# ExampleDrivenErrorDetection
+# SequentialPatternErrorDetection
