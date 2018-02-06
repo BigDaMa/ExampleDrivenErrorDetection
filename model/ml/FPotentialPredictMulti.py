@@ -172,13 +172,13 @@ print "datasets used for training:"
 for i in range(len(datasets)):
     print datasets[i]
 
-N_datasets = 1
+N_datasets = 7
 
 
 X = []
 y = []
 for d in range(len(datasets)):
-    for ndata in range(N_datasets):
+    for ndata in [1]:
         file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log_data/7/log_progress_"+ datasets[d].name +"_" + str(ndata)  +".csv"
         train_x, train_y = read_csv1(file_path, None)
 
@@ -199,6 +199,7 @@ for d in range(len(datasets)):
         train_x, train_y = add_history(train_x,train_y, n)
 
         print "size: " + str(train_x.shape)
+
 
         X.append(np.copy(train_x))
         y.append(np.copy(train_y))
@@ -276,7 +277,7 @@ y_pred = final.predict(mat)
 nr_columns = model_for_dataset.get_number_dirty_columns()
 
 
-N_datasets_test = 1
+N_datasets_test = 7
 X_test = []
 y_test = []
 pred_test = []
