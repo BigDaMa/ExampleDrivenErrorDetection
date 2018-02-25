@@ -26,12 +26,15 @@ from ml.features.MetaDataFeatures import MetaDataFeatures
 
 warnings.filterwarnings('ignore')
 
-def create_user_start_data(feature_matrix, target, num_errors=2):
+def create_user_start_data(feature_matrix, target, num_errors=2, return_ids=False):
     error_ids = np.where(target == True)[0]
     correct_ids = np.where(target == False)[0]
 
     if (len(error_ids) == 0 or len(correct_ids) == 0):
-        return None,None
+        if return_ids:
+            return None, None, None
+        else:
+            return None, None
 
     error_select_ids = range(len(error_ids))
     np.random.shuffle(error_select_ids)
@@ -50,10 +53,87 @@ def create_user_start_data(feature_matrix, target, num_errors=2):
     print(train_target)
 
 
-    return train, train_target
+    if return_ids:
+        return train, train_target, list_ids
+    else:
+        return train, train_target
 
 
-def create_next_data(train, train_target, feature_matrix, target, y_pred, n, data, column_id, user_error_probability = 0.0):
+
+def add_data_next(trainx, trainy, id_list, x_next, y_next, id_next):
+    for ii in range(len(x_next)):
+        trainx = vstack((trainx, x_next[ii]))
+
+    trainy = np.append(trainy, y_next)
+    id_list.extend(id_next)
+
+    return trainx, trainy, id_list
+
+
+def create_next_part(feature_matrix, target, y_pred, n, data, column_id, user_error_probability = 0.0, id_list=[]):
+    diff = np.absolute(y_pred - 0.5)
+    sorted_ids = np.argsort(diff)
+
+    certainty = (np.sum(diff) / len(diff)) * 2
+
+    next_target = []
+
+    next_x = []
+
+    current_set = Set()
+    i = 0
+    internal_id_list = []
+    while len(current_set) < n and i < len(sorted_ids):
+        if not data.dirty_pd.values[sorted_ids[i],column_id] in current_set:
+            if not sorted_ids[i] in id_list:
+                current_set.add(data.dirty_pd.values[sorted_ids[i],column_id])
+                internal_id_list.append(sorted_ids[i])
+                print(data.dirty_pd.values[sorted_ids[i],column_id])
+                if len(id_list) > 0:
+                    id_list.append(sorted_ids[i])
+
+                next_x.append(feature_matrix[sorted_ids[i]])
+                #train = vstack((train, feature_matrix[sorted_ids[i]]))
+
+                random01 = random.random()
+                if random01 < user_error_probability: # introduce user error
+                    next_target.append([not target[sorted_ids[i]]])
+                else:
+                    next_target.append([target[sorted_ids[i]]])
+        i += 1
+
+    i = 0
+    while len(internal_id_list) < n:
+        if not sorted_ids[i] in internal_id_list:
+            if not sorted_ids[i] in id_list:
+                print(data.dirty_pd.values[sorted_ids[i], column_id])
+                internal_id_list.append(sorted_ids[i])
+                if len(id_list) > 0:
+                    id_list.append(sorted_ids[i])
+
+                next_x.append(feature_matrix[sorted_ids[i]])
+                #train = vstack((train, feature_matrix[sorted_ids[i]]))
+
+                random01 = random.random()
+                if random01 < user_error_probability:  # introduce user error
+                    next_target.append([not target[sorted_ids[i]]])
+                else:
+                    next_target.append([target[sorted_ids[i]]])
+        i += 1
+
+    if len(id_list) == 0:
+        return next_x, next_target, diff
+    else:
+        return next_x, next_target, diff, internal_id_list
+
+
+
+
+
+
+
+
+def create_next_data(train, train_target, feature_matrix, target, y_pred, n, data, column_id, user_error_probability = 0.0, id_list=[]):
     diff = np.absolute(y_pred - 0.5)
     sorted_ids = np.argsort(diff)
 
@@ -61,6 +141,10 @@ def create_next_data(train, train_target, feature_matrix, target, y_pred, n, dat
 
     if certainty == 1.0:
         return train, train_target, 1.0
+        if len(id_list) == 0:
+            return train, train_target, 1.0
+        else:
+            return train, train_target, 1.0, id_list
 
     #plt.hist(diff)
     #plt.show()
@@ -68,41 +152,50 @@ def create_next_data(train, train_target, feature_matrix, target, y_pred, n, dat
     trainl = []
 
     current_set = Set()
-    id_list = []
     i = 0
+    internal_id_list = []
     while len(current_set) < n and i < len(sorted_ids):
         if not data.dirty_pd.values[sorted_ids[i],column_id] in current_set:
-            current_set.add(data.dirty_pd.values[sorted_ids[i],column_id])
-            print(data.dirty_pd.values[sorted_ids[i],column_id])
-            id_list.append(sorted_ids[i])
+            if not sorted_ids[i] in id_list:
+                current_set.add(data.dirty_pd.values[sorted_ids[i],column_id])
+                internal_id_list.append(sorted_ids[i])
+                print(data.dirty_pd.values[sorted_ids[i],column_id])
+                if len(id_list) > 0:
+                    id_list.append(sorted_ids[i])
 
-            trainl.append(feature_matrix[sorted_ids[i]])
-            train = vstack((train, feature_matrix[sorted_ids[i]]))
+                trainl.append(feature_matrix[sorted_ids[i]])
+                train = vstack((train, feature_matrix[sorted_ids[i]]))
 
-            random01 = random.random()
-            if random01 < user_error_probability: # introduce user error
-                train_target = np.append(train_target, [not target[sorted_ids[i]]])
-            else:
-                train_target = np.append(train_target, [target[sorted_ids[i]]])
+                random01 = random.random()
+                if random01 < user_error_probability: # introduce user error
+                    train_target = np.append(train_target, [not target[sorted_ids[i]]])
+                else:
+                    train_target = np.append(train_target, [target[sorted_ids[i]]])
         i += 1
 
     i = 0
-    while len(id_list) < n:
-        if not sorted_ids[i] in id_list:
-            print(data.dirty_pd.values[sorted_ids[i], column_id])
-            id_list.append(sorted_ids[i])
+    while len(internal_id_list) < n:
+        if not sorted_ids[i] in internal_id_list:
+            if not sorted_ids[i] in id_list:
+                print(data.dirty_pd.values[sorted_ids[i], column_id])
+                internal_id_list.append(sorted_ids[i])
+                if len(id_list) > 0:
+                    id_list.append(sorted_ids[i])
 
-            trainl.append(feature_matrix[sorted_ids[i]])
-            train = vstack((train, feature_matrix[sorted_ids[i]]))
+                trainl.append(feature_matrix[sorted_ids[i]])
+                train = vstack((train, feature_matrix[sorted_ids[i]]))
 
-            random01 = random.random()
-            if random01 < user_error_probability:  # introduce user error
-                train_target = np.append(train_target, [not target[sorted_ids[i]]])
-            else:
-                train_target = np.append(train_target, [target[sorted_ids[i]]])
+                random01 = random.random()
+                if random01 < user_error_probability:  # introduce user error
+                    train_target = np.append(train_target, [not target[sorted_ids[i]]])
+                else:
+                    train_target = np.append(train_target, [target[sorted_ids[i]]])
         i += 1
 
-    return train, train_target, certainty
+    if len(id_list) == 0:
+        return train, train_target, certainty
+    else:
+        return train, train_target, certainty, id_list
 
 '''
 def run_cross_validation(train, train_target, folds):
@@ -142,6 +235,29 @@ def print_stats(target, res):
     print("F-Score: " + str(f1_score(target, res)))
     print("Precision: " + str(precision_score(target, res)))
     print("Recall: " + str(recall_score(target, res)))
+
+def calc_my_fscore(target, res, dataSet):
+    t = target.flatten()
+    pred = res.flatten()
+
+    from sklearn.metrics import confusion_matrix
+    tn, fp, fn, tp = confusion_matrix(t, pred).ravel()
+
+    total_f = float((2 * tp)) / float(((2 * tp) + fn + fp))
+
+    print "my total: " + str(total_f) + " sklearn: " + str(f1_score(t, pred))
+
+    error_indices = np.where(np.sum(dataSet.matrix_is_error, axis=0) != 0)[0]
+
+    t_part = target[:, error_indices].flatten()
+    pred_part = res[:, error_indices].flatten()
+
+    tn, fp, fn, tp = confusion_matrix(t_part, pred_part).ravel()
+
+    total_f = float((2 * tp)) / float(((2 * tp) + fn + fp))
+
+    print "my part total: " + str(total_f) + " sklearn: " + str(f1_score(t_part, pred_part))
+
 
 def print_stats_whole(target, res, label):
     print(label + " F-Score: " + str(f1_score(target.flatten(), res.flatten())))
