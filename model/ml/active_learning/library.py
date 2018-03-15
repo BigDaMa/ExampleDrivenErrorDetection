@@ -51,6 +51,7 @@ def create_user_start_data(feature_matrix, target, num_errors=2, return_ids=Fals
     train = feature_matrix[list_ids, :]
     train_target = target[list_ids]
     print(train_target)
+    print list_ids
 
 
     if return_ids:
@@ -119,6 +120,38 @@ def create_next_part(feature_matrix, target, y_pred, n, data, column_id, user_er
                     next_target.append([not target[sorted_ids[i]]])
                 else:
                     next_target.append([target[sorted_ids[i]]])
+        i += 1
+
+    if len(id_list) == 0:
+        return next_x, next_target, diff
+    else:
+        return next_x, next_target, diff, internal_id_list
+
+
+def create_next_dumm(feature_matrix, target, y_pred, n, data, column_id, user_error_probability = 0.0, id_list=[]):
+    diff = np.absolute(y_pred - 0.5)
+    sorted_ids = np.argsort(diff)
+
+    next_target = []
+
+    next_x = []
+
+    internal_id_list = []
+    i = 0
+    while len(internal_id_list) < n:
+        print(data.dirty_pd.values[sorted_ids[i], column_id])
+        internal_id_list.append(sorted_ids[i])
+        if len(id_list) > 0:
+            id_list.append(sorted_ids[i])
+
+        next_x.append(feature_matrix[sorted_ids[i]])
+        #train = vstack((train, feature_matrix[sorted_ids[i]]))
+
+        random01 = random.random()
+        if random01 < user_error_probability:  # introduce user error
+            next_target.append([not target[sorted_ids[i]]])
+        else:
+            next_target.append([target[sorted_ids[i]]])
         i += 1
 
     if len(id_list) == 0:

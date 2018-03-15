@@ -55,7 +55,7 @@ def predict_tree(clf, test_x, feature_names):
     #predicted[predicted > 1.0] = 1.0
     return predicted
 
-def run_cross_validation(train, train_target, folds):
+def run_cross_validation(train, train_target, folds, scoring='r2'):
     cv_params = {'min_child_weight': [1, 3, 5],
                  'subsample': [0.7, 0.8, 0.9],
                  'learning_rate': [0.01],
@@ -69,7 +69,7 @@ def run_cross_validation(train, train_target, folds):
 
     optimized_GBM = GridSearchCV(xgb.XGBRegressor(**ind_params),
                                  cv_params,
-                                 scoring='r2', cv=folds, n_jobs=1, verbose=4)
+                                 scoring=scoring, cv=folds, n_jobs=1, verbose=4)
 
     optimized_GBM.fit(train, train_target)
 
@@ -103,12 +103,14 @@ for i in range(100):
     feature_names.append('certainty_histogram' + str(i))
 
 for i in range(7):
-    feature_names.append('cross_val' + str(i))
+    feature_names.append('icross_val' + str(i))
 
 feature_names.append('mean_cross_val')
 
 for i in range(100):
     feature_names.append('change_histogram' + str(i))
+
+#feature_names.append('mean_squared_certainty_change')
 
 feature_names.append('no_change_0')
 feature_names.append('no_change_1')
@@ -125,9 +127,12 @@ for s in range(size):
 
 which_features_to_use = []
 for feature_index in range(len(feature_names)):
-    #if not "cross" in feature_names[feature_index]:
-    which_features_to_use.append(feature_index)
+    if not 'histogram' in feature_names[feature_index] \
+            and not 'mean_squared_certainty_change' in feature_names[feature_index]:
+        which_features_to_use.append(feature_index)
 print which_features_to_use
+
+feature_names = [i for j, i in enumerate(feature_names) if j in which_features_to_use]
 
 
 use_absolute_difference = True # False == Squared / True == Absolute
@@ -141,7 +146,7 @@ classifier_log_paths = {}
 #classifier_log_paths[LinearSVMClassifier.name] = "/home/felix/SequentialPatternErrorDetection/progress_log_data/log_newer/linearsvm"
 #classifier_log_paths[NaiveBayesClassifier.name] = "/home/felix/SequentialPatternErrorDetection/progress_log_data/log_newer/naivebayes"
 
-classifier_log_paths[XGBoostClassifier.name] = "/home/felix/SequentialPatternErrorDetection/progress_log_data/neweat_backup"#hist_change"
+classifier_log_paths[XGBoostClassifier.name] = "/home/felix/SequentialPatternErrorDetection/progress_log_data/neweat_backup"#"/home/felix/ExampleDrivenErrorDetection/progress_log_data/new_mean_certainty_change_all"#hist_change"
 
 
 
@@ -155,7 +160,7 @@ dataset_log_files[Restaurant().name] = "restaurant"
 
 
 classifier_to_use = XGBoostClassifier
-model_for_dataset = FlightHoloClean()
+model_for_dataset = HospitalHoloClean()
 
 datasets = [HospitalHoloClean(), BlackOakDataSetUppercase(), FlightHoloClean(), Book(), Salary(), Restaurant()]
 
@@ -201,6 +206,8 @@ for d in range(len(datasets)):
 
     print "before cut: " + str(train_x[d].shape)
 
+    '''
+
     #cut zero change data
     sum_change = sum_change[n:len(sum_change)]
     is_converged = np.ones(n, dtype=bool)
@@ -219,6 +226,7 @@ for d in range(len(datasets)):
     train_y[d] = np.array(new_list_y)
 
     print "after cut: " + str(train_x[d].shape)
+    '''
 
 
 
@@ -237,7 +245,8 @@ train_y_n[train_y_n < 0]= 0.0
 
 train_x_n = train_x_n[:, which_features_to_use]
 
-our_params = run_cross_validation(train_x_n, train_y_n, 5)
+our_params = run_cross_validation(train_x_n, train_y_n, 5, scoring='neg_mean_squared_error')
+#our_params = run_cross_validation(train_x_n, train_y_n, 5, scoring='r2') #worse
 print our_params
 
 

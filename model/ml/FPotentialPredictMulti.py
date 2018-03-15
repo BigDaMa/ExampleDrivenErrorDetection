@@ -159,7 +159,7 @@ dataset_log_files[Restaurant().name] = "restaurant"
 
 
 classifier_to_use = XGBoostClassifier
-model_for_dataset = HospitalHoloClean()
+model_for_dataset = BlackOakDataSetUppercase()
 
 datasets = [HospitalHoloClean(), BlackOakDataSetUppercase(), FlightHoloClean(), Book(), Salary(), Restaurant()]
 

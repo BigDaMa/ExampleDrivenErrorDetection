@@ -104,9 +104,9 @@ start_time = time.time()
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
 #dataSet = FlightHoloClean()
 from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
-dataSet = HospitalHoloClean()
+#dataSet = HospitalHoloClean()
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
-#dataSet = BlackOakDataSetUppercase()
+dataSet = BlackOakDataSetUppercase()
 
 from ml.datasets.salary_data.Salary import Salary
 #dataSet = Salary()
@@ -117,6 +117,31 @@ from ml.datasets.luna.book.Book import Book
 from ml.datasets.luna.restaurant.Restaurant import Restaurant
 
 #dataSet = Restaurant()
+
+'''
+from ml.datasets.synthetic.Synthetic import Synthetic
+from ml.datasets.synthetic.ReplaceError import ReplaceError
+rows = 2000
+datasets =[BlackOakDataSetUppercase(), BlackOakDataSetUppercase(), BlackOakDataSetUppercase(), BlackOakDataSetUppercase(), BlackOakDataSetUppercase(), BlackOakDataSetUppercase(), BlackOakDataSetUppercase(), BlackOakDataSetUppercase(), BlackOakDataSetUppercase(), BlackOakDataSetUppercase()]
+columns = [4,4,4,4,4,4,4,4,4,4]
+error_fraction = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+error_types = [ReplaceError, ReplaceError,ReplaceError, ReplaceError,ReplaceError, ReplaceError,ReplaceError, ReplaceError,ReplaceError, ReplaceError]
+seed_synth = 41
+dataSet = Synthetic(rows, datasets, columns, error_fraction, error_types, seed_synth)
+'''
+
+'''
+from ml.datasets.synthetic.Synthetic import Synthetic
+from ml.datasets.synthetic.ReplaceError import ReplaceError
+rows = 2000
+datasets =[BlackOakDataSetUppercase()]
+columns = [4]
+error_fraction = [0.9]
+error_types = [ReplaceError]
+seed_synth = 41
+dataSet = Synthetic(rows, datasets, columns, error_fraction, error_types, seed_synth)
+'''
+
 
 print("read: %s seconds ---" % (time.time() - start_time))
 

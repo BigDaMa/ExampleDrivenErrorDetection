@@ -1,7 +1,7 @@
 import numpy as np
 
 from ml.datasets.hospital import HospitalHoloClean
-
+'''
 #data = BlackOakDataSet()
 data = HospitalHoloClean()
 #data = FlightHoloClean()
@@ -20,3 +20,13 @@ print len(data.clean_pd[data.clean_pd.columns[0]].unique())
 print data.shape
 
 print float(np.sum(data.matrix_is_error)) / float(data.shape[0] * data.shape[1])
+'''
+
+
+from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
+data = BlackOakDataSetUppercase()
+
+data.clean_pd.columns =['RecID','FirstName','MiddleName','LastName','Address','City','State','ZIP','POBox','POCityStateZip','SSN','DOB']
+
+import csv
+data.clean_pd.to_csv('/tmp/address.csv', index=False, quoting=csv.QUOTE_ALL)

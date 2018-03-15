@@ -5,6 +5,7 @@ import abc
 from sklearn.metrics import f1_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
+from sklearn.metrics import confusion_matrix
 
 class Tool(object):
     __metaclass__ = abc.ABCMeta
@@ -42,4 +43,19 @@ class Tool(object):
 
     def calculate_recall_by_column(self, column_id):
         return recall_score(self.dataset.matrix_is_error[:,column_id].flatten(), self.matrix_detected[:,column_id].flatten())
+
+    def calculate_total_confusion_matrix(self):
+        A = self.dataset.matrix_is_error.flatten()
+        B = self.matrix_detected.flatten()
+
+        print A
+        print B
+
+
+        matrix = confusion_matrix(A,B)
+        if len(matrix) == 1:
+            return matrix[0], 0, 0, 0
+
+        tn, fp, fn, tp = matrix.ravel()
+        return tn, fp, fn, tp
 

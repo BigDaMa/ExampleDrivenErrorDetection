@@ -38,8 +38,8 @@ class HospitalHoloClean(DataSet):
         for i in range(len(columns)):
             mapColumns[columns[i]] = i
 
-        print "shape: " + str(df.shape[0])
-        print "column: " + str(len(columns))
+        #print "shape: " + str(df.shape[0])
+        #print "column: " + str(len(columns))
 
         pd_matrix = df.values
         matrix = np.empty([df.shape[0] / len(columns), len(columns)], dtype=object)

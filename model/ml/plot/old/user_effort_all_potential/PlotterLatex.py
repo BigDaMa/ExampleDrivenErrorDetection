@@ -7,7 +7,7 @@ class PlotterLatex:
         latex = "\\begin{tikzpicture}[scale=0.6]\n" + \
 			    "\\begin{axis}[\n" + \
 				"title={"+ title +"},\n" + \
-				"xlabel={Number of labelled cells},\n" + \
+				"xlabel={\\# Labelled Cells},\n" + \
 				"ylabel={F1-score},\n" + \
                 "xmin=0, xmax="+ str(xmax) +",\n" + \
 				"ymin=0.0, ymax=1.0,\n"

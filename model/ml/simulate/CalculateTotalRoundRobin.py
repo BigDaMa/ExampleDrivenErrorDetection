@@ -195,12 +195,12 @@ N_datasets = 7
 
 
 
-log_folder = "unique_batch" #"unique"
+log_folder = "test_roundrobin" #"plain_al"#"unique_batch" #"unique"
 
-dataset = HospitalHoloClean() #BlackOakDataSetUppercase()
+dataset = BlackOakDataSetUppercase()
 #future_steps = 8+9 #BlackOak = 7, Flights = 9
-#future_steps = 14+7 #BlackOak = 7
-future_steps = 17*2 + 60
+future_steps = 14+7 #BlackOak = 7
+#future_steps = 17*2 + 60
 
 n = dataset.get_number_dirty_columns()
 
@@ -241,6 +241,7 @@ for d in range(10):
     # print tensor_run
 
     best_sum_total_f[d], best_col_seq[d] = select_by_round_robin(tensor_run, np.ones(n, dtype=int) * -1, [], [], future_steps, True) #Flight = 9, Blackoak 7, Hospital=5
+    print list(best_sum_total_f[d])
 
 print best_col_seq
 

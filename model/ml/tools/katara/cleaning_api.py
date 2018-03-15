@@ -15,11 +15,12 @@ import json
 import re
 import subprocess
 import pandas
+from ml.configuration.Config import Config
 ########################################
 
 
 ########################################
-TOOLS_FOLDER = "/home/felix/abstractionlayer/tools"
+TOOLS_FOLDER = Config.get("abstractionlayer.tools")
 ########################################
 
 
@@ -33,10 +34,8 @@ def install_tools():
             p = subprocess.Popen(["ant", "all"], cwd="{}/NADEEF".format(TOOLS_FOLDER), stdin=subprocess.PIPE,
                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             p.communicate()
-            print "To configure NADEEF, please follow the following steps:"
-            print "1. Create a database entitled 'nadeef' in the postgres."
-            postgress_username = raw_input("2. Enter your postgres username: ")
-            postgress_password = raw_input("3. Enter your postgres password: ")
+            postgress_username = Config.get("nadeef.db.user")
+            postgress_password = Config.get("nadeef.db.password")
             nadeef_configuration_file = open("{}/NADEEF/nadeef.conf".format(TOOLS_FOLDER), "r")
             nadeef_configuration = nadeef_configuration_file.read()
             nadeef_configuration = re.sub("(database.username = )([\w\d]+)", "\g<1>{}".format(postgress_username),
@@ -173,6 +172,8 @@ def run_katara(dataset_path, katara_parameters):
                "{0}/KATARA/out/test/test:{0}/KATARA/KATARA/out/test/test/SimplifiedKATARA.jar".format(TOOLS_FOLDER),
                "simplied.katara.SimplifiedKATARAEntrance"]
     knowledge_base_path = os.path.abspath(katara_parameters[0])
+
+    print(command)
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
     p.communicate(dataset_path + "\n" + knowledge_base_path + "\n")
     return_list = []
@@ -215,57 +216,4 @@ def run_data_cleaning_job(data_cleaning_job):
 ########################################
 
 
-########################################
-if __name__ == "__main__":
-    pass
-
-    install_tools()
-
-    # run_input = {
-    #     "dataset": {
-    #         "type": "csv",
-    #         "param": ["datasets/sample.csv"]
-    #     },
-    #     "tool": {
-    #         "name": "dboost",
-    #         "param": ["gaussian", "1"]
-    #         }
-    # }
-
-    # run_input = {
-    #     "dataset": {
-    #         "type": "csv",
-    #         "param": ["datasets/sample.csv"]
-    #     },
-    #     "tool": {
-    #         "name": "nadeef",
-    #         "param": [["title", "brand_name"]]
-    #     }
-    # }
-
-    # run_input = {
-    #     "dataset": {
-    #         "type": "csv",
-    #         "param": ["datasets/sample.csv"]
-    #     },
-    #     "tool": {
-    #         "name": "openrefine",
-    #         "param": [["price", "^[\d]+$"], ["brand_name", "^[\w]+$"]]
-    #     }
-    # }
-
-    run_input = {
-        "dataset": {
-            "type": "csv",
-            "param": ["/tmp/hospital.csv"]
-        },
-        "tool": {
-            "name": "katara",
-            "param": ["tools/KATARA/dominSpecific"]
-        }
-    }
-
-    results_list = run_data_cleaning_job(run_input)
-    for x in results_list:
-        print x
 ########################################
