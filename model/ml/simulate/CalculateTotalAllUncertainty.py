@@ -197,10 +197,16 @@ N_datasets = 7
 
 
 
-log_folder = "unique_batch" #"unique"
+#log_folder = "unique_batch"
+log_folder = "bart/fd1/20percent"
 
-dataset = HospitalHoloClean() #BlackOakDataSetUppercase()
-future_steps = 60 #BlackOak = 7, Flights = 9
+#dataset = HospitalHoloClean() #BlackOakDataSetUppercase()
+#future_steps = 60 #BlackOak = 7, Flights = 9
+
+from ml.datasets.BartDataset.BartDataSet import BartDataset
+dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_20percent")
+future_steps = 7
+
 
 n = dataset.get_number_dirty_columns()
 
@@ -215,7 +221,7 @@ for d in range(10):
 
     certainty_sum = get_all_certainty_sum(x, feature_names)
 
-    print certainty_sum
+    #print certainty_sum
 
     print "train: " + str(x.shape[0])
     print "features: " + str(all_features)

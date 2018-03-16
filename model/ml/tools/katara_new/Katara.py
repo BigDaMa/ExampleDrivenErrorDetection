@@ -9,6 +9,8 @@ class Katara(Tool):
     def __init__(self, path_to_tool_result, data):
         outliers = pd.read_csv(path_to_tool_result, header=0, sep=',', dtype=int)
 
+        print "detected: " + str(outliers.shape)
+
         matrix_detected = np.zeros(data.shape, dtype=bool)
 
         for i in range(outliers.shape[0]):

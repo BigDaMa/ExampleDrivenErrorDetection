@@ -22,11 +22,34 @@ print data.shape
 print float(np.sum(data.matrix_is_error)) / float(data.shape[0] * data.shape[1])
 '''
 
-
+import csv
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
+'''
 data = BlackOakDataSetUppercase()
 
 data.clean_pd.columns =['RecID','FirstName','MiddleName','LastName','Address','City','State','ZIP','POBox','POCityStateZip','SSN','DOB']
 
-import csv
 data.clean_pd.to_csv('/tmp/address.csv', index=False, quoting=csv.QUOTE_ALL)
+#data.clean_pd.to_csv('/tmp/address.csv', index=False)
+'''
+
+from ml.datasets.salary_data.Salary import Salary
+
+data = Salary()
+all_columns = list(data.clean_pd.columns)
+all_columns[0] = "mygreatid"
+all_columns[8] += " (integer)"
+data.clean_pd.columns = all_columns
+
+def convert_to_int(value):
+    return int(float(value))
+
+data.clean_pd[all_columns[8]] = data.clean_pd[all_columns[8]].apply(convert_to_int)
+
+
+print list(data.clean_pd.columns)
+
+data.clean_pd.to_csv('/tmp/salary.csv', index=False, quoting=csv.QUOTE_ALL)
+
+
+

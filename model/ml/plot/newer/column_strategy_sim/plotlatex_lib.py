@@ -17,7 +17,8 @@ def plot_list(ranges, list_series, list_names, title, x_max=None, end_of_round=N
 	ax.set_xlim((0,x_max))
 
 
-	ax.legend(loc=4)
+	#ax.legend(loc=4)
+	ax.legend(loc=2)
 
 	plt.show()
 

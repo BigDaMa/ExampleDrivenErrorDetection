@@ -8,6 +8,7 @@ from sklearn.metrics import mean_squared_error
 import operator
 import pickle
 from ml.simulate.RoundRobin.round import select_by_round_robin
+from ml.simulate.RoundRobin.round import select_by_round_robin_all_measures
 
 from ml.active_learning.classifier.XGBoostClassifier import XGBoostClassifier
 
@@ -195,17 +196,25 @@ N_datasets = 7
 
 
 
-log_folder = "test_roundrobin" #"plain_al"#"unique_batch" #"unique"
+#log_folder = "unique_batch"
+log_folder = "bart/fd1/5percent"
 
+'''
 dataset = BlackOakDataSetUppercase()
 #future_steps = 8+9 #BlackOak = 7, Flights = 9
 future_steps = 14+7 #BlackOak = 7
 #future_steps = 17*2 + 60
+'''
+from ml.datasets.BartDataset.BartDataSet import BartDataset
+dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_5percent")
+future_steps = 2 + 4
 
 n = dataset.get_number_dirty_columns()
 
 best_sum_total_f = {}
 best_col_seq  = {}
+recall_list ={}
+precision_list ={}
 
 
 
@@ -240,13 +249,19 @@ for d in range(10):
 
     # print tensor_run
 
-    best_sum_total_f[d], best_col_seq[d] = select_by_round_robin(tensor_run, np.ones(n, dtype=int) * -1, [], [], future_steps, True) #Flight = 9, Blackoak 7, Hospital=5
+    #best_sum_total_f[d], best_col_seq[d] = select_by_round_robin(tensor_run, np.ones(n, dtype=int) * -1, [], [], future_steps, True) #Flight = 9, Blackoak 7, Hospital=5
+    best_sum_total_f[d], precision_list[d], recall_list[d], best_col_seq[d] = select_by_round_robin_all_measures(tensor_run, np.ones(n, dtype=int) * -1, [],[],[], [],
+                                                                 future_steps,
+                                                                 True)  # Flight = 9, Blackoak 7, Hospital=5
+
     print list(best_sum_total_f[d])
 
 print best_col_seq
 
 
 average_best = np.sum(best_sum_total_f.values(), axis=0) / float(len(best_sum_total_f))
+average_recall = np.sum(recall_list.values(), axis=0) / float(len(recall_list))
+average_precision = np.sum(precision_list.values(), axis=0) / float(len(precision_list))
 
 labels = []
 
@@ -273,7 +288,13 @@ ax.legend(loc=4)
 
 plt.show()
 
+print "Fscore:"
 print list(average_best)
+print "Recall:"
+print list(average_recall)
+print "Precision:"
+print list(average_precision)
+print "labels"
 print labels
 
 

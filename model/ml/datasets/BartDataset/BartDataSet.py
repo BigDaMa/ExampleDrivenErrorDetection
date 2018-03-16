@@ -25,9 +25,20 @@ if __name__ == '__main__':
 	from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
 	import numpy as np
 
-	data = BartDataset(BlackOakDataSetUppercase(), "2FD_1percent")
+	#data = BartDataset(BlackOakDataSetUppercase(), "CityFD_10percent")
 
-	error_fractions = np.sum(data.matrix_is_error,axis=0)
+	#'''
+	from ml.datasets.salary_data.Salary import Salary
+
+	#outlier data
+	datan = Salary()
+	def convert_to_int(value):
+		return str(int(float(value)))
+	datan.clean_pd[datan.clean_pd.columns[8]] = datan.clean_pd[datan.clean_pd.columns[8]].apply(convert_to_int)
+	data = BartDataset(datan, "Salary_outlier_5percent")
+	#'''
+
+	error_fractions = np.sum(data.matrix_is_error, axis=0)
 
 
 	print data.clean_pd.columns

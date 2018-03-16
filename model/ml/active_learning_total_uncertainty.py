@@ -106,7 +106,7 @@ from ml.datasets.flights.FlightHoloClean import FlightHoloClean
 from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
 #dataSet = HospitalHoloClean()
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
-dataSet = BlackOakDataSetUppercase()
+#dataSet = BlackOakDataSetUppercase()
 
 from ml.datasets.salary_data.Salary import Salary
 #dataSet = Salary()
@@ -141,6 +141,16 @@ error_types = [ReplaceError]
 seed_synth = 41
 dataSet = Synthetic(rows, datasets, columns, error_fraction, error_types, seed_synth)
 '''
+
+from ml.datasets.BartDataset.BartDataSet import BartDataset
+# dataSet = BartDataset(BlackOakDataSetUppercase(), "CityFD_20percent")
+
+#outlier data
+datan = Salary()
+def convert_to_int(value):
+	return str(int(float(value)))
+datan.clean_pd[datan.clean_pd.columns[8]] = datan.clean_pd[datan.clean_pd.columns[8]].apply(convert_to_int)
+dataSet = BartDataset(datan, "Salary_outlier_5percent")
 
 
 print("read: %s seconds ---" % (time.time() - start_time))
