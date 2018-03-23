@@ -132,15 +132,13 @@ class NadeefDetect:
         ts = int(time.time())
         name = "dirty_data" + str(ts)
         csv_path = '/tmp/' + name + '.csv'
-        dirty.to_csv(csv_path, index=False)
-        '''
+        #dirty.to_csv(csv_path, index=False)
         dirty.to_csv(csv_path,
                index=False,
                quoting=csv.QUOTE_ALL,
                escapechar='\\',
                quotechar="'",
                na_rep="")
-        '''
 
         import os
         newline = os.linesep  # Defines the newline based on your OS.

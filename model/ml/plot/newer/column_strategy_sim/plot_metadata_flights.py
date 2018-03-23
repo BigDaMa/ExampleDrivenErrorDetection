@@ -312,39 +312,39 @@ average_max_recallimpact_pred_sim = list(np.mean(np.matrix(max_recallimpact_pred
 
 
 
-ranges = [labels_optimum,
+ranges = [#labels_optimum,
+		  #labels_optimum,
 		  labels_optimum,
 		  labels_optimum,
 		  labels_optimum,
 		  labels_optimum,
 		  labels_optimum,
-		  labels_optimum,
-		  labels_optimum,
-		  labels_optimum,
-		  labels_optimum
+		  #labels_optimum,
+		  #labels_optimum,
+		  #labels_optimum
 		  ]
-list = [average_optimum,
-		average_totaluncertainty_sim,
+list = [#average_optimum,
+		#average_totaluncertainty_sim,
 		average_maxuncertainty_sim,
 		average_maxchangeprediction_sim,
 		average_roundrobin_sim,
 		average_random_sim,
 		average_mincross_sim,
-		average_max_false_pred_sim,
-		average_max_fimpact_pred_sim,
-		average_max_recallimpact_pred_sim
+		#average_max_false_pred_sim,
+		#average_max_fimpact_pred_sim,
+		#average_max_recallimpact_pred_sim
 		]
 names = [
-		 "optimum",
-		 "total uncertainty sampling",
+		 #"optimum",
+		 #"total uncertainty sampling",
          "min certainty",
 		 "max prediction change",
 	     "round robin",
 		 "random",
 	     "min cross val",
-		 "max pred FN+FP",
-		 "max pred f impact",
-		 "max pred recall impact"
+		 #"max pred FN+FP",
+		 #"max pred f impact",
+		 #"max pred recall impact"
 		 ]
 
 

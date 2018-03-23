@@ -54,5 +54,5 @@ if __name__ == '__main__':
 	print data.shape
 
 	import csv
-	data.clean_pd.to_csv('/tmp/products_clean.csv', index=False, quoting=csv.QUOTE_ALL)
-	data.dirty_pd.to_csv('/tmp/products_dirty.csv', index=False, quoting=csv.QUOTE_ALL)
+	#data.clean_pd.to_csv('/tmp/products_clean.csv', index=False, quoting=csv.QUOTE_ALL)
+	#data.dirty_pd.to_csv('/tmp/products_dirty.csv', index=False, quoting=csv.QUOTE_ALL)

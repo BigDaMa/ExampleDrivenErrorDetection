@@ -8,6 +8,7 @@ from sklearn.metrics import mean_squared_error
 import operator
 import pickle
 from ml.simulate.MaxUncertaintyAll.maxuncertaintyall import select_by_max_uncertainty_all
+from ml.simulate.MaxUncertaintyAll.maxuncertaintyall import select_by_max_uncertainty_all_prob
 from ml.simulate.MaxUncertaintyAll.maxuncertaintyall import get_all_certainty_sum
 from ml.simulate.RoundRobin.round import select_by_round_robin
 
@@ -197,15 +198,16 @@ N_datasets = 7
 
 
 
-#log_folder = "unique_batch"
-log_folder = "bart/fd1/20percent"
+log_folder = "unique_batch"
+#log_folder = "bart/fd1/20percent"
 
-#dataset = HospitalHoloClean() #BlackOakDataSetUppercase()
+dataset = HospitalHoloClean()#FlightHoloClean()#BlackOakDataSetUppercase()#HospitalHoloClean() #BlackOakDataSetUppercase()
 #future_steps = 60 #BlackOak = 7, Flights = 9
-
+'''
 from ml.datasets.BartDataset.BartDataSet import BartDataset
 dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_20percent")
-future_steps = 7
+'''
+future_steps = 60
 
 
 n = dataset.get_number_dirty_columns()
@@ -252,10 +254,12 @@ for d in range(10):
     # print tensor_run
     total_f, col_seq = select_by_round_robin(tensor_run, np.ones(n, dtype=int) * -1, [], [], n * 2, True)
 
-    best_sum_total_f[d], best_col_seq[d] = select_by_max_uncertainty_all(tensor_run, np.ones(n, dtype=int), total_f, col_seq, matrix_batch_certainty_sum, future_steps, True) #Flight = 9, Blackoak 7, Hospital=5
+    best_sum_total_f[d], best_col_seq[d] = select_by_max_uncertainty_all_prob(tensor_run, np.ones(n, dtype=int), total_f, col_seq, matrix_batch_certainty_sum, future_steps, True) #Flight = 9, Blackoak 7, Hospital=5
 
 print best_col_seq
 
+for mylist in best_sum_total_f.values():
+    print list(mylist)
 
 average_best = np.sum(best_sum_total_f.values(), axis=0) / float(len(best_sum_total_f))
 
@@ -278,12 +282,13 @@ ax.plot(labels, average_best, label="actual")
 
 ax.set_ylabel('total fscore')
 ax.set_ylim((0.0, 1.0))
-ax.set_xlabel('round')
+ax.set_xlabel('labels')
 
 ax.legend(loc=4)
 
 plt.show()
 
+print "average:"
 print list(average_best)
 print labels
 

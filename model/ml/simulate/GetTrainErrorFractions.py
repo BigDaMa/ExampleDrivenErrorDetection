@@ -7,9 +7,8 @@ from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 import operator
 import pickle
-from ml.simulate.PredictFImpact.predictF import get_estimated_tp_fp_fn
-from ml.simulate.PredictFImpact.predictF import select_by_estimated_max_f_impact
 from ml.simulate.RoundRobin.round import select_by_round_robin
+from ml.simulate.RoundRobin.round import select_by_round_robin_all_measures
 
 from ml.active_learning.classifier.XGBoostClassifier import XGBoostClassifier
 
@@ -98,8 +97,6 @@ def run_cross_validation(train, train_target, folds, scoring='r2'):
     return our_params
 
 
-
-
 use_history = False
 
 
@@ -125,7 +122,7 @@ feature_names.append('mean_squared_certainty_change')
 feature_names.append('stddev_squared_certainty_change')
 
 for i in range(10):
-    feature_names.append('batch_certainty_' + str(i))
+    feature_names.append('batch_certainty' + str(i))
 
 feature_names.append('no_change_0')
 feature_names.append('no_change_1')
@@ -136,22 +133,20 @@ all_features = len(feature_names)
 
 print feature_names
 
-
-size = len(feature_names)
-for s in range(size):
-    feature_names.append(feature_names[s] + "_old")
+if use_history:
+    size = len(feature_names)
+    for s in range(size):
+        feature_names.append(feature_names[s] + "_old")
 
 
 which_features_to_use = []
 for feature_index in range(len(feature_names)):
-    #if not 'batch_certainty_' in feature_names[feature_index]: #True:#not 'histogram' in feature_names[feature_index]:
-    if not 'batch_certainty_' in feature_names[feature_index] and not 'histogram' in feature_names[feature_index]:
+    if True:#not 'histogram' in feature_names[feature_index]:
         which_features_to_use.append(feature_index)
 print which_features_to_use
 
 feature_names = [i for j, i in enumerate(feature_names) if j in which_features_to_use]
 
-print feature_names
 
 use_absolute_difference = True # False == Squared / True == Absolute
 
@@ -201,64 +196,73 @@ N_datasets = 7
 
 
 
-log_folder = "unique_batch" #"unique"
+#log_folder = "unique_batch"
+#log_folder = "bart/fd1/5percent"
+#log_folder = "bart/outlier/20percent"
+log_folder = "bart/fd1/1percent"
+#log_folder = "bart/fd1_switch"
 
-#dataset = HospitalHoloClean() #BlackOakDataSetUppercase()
-#future_steps = 60 #BlackOak = 7, Flights = 9
-dataset = BlackOakDataSetUppercase()
-future_steps = 7 #BlackOak = 7, Flights = 9
+
+#dataset = HospitalHoloClean()
+#future_steps = 8+9 #BlackOak = 7, Flights = 9
+#future_steps = 14+7 #BlackOak = 7
+#future_steps = 17*2 + 60
+
+from ml.datasets.BartDataset.BartDataSet import BartDataset
+dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_1percent")
+#dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_10percent_Switch")
+future_steps = 9
+
+
+#outlier data
+'''
+datan = Salary()
+def convert_to_int(value):
+    return str(int(float(value)))
+datan.clean_pd[datan.clean_pd.columns[8]] = datan.clean_pd[datan.clean_pd.columns[8]].apply(convert_to_int)
+dataset = BartDataset(datan, "Salary_outlier_20percent")
+
+future_steps = 2 + 10
+'''
 
 n = dataset.get_number_dirty_columns()
 
 best_sum_total_f = {}
-best_col_seq = {}
+best_col_seq  = {}
+recall_list ={}
+precision_list ={}
+
+def get_train_error_fractions(x, featurenames):
+    ids = []
+    for feature_i in range(len(featurenames)):
+        if 'training_error_fraction' == featurenames[feature_i]:
+            ids.append(feature_i)
+
+    return x[:,ids]
 
 
+train_error_fraction = {}
 
 for d in range(10):
     file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log_data/" + log_folder + "/log_progress_"+ dataset.name +"_" + str(d)  +".csv"
     x, fp, fn, tp = read_csv1(file_path, None)
 
-    estimated_scores = get_estimated_tp_fp_fn(x, n, dataset,feature_names, which_features_to_use)
-
     print "train: " + str(x.shape[0])
     print "features: " + str(all_features)
     assert x.shape[1] == all_features
 
+    train_error_fraction[d] = np.array(get_train_error_fractions(x, feature_names)).flatten()
 
-    print "number dirty attributes: " + str(n)
-
-    runs = 41
-    tensor_run = np.zeros((n, runs, 3))
-
-    matrix_cross_mean = np.zeros((n, runs))
-
-    f_p = 0
-    f_n = 1
-    t_p = 2
-
-    for run in range(runs):
-        for col in range(n):
-            tensor_run[col, run, f_p] = fp[col + n * run]
-            tensor_run[col, run, f_n] = fn[col + n * run]
-            tensor_run[col, run, t_p] = tp[col + n * run]
+    print train_error_fraction[d]
 
 
-    # print tensor_run
-    total_f, col_seq = select_by_round_robin(tensor_run, np.ones(n, dtype=int) * -1, [], [], n * 2, True)
-
-    best_sum_total_f[d], best_col_seq[d] = select_by_estimated_max_f_impact(tensor_run, np.ones(n, dtype=int), total_f, col_seq, estimated_scores, future_steps, True) #Flight = 9, Blackoak 7, Hospital=5
-
-print best_col_seq
-
-
-average_best = np.sum(best_sum_total_f.values(), axis=0) / float(len(best_sum_total_f))
+average_best = np.sum( train_error_fraction.values(), axis=0) / float(len(train_error_fraction))
 
 labels = []
 
 start = 0
 for ii in range(n):
-    start += 4
+    start +=4
     labels.append(start)
 
 while len(labels) < len(average_best):
@@ -279,8 +283,8 @@ ax.legend(loc=4)
 
 plt.show()
 
+print "Train error fraction:"
 print list(average_best)
-print labels
 
 
 

@@ -197,17 +197,33 @@ N_datasets = 7
 
 
 #log_folder = "unique_batch"
-log_folder = "bart/fd1/5percent"
+#log_folder = "bart/fd1/5percent"
+#log_folder = "bart/outlier/20percent"
+#log_folder = "bart/fd1/30percent"
+log_folder = "bart/fd1_add"
 
-'''
-dataset = BlackOakDataSetUppercase()
+
+#dataset = HospitalHoloClean()
 #future_steps = 8+9 #BlackOak = 7, Flights = 9
-future_steps = 14+7 #BlackOak = 7
+#future_steps = 14+7 #BlackOak = 7
 #future_steps = 17*2 + 60
-'''
+
 from ml.datasets.BartDataset.BartDataSet import BartDataset
-dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_5percent")
-future_steps = 2 + 4
+#dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_30percent")
+dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_10percent_AddStar")
+future_steps = 9
+
+
+#outlier data
+'''
+datan = Salary()
+def convert_to_int(value):
+    return str(int(float(value)))
+datan.clean_pd[datan.clean_pd.columns[8]] = datan.clean_pd[datan.clean_pd.columns[8]].apply(convert_to_int)
+dataset = BartDataset(datan, "Salary_outlier_20percent")
+
+future_steps = 2 + 10
+'''
 
 n = dataset.get_number_dirty_columns()
 

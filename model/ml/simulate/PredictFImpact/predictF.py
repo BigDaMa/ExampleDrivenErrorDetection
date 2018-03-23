@@ -18,15 +18,19 @@ def load_model(dataSet):
 	# dataset_log_files[Salary().name] = "hospital"  # be careful
 	# dataset_log_files[Book().name] = "hospital"  # be careful
 
-	potential_model_dir = '/home/felix/ExampleDrivenErrorDetection/potential models/current_total_f'
-	tp_model = pickle.load(open(potential_model_dir + "/tp_model" + dataset_log_files[dataSet.name] + "_" + "XGBoost" + ".p"))
-	fp_model = pickle.load(open(potential_model_dir + "/fp_model" + dataset_log_files[dataSet.name] + "_" + "XGBoost" + ".p"))
+	#potential_model_dir = '/home/felix/ExampleDrivenErrorDetection/potential models/current_total_f'
+	potential_model_dir = '/home/felix/ExampleDrivenErrorDetection/potential models/simulation100data'
+
+	tp_model = pickle.load(open(potential_model_dir + "/tp_model_" + "XGBoost" + ".p"))
+	fp_model = pickle.load(open(potential_model_dir + "/fp_model_" + "XGBoost" + ".p"))
 	fn_model = pickle.load(
-		open(potential_model_dir + "/fn_model" + dataset_log_files[dataSet.name] + "_" + "XGBoost" + ".p"))
+		open(potential_model_dir + "/fn_model_XGBoost.p"))
 
 	return tp_model, fp_model, fn_model
 
-def get_estimated_tp_fp_fn(x, n, dataSet, which_features_to_use_n, runs=41,tp_model=None, fp_model=None, fn_model=None):
+def get_estimated_tp_fp_fn(x, n, dataSet, features, which_features_to_use_n, runs=41,tp_model=None, fp_model=None, fn_model=None):
+
+	'''
 	feature_names = ['distinct_values_fraction', 'labels', 'certainty', 'certainty_stddev',
 					 'minimum_certainty']
 
@@ -49,16 +53,21 @@ def get_estimated_tp_fp_fn(x, n, dataSet, which_features_to_use_n, runs=41,tp_mo
 	feature_names.append('mean_squared_certainty_change')
 	feature_names.append('stddev_squared_certainty_change')
 
+	for i in range(10):
+		feature_names.append('batch_certainty' + str(i))
+
 	feature_names.append('no_change_0')
 	feature_names.append('no_change_1')
 	feature_names.append('change_0_to_1')
 	feature_names.append('change_1_to_0')
+
 
 	#print(str(feature_names))
 
 	size = len(feature_names)
 	for s in range(size):
 		feature_names.append(feature_names[s] + "_old")
+	'''
 
 
 	f_p = 0
@@ -70,15 +79,19 @@ def get_estimated_tp_fp_fn(x, n, dataSet, which_features_to_use_n, runs=41,tp_mo
 		for col in range(n):
 			if run > 0:
 				vector = []
-				vector.extend(x[col + n * run][which_features_to_use_n])
-				vector.extend(x[col + (n - 1) * run][which_features_to_use_n])
+				vector.extend(x[col + n * run])
+				vector.extend(x[col + (n - 1) * run])
 
-				feature_vector_new = np.matrix(vector)
+				feature_vector_new = np.matrix(vector)[:, which_features_to_use_n]
 
 				if tp_model == None:
 					tp_model, fp_model, fn_model = load_model(dataSet)
 
-				mat_potential = xgb.DMatrix(feature_vector_new, feature_names=feature_names)
+
+				print feature_vector_new.shape
+				print len(features)
+
+				mat_potential = xgb.DMatrix(feature_vector_new, feature_names=features)
 				estimated_scores[col, run, t_p] = tp_model.predict(mat_potential)
 				estimated_scores[col, run, f_p] = fp_model.predict(mat_potential)
 				estimated_scores[col, run, f_n] = fn_model.predict(mat_potential)

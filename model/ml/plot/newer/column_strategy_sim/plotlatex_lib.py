@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_list(ranges, list_series, list_names, title, x_max=None, end_of_round=None):
+def plot_list(ranges, list_series, list_names, title, x_max=None, end_of_round=None, yname='F1-score'):
 	fig = plt.figure()
 	ax = plt.subplot(111)
 
@@ -12,7 +12,7 @@ def plot_list(ranges, list_series, list_names, title, x_max=None, end_of_round=N
 	if end_of_round != None:
 		ax.axvline(x=end_of_round)
 
-	ax.set_ylabel('F1-score')
+	ax.set_ylabel(yname)
 	ax.set_ylim((0.0, 1.0))
 	ax.set_xlim((0,x_max))
 

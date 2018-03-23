@@ -24,7 +24,7 @@ print float(np.sum(data.matrix_is_error)) / float(data.shape[0] * data.shape[1])
 
 import csv
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
-'''
+
 data = BlackOakDataSetUppercase()
 
 data.clean_pd.columns =['RecID','FirstName','MiddleName','LastName','Address','City','State','ZIP','POBox','POCityStateZip','SSN','DOB']
@@ -32,6 +32,7 @@ data.clean_pd.columns =['RecID','FirstName','MiddleName','LastName','Address','C
 data.clean_pd.to_csv('/tmp/address.csv', index=False, quoting=csv.QUOTE_ALL)
 #data.clean_pd.to_csv('/tmp/address.csv', index=False)
 '''
+
 
 from ml.datasets.salary_data.Salary import Salary
 
@@ -51,5 +52,10 @@ print list(data.clean_pd.columns)
 
 data.clean_pd.to_csv('/tmp/salary.csv', index=False, quoting=csv.QUOTE_ALL)
 
+
+from ml.datasets.BartDataset.BartDataSet import BartDataset
+data = BartDataset(BlackOakDataSetUppercase(), "CityFD_30percent")
+data.clean_pd.to_csv('/tmp/salary.csv', index=False, quoting=csv.QUOTE_ALL)
+'''
 
 

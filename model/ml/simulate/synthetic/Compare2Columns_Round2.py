@@ -223,7 +223,8 @@ for a in range(10):
 		else:
 			comparison[a, b] = round_integral / opt_integral
 		final_f_score[a, b] = round_list[i][-1]
-		print comparison[a, b]
+		print final_f_score[a, b]
+		#print comparison[a, b]
 		#print "a: " + str(error_fractions[a]) + " b: " + str(error_fractions[b])
 		i += 1
 

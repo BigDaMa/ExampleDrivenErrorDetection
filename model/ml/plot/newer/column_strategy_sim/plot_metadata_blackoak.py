@@ -257,8 +257,13 @@ max_recallimpact_pred_sim = []
 max_recallimpact_pred_sim.append([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.14240343779747952, 0.57419650110247011, 0.65224792138728371, 0.77541722633542742, 0.86559885004619441, 0.94823968944421855, 0.9719527112838241, 0.97188155233024742, 0.97305926751756522, 0.97410735878905097, 0.97210636624443014])
 average_max_recallimpact_pred_sim = list(np.mean(np.matrix(max_recallimpact_pred_sim), axis=0).A1)
 
+datasets100_sim = []
+datasets100_sim.append([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.14240343779747952, 0.5741965011024701, 0.6522479213872837, 0.7754172263354274, 0.861788317765481, 0.939210454028867, 0.9569894095758844, 0.9555802841786427, 0.9602368894567892, 0.9598236091270419, 0.9725868799168185])
+average_datasets100_sim = list(np.mean(np.matrix(datasets100_sim), axis=0).A1)
 
-ranges = [labels_optimum,
+
+ranges = [#labels_optimum,
+		  labels_optimum,
 		  labels_optimum,
 		  labels_optimum,
 		  labels_optimum,
@@ -269,28 +274,30 @@ ranges = [labels_optimum,
 		  labels_optimum,
 		  labels_optimum
 		  ]
-list = [average_optimum,
-		average_totaluncertainty_sim,
+list = [#average_optimum,
+		#average_totaluncertainty_sim,
 		average_maxuncertainty_sim,
 		average_maxchangeprediction_sim,
 		average_roundrobin_sim,
 		average_random_sim,
 		average_mincross_sim,
-		average_max_false_pred_sim,
-		average_max_fimpact_pred_sim,
-		average_max_recallimpact_pred_sim
+		#average_max_false_pred_sim,
+		#average_max_fimpact_pred_sim,
+		#average_max_recallimpact_pred_sim,
+		#average_datasets100_sim
 		]
 names = [
-		 "optimum",
-		 "total uncertainty sampling",
+		 #"optimum",
+		 #"total uncertainty sampling",
          "min certainty",
 		 "max prediction change",
 	     "round robin",
 		 "random",
 	     "min cross val",
-		 "max pred FN+FP",
-	     "max pred f impact",
-	     "max pred recall impact"
+		 #"max pred FN+FP",
+	     #"max pred f impact",
+	     #"max pred recall impact",
+		 #"max f data = 100"
 		 ]
 
 

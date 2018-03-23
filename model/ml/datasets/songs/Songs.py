@@ -66,12 +66,12 @@ class Songs(DataSet):
 			#if counter > 100:
 			#	break
 
-		self.dirty_pd = msd_df
-		self.clean_pd = msd_clean
+		dirty_pd = msd_df
+		clean_pd = msd_clean
 
 		print "done first"
 
-		#super(Songs, self).__init__(Songs.name, dirty_pd, clean_pd)
+		super(Songs, self).__init__(Songs.name, dirty_pd, clean_pd)
 
 
 
@@ -82,12 +82,10 @@ class Songs(DataSet):
 if __name__ == '__main__':
 	data = Songs()
 
-	#print np.sum(data.matrix_is_error, axis=0) / float(data.shape[0])
+	print np.sum(data.matrix_is_error, axis=0) / float(data.shape[0])
 
-	#print data.shape
+	print data.shape
 
 	import csv
-	data.clean_pd.to_csv('/tmp/songs_clean1.csv', index=False, quoting=csv.QUOTE_ALL)
-	data.dirty_pd.to_csv('/tmp/songs_dirty1.csv', index=False, quoting=csv.QUOTE_ALL)
-
-	print "done"
+	#data.clean_pd.to_csv('/tmp/songs_clean1.csv', index=False, quoting=csv.QUOTE_ALL)
+	#data.dirty_pd.to_csv('/tmp/songs_dirty1.csv', index=False, quoting=csv.QUOTE_ALL)

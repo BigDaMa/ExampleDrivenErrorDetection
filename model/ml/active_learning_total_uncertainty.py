@@ -102,7 +102,7 @@ def add_lstm_features(data, use_lstm_only, all_matrix_train, feature_name_list):
 start_time = time.time()
 
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
-#dataSet = FlightHoloClean()
+dataSet = FlightHoloClean()
 from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
 #dataSet = HospitalHoloClean()
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
@@ -143,14 +143,29 @@ dataSet = Synthetic(rows, datasets, columns, error_fraction, error_types, seed_s
 '''
 
 from ml.datasets.BartDataset.BartDataSet import BartDataset
-# dataSet = BartDataset(BlackOakDataSetUppercase(), "CityFD_20percent")
+#dataSet = BartDataset(BlackOakDataSetUppercase(), "CityFD_10percent_AddStar")
 
 #outlier data
+'''
 datan = Salary()
 def convert_to_int(value):
 	return str(int(float(value)))
 datan.clean_pd[datan.clean_pd.columns[8]] = datan.clean_pd[datan.clean_pd.columns[8]].apply(convert_to_int)
-dataSet = BartDataset(datan, "Salary_outlier_5percent")
+dataSet = BartDataset(datan, "Salary_outlier_20percent")
+'''
+
+from datasets.electronics.Electronics import Electronics
+#dataSet = Electronics()
+
+from datasets.ebooks1.EBooks1 import EBooks1
+#dataSet = EBooks1()
+
+from datasets.products.Products import Products
+#dataSet = Products()
+
+#from datasets.songs.Songs import Songs
+#dataSet = Songs()
+
 
 
 print("read: %s seconds ---" % (time.time() - start_time))
@@ -229,7 +244,7 @@ feature_gen_time = 0.0
 
 for check_this in range(checkN):
 
-	f = open("/home/felix/ExampleDrivenErrorDetection/log_progress_" + dataSet.name + "_" + str(check_this) + ".csv",
+	f = open(Config.get("folder.logfile") + "/log_progress_" + dataSet.name + "_" + str(check_this) + ".csv",
 			 'w+')
 
 	train_indices, test_indices = split_data_indices(dataSet, train_fraction, fold_number=check_this)
