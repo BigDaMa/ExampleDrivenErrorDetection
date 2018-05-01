@@ -7,7 +7,9 @@ from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 import operator
 import pickle
-from ml.simulate.RoundRobin.round import select_by_round_robin
+from ml.simulate.MaxUncertaintyAll.maxuncertaintyall import select_by_max_uncertainty_all_metrics
+from ml.simulate.MaxUncertaintyAll.maxuncertaintyall import select_by_max_uncertainty_all_prob
+from ml.simulate.MaxUncertaintyAll.maxuncertaintyall import get_all_certainty_sum
 from ml.simulate.RoundRobin.round import select_by_round_robin_all_measures
 
 from ml.active_learning.classifier.XGBoostClassifier import XGBoostClassifier
@@ -18,6 +20,7 @@ from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
 from ml.datasets.luna.book.Book import Book
 from ml.datasets.salary_data.Salary import Salary
 from ml.datasets.luna.restaurant.Restaurant import Restaurant
+from ml.datasets.food.FoodHoloClean import FoodHoloClean
 
 def plot(y, y_pred):
     fig = plt.figure()
@@ -197,45 +200,29 @@ N_datasets = 7
 
 
 #log_folder = "unique_batch"
-#log_folder = "bart/fd1/5percent"
-#log_folder = "bart/outlier/20percent"
-#log_folder = "bart/fd1/30percent"
-#log_folder = "bart/fd1_add"
-#log_folder = "hospitalFD/30percent"
-log_folder ="bartstupid/30percent"
-
-from ml.datasets.HospitalFD.MyFD import MyFD
-#dataset = MyFD(HospitalHoloClean(), 0.3, "city") # 0.01, 0.05, 0.1, 0.2, 0.3
-
-from ml.datasets.BartDataset.BartDataSet import BartDataset
-dataset = BartDataset(HospitalHoloClean(), "bart_fd_stupid/30percent")
+#log_folder = "bart/fd1/20percent"
+#log_folder = "word_unigrams"
+#log_folder = "unigrams"
+#log_folder = "bigrams"
+#log_folder = "metadata"
+log_folder = "unique_batch"
+#log_folder = "unigram_metadata_naivebayes"
+#log_folder = "unigram_metadata_linearsvm"
+#log_folder = "food"
+#log_folder = "deep_all"
 
 
+#dataset = FoodHoloClean()
+#dataset = FlightHoloClean()#FlightHoloClean()#BlackOakDataSetUppercase()#HospitalHoloClean() #BlackOakDataSetUppercase()
+dataset = BlackOakDataSetUppercase()
 #dataset = HospitalHoloClean()
-#dataset.name = "MyFD"
-#future_steps = 8+9 #BlackOak = 7, Flights = 9
-#future_steps = 8+20 #BlackOak = 7
-#future_steps = 17*2 + 60
-future_steps = 6
-
+#future_steps = 60 #BlackOak = 7, Flights = 9
 '''
 from ml.datasets.BartDataset.BartDataSet import BartDataset
-#dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_30percent")
-dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_10percent_AddStar")
-future_steps = 9
+dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_20percent")
 '''
+future_steps = 60 # 60
 
-
-#outlier data
-'''
-datan = Salary()
-def convert_to_int(value):
-    return str(int(float(value)))
-datan.clean_pd[datan.clean_pd.columns[8]] = datan.clean_pd[datan.clean_pd.columns[8]].apply(convert_to_int)
-dataset = BartDataset(datan, "Salary_outlier_20percent")
-
-future_steps = 2 + 10
-'''
 
 n = dataset.get_number_dirty_columns()
 
@@ -250,6 +237,10 @@ for d in range(10):
     file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log_data/" + log_folder + "/log_progress_"+ dataset.name +"_" + str(d)  +".csv"
     x, fp, fn, tp = read_csv1(file_path, None)
 
+    certainty_sum = get_all_certainty_sum(x, feature_names)
+
+    #print certainty_sum
+
     print "train: " + str(x.shape[0])
     print "features: " + str(all_features)
     assert x.shape[1] == all_features
@@ -262,7 +253,7 @@ for d in range(10):
     runs = 41
     tensor_run = np.zeros((n, runs, 3))
 
-    matrix_change_sum = np.zeros((n, runs))
+    matrix_certainty_sum = np.zeros((n, runs))
 
     f_p = 0
     f_n = 1
@@ -273,16 +264,30 @@ for d in range(10):
             tensor_run[col, run, f_p] = fp[col + n * run]
             tensor_run[col, run, f_n] = fn[col + n * run]
             tensor_run[col, run, t_p] = tp[col + n * run]
+            matrix_certainty_sum[col, run] = certainty_sum[col + n * run]
 
+    '''
+    for col in range(n):
+        fig = plt.figure()
+        ax = plt.subplot(111)
+
+        ax.plot(range(41), matrix_certainty_sum[col, :], label="certainty")
+
+        ax.set_ylabel('certainty')
+        ax.set_xlabel('iteration')
+
+        ax.legend(loc=4)
+
+        plt.show()
+    '''
 
     # print tensor_run
+    best_sum_total_f[d], precision_list[d], recall_list[d], best_col_seq[d] = select_by_round_robin_all_measures(
+        tensor_run, np.ones(n, dtype=int) * -1, [], [], [], [],
+        n * 2,
+        True)  # Flight = 9, Blackoak 7, Hospital=5
 
-    #best_sum_total_f[d], best_col_seq[d] = select_by_round_robin(tensor_run, np.ones(n, dtype=int) * -1, [], [], future_steps, True) #Flight = 9, Blackoak 7, Hospital=5
-    best_sum_total_f[d], precision_list[d], recall_list[d], best_col_seq[d] = select_by_round_robin_all_measures(tensor_run, np.ones(n, dtype=int) * -1, [],[],[], [],
-                                                                 future_steps,
-                                                                 True)  # Flight = 9, Blackoak 7, Hospital=5
-
-    print list(best_sum_total_f[d])
+    best_sum_total_f[d], precision_list[d], recall_list[d], best_col_seq[d] = select_by_max_uncertainty_all_metrics(tensor_run, np.ones(n, dtype=int), best_sum_total_f[d],precision_list[d], recall_list[d], best_col_seq[d], matrix_certainty_sum, future_steps, True) #Flight = 9, Blackoak 7, Hospital=5
 
 print best_col_seq
 
@@ -324,7 +329,6 @@ print "Precision:"
 print list(average_precision)
 print "labels"
 print labels
-
 
 
 

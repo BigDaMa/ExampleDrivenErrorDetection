@@ -199,19 +199,24 @@ N_datasets = 7
 #log_folder = "unique_batch"
 #log_folder = "bart/fd1/5percent"
 #log_folder = "bart/outlier/20percent"
-log_folder = "bart/fd1/1percent"
-#log_folder = "bart/fd1_switch"
+#log_folder = "bart/fd1/30percent"
+#log_folder = "bart/fd1_add"
+#log_folder = "hospitalFD/30percent"
+log_folder ="bartstupid/1percent"
+
+from ml.datasets.HospitalFD.MyFD import MyFD
+#dataset = MyFD(HospitalHoloClean(), 0.3, "city") # 0.01, 0.05, 0.1, 0.2, 0.3
+
+from ml.datasets.BartDataset.BartDataSet import BartDataset
+dataset = BartDataset(HospitalHoloClean(), "bart_fd_stupid/1percent")
 
 
 #dataset = HospitalHoloClean()
+#dataset.name = "MyFD"
 #future_steps = 8+9 #BlackOak = 7, Flights = 9
-#future_steps = 14+7 #BlackOak = 7
+#future_steps = 8+20 #BlackOak = 7
 #future_steps = 17*2 + 60
-
-from ml.datasets.BartDataset.BartDataSet import BartDataset
-dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_1percent")
-#dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_10percent_Switch")
-future_steps = 9
+future_steps = 3
 
 
 #outlier data

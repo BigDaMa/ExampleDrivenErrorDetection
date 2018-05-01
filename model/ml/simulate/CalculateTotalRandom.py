@@ -197,10 +197,10 @@ N_datasets = 7
 
 log_folder = "unique_batch" #"unique"
 
-dataset = HospitalHoloClean() #BlackOakDataSetUppercase()
+dataset = FlightHoloClean() #BlackOakDataSetUppercase()
 #future_steps = 8+9 #Flights = 9
-#future_steps = 14+7 #BlackOak = 7
-future_steps = 17*2 + 60
+future_steps = 8+20 #BlackOak = 7
+#future_steps = 17*2 + 60
 
 n = dataset.get_number_dirty_columns()
 

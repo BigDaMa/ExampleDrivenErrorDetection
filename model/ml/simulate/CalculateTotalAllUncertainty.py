@@ -20,6 +20,7 @@ from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
 from ml.datasets.luna.book.Book import Book
 from ml.datasets.salary_data.Salary import Salary
 from ml.datasets.luna.restaurant.Restaurant import Restaurant
+from ml.datasets.food.FoodHoloClean import FoodHoloClean
 
 def plot(y, y_pred):
     fig = plt.figure()
@@ -198,16 +199,27 @@ N_datasets = 7
 
 
 
-log_folder = "unique_batch"
+#log_folder = "unique_batch"
 #log_folder = "bart/fd1/20percent"
+#log_folder = "word_unigrams"
+#log_folder = "unigrams"
+#log_folder = "bigrams"
+#log_folder = "metadata"
+#log_folder = "unique_batch"
+#log_folder = "unigram_metadata_naivebayes"
+#log_folder = "unigram_metadata_linearsvm"
+#log_folder = "food"
+log_folder = "deep_all"
 
-dataset = HospitalHoloClean()#FlightHoloClean()#BlackOakDataSetUppercase()#HospitalHoloClean() #BlackOakDataSetUppercase()
+
+#dataset = FoodHoloClean()
+dataset = FlightHoloClean()#FlightHoloClean()#BlackOakDataSetUppercase()#HospitalHoloClean() #BlackOakDataSetUppercase()
 #future_steps = 60 #BlackOak = 7, Flights = 9
 '''
 from ml.datasets.BartDataset.BartDataSet import BartDataset
 dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_20percent")
 '''
-future_steps = 60
+future_steps = 20 # 60
 
 
 n = dataset.get_number_dirty_columns()
@@ -237,7 +249,7 @@ for d in range(10):
     runs = 41
     tensor_run = np.zeros((n, runs, 3))
 
-    matrix_batch_certainty_sum = np.zeros((n, runs))
+    matrix_certainty_sum = np.zeros((n, runs))
 
     f_p = 0
     f_n = 1
@@ -248,13 +260,27 @@ for d in range(10):
             tensor_run[col, run, f_p] = fp[col + n * run]
             tensor_run[col, run, f_n] = fn[col + n * run]
             tensor_run[col, run, t_p] = tp[col + n * run]
-            matrix_batch_certainty_sum[col, run] = certainty_sum[col + n * run]
+            matrix_certainty_sum[col, run] = certainty_sum[col + n * run]
 
+    '''
+    for col in range(n):
+        fig = plt.figure()
+        ax = plt.subplot(111)
+
+        ax.plot(range(41), matrix_certainty_sum[col, :], label="certainty")
+
+        ax.set_ylabel('certainty')
+        ax.set_xlabel('iteration')
+
+        ax.legend(loc=4)
+
+        plt.show()
+    '''
 
     # print tensor_run
     total_f, col_seq = select_by_round_robin(tensor_run, np.ones(n, dtype=int) * -1, [], [], n * 2, True)
 
-    best_sum_total_f[d], best_col_seq[d] = select_by_max_uncertainty_all_prob(tensor_run, np.ones(n, dtype=int), total_f, col_seq, matrix_batch_certainty_sum, future_steps, True) #Flight = 9, Blackoak 7, Hospital=5
+    best_sum_total_f[d], best_col_seq[d] = select_by_max_uncertainty_all(tensor_run, np.ones(n, dtype=int), total_f, col_seq, matrix_certainty_sum, future_steps, True) #Flight = 9, Blackoak 7, Hospital=5
 
 print best_col_seq
 
