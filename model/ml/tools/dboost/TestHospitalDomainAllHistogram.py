@@ -6,6 +6,7 @@ from ml.tools.dboost.TestDBoost import test_multiple_sizes_hist
 #data = HospitalHoloClean()
 
 from ml.datasets.HospitalDomainError.HospitalDomainError import HospitalDomainError
+from ml.datasets.HospitalDomainError.HospitalDomainError import HospitalDomainError
 data = HospitalDomainError()
 
 '''
@@ -17,12 +18,12 @@ test_multiple_sizes_hist(data, steps, N, sizes)
 '''
 
 steps = 100
-N = 5
+N = 10
 labels = 918
 
 nr_rows = int(float(labels) / data.shape[1])
 #sizes = np.array([200, 400, 600, 800], dtype=float) # in cells
-sizes = np.array([600], dtype=float) # in cells
+sizes = np.array([200, 400, 600, 800], dtype=float) # in cells
 
 print sizes
 dirty_column_fraction = data.get_number_dirty_columns() / float(data.shape[1])
