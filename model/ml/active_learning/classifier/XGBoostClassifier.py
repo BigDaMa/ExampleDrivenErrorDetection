@@ -1,10 +1,11 @@
 from sklearn.model_selection import GridSearchCV
 import xgboost as xgb
 from sklearn.model_selection import cross_val_score
+import numpy as np
 
 class XGBoostClassifier(object):
     name = 'XGBoost'
-    def __init__(self, X_train, X_test):
+    def __init__(self, X_train, X_test, balance=False):
         self.params = {}
         self.model = {}
 
@@ -13,10 +14,15 @@ class XGBoostClassifier(object):
         self.X_train = xgb.DMatrix(X_train)
         self.X_test = xgb.DMatrix(X_test)
 
+        self.balance = balance
+
+
+
     def run_cross_validation(self, train, train_target, folds, column_id):
         cv_params = {'min_child_weight': [1, 3, 5],
                      'subsample': [0.7, 0.8, 0.9],
                      'max_depth': [3, 5, 7]}
+
         ind_params = {  # 'min_child_weight': 1, # we could optimize this: 'min_child_weight': [1, 3, 5]
             'learning_rate': 0.1,  # we could optimize this: 'learning_rate': [0.1, 0.01]
             # 'max_depth': 3, # we could optimize this: 'max_depth': [3, 5, 7]
@@ -24,7 +30,14 @@ class XGBoostClassifier(object):
             'colsample_bytree': 0.8,
             'silent': 1,
             'seed': 0,
-            'objective': 'binary:logistic'}
+            'objective': 'binary:logistic',
+            'n_jobs': '4'
+        }
+
+        if self.balance:
+            ratio = float(np.sum(train_target == False)) / np.sum(train_target == True)
+            print "weight ratio: " + str(ratio)
+            ind_params['scale_pos_weight'] = ratio
 
         optimized_GBM = GridSearchCV(xgb.XGBClassifier(**ind_params),
                                      cv_params,
@@ -53,6 +66,10 @@ class XGBoostClassifier(object):
         return format_as_text(expl, **params_text)
 
     def train_predict(self, x, y, column_id):
+        if self.balance:
+            ratio = float(np.sum(y == False)) / np.sum(y == True)
+            print "weight ratio: " + str(ratio)
+            self.params[column_id]['scale_pos_weight'] = ratio
         xgdmat = xgb.DMatrix(x, y)
         self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=3000, verbose_eval=False)
         # predict

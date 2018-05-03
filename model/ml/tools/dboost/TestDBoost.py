@@ -48,27 +48,26 @@ def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file
 
             run = DBoostMe(our_sample_data, result_file)
 
-            tn_cur, fp_cur, fn_cur, tp_cur = run.calculate_total_confusion_matrix()
             current_fscore = run.calculate_total_fscore()
+            current_precision = run.calculate_total_precision()
+            current_recall = run.calculate_total_recall()
 
             print "--gaussian " + str(g) + " --statistical " + str(s)
-            #print "Fscore: " + str(current_fscore)
-            #print "Precision: " + str(run.calculate_total_precision())
-            #print "Recall: " + str(run.calculate_total_recall())
+            print "Fscore: " + str(current_fscore)
+            print "Precision: " + str(run.calculate_total_precision())
+            print "Recall: " + str(run.calculate_total_recall())
 
             #remove result file:
             os.remove(result_file)
 
             if current_fscore >= best_fscore:
                 best_fscore = current_fscore
-                best_tn = tn_cur
-                best_fp = fp_cur
-                best_fn = fn_cur
-                best_tp = tp_cur
+                precision = current_precision
+                recall = current_recall
                 best_params['gaussian'] = g
                 best_params['statistical'] = s
 
-    return best_params, best_fscore, best_tn, best_fp, best_fn, best_tp
+    return best_params, best_fscore, precision, recall
 
 
 def search_histogram_stat(data, data_sample, data_sample_ground_truth,result_file, peak_s, outlier_s, statistical_range):
@@ -168,7 +167,7 @@ def grid_search_by_sample_gaussian(data, sample_size, steps):
     gaussian_range = [((4.0 - 0.0) / steps) * step for step in range(steps)]
     statistical_range = [0.5]
 
-    best_params, best_fscore_1, best_tn, best_fp, best_fn, best_tp = search_gaussian_stat(data, data_sample, data_sample_ground_truth, result_file, gaussian_range, statistical_range)
+    best_params, best_fscore_1, precision_1, recall_1 = search_gaussian_stat(data, data_sample, data_sample_ground_truth, result_file, gaussian_range, statistical_range)
 
 
     runtime = (time.time() - total_start_time)
@@ -256,14 +255,14 @@ def run_params_gaussian(data, params):
     statistical_range = [params['statistical']]
 
     print "Run on all: "
-    _, best_fscore, best_tn, best_fp, best_fn, best_tp = search_gaussian_stat(data, data_sample, data_sample_ground_truth, result_file, gaussian_range,
+    _, best_fscore, precision, recall = search_gaussian_stat(data, data_sample, data_sample_ground_truth, result_file, gaussian_range,
                                        statistical_range)
 
     runtime = (time.time() - total_start_time)
 
     print "runtime for one run on all data: " + str(runtime)
 
-    return best_fscore, best_tn, best_fp, best_fn, best_tp
+    return best_fscore, precision, recall
 
 def run_params_hist(data, params):
     n = data.shape[0]
@@ -326,8 +325,8 @@ def run_params_mixture(data, params):
 def test_gaussian(data, sample_size, steps):
     print "test"
     best_params = grid_search_by_sample_gaussian(data, sample_size, steps)
-    best_fscore_all, best_tn, best_fp, best_fn, best_tp = run_params_gaussian(data, best_params)
-    return best_fscore_all, best_tn, best_fp, best_fn, best_tp, best_params
+    best_fscore_all, precision, recall = run_params_gaussian(data, best_params)
+    return best_fscore_all, precision, recall, best_params
 
 def test_hist(data, sample_size, steps):
     best_params = grid_search_by_sample_hist(data, sample_size, steps)
@@ -350,10 +349,8 @@ def test_multiple_sizes(data, steps, N=3, sizes = [10, 100, 1000], run_algo_func
     for t in sizes:
         times = []
         fscore = []
-        tn_list = []
-        fp_list = []
-        fn_list = []
-        tp_list = []
+        prec_list = []
+        rec_list = []
 
         with open(log_file, "a") as myfile:
             myfile.write("training size: " + str(t) + "\n\n")
@@ -361,37 +358,33 @@ def test_multiple_sizes(data, steps, N=3, sizes = [10, 100, 1000], run_algo_func
         for i in range(N):
             total_start_time = time.time()
 
-            best_fscore_all, best_tn, best_fp, best_fn, best_tp, best_params = run_algo_function(data=data, sample_size=t, steps=steps)
+            best_fscore_all, precision, recall, best_params = run_algo_function(data=data, sample_size=t, steps=steps)
             runtime = (time.time() - total_start_time)
 
             times.append(runtime)
             fscore.append(best_fscore_all)
-            tn_list.append(best_tn)
-            fp_list.append(best_fp)
-            fn_list.append(best_fn)
-            tp_list.append(best_tp)
+            prec_list.append(precision)
+            rec_list.append(recall)
 
             if log_file != None:
                 with open(log_file, "a") as myfile:
                     myfile.write(str(best_params) + ", " +
                                  str(runtime) + ", " +
-                                 str(best_tn) + ", " +
-                                 str(best_fp) + ", " +
-                                 str(best_fn) + ", " +
-                                 str(best_tp) + ", " +
+                                 str(precision) + ", " +
+                                 str(recall) + ", " +
                                  str(best_fscore_all) + "\n")
 
 
         avg_times.append(np.mean(times))
         avg_fscores.append(np.mean(fscore))
-        #avg_precision.append(np.mean(prec_list))
-        #avg_recall.append(np.mean(rec_list))
+        avg_precision.append(np.mean(prec_list))
+        avg_recall.append(np.mean(rec_list))
 
     print "labelled rows: " + str(sizes)
     print "time: " + str(avg_times)
     print "fscore: " + str(avg_fscores)
-    #print "precision: " + str(avg_precision)
-    #print "recall: " + str(avg_recall)
+    print "precision: " + str(avg_precision)
+    print "recall: " + str(avg_recall)
 
 
 def test_multiple_sizes_gaussian(data, steps, N=3, sizes = [10, 100, 1000], log_file=None):

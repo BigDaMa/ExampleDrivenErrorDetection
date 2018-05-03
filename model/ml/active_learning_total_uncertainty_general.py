@@ -74,7 +74,8 @@ def add_lstm_features(data, use_lstm_only, all_matrix_train, feature_name_list):
 	elif dataSet.name == 'HospitalHoloClean':
 		lstm_path = "/home/felix/SequentialPatternErrorDetection/deepfeatures/HospitalHoloClean/last/"
 	elif dataSet.name == 'BlackOakUppercase':
-		lstm_path = "/home/felix/SequentialPatternErrorDetection/deepfeatures/BlackOakUppercase/last/"
+		#lstm_path = "/home/felix/ExampleDrivenErrorDetection/deepfeatures/BlackOakUppercase/last/"
+		lstm_path = "/home/felix/ExampleDrivenErrorDetection/deepfeatures/Address_last_state/"
 	else:
 		raise Exception('We have no potential model for this dataset yet')
 
@@ -98,7 +99,7 @@ def add_lstm_features(data, use_lstm_only, all_matrix_train, feature_name_list):
 start_time = time.time()
 
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
-dataSet = FlightHoloClean()
+#dataSet = FlightHoloClean()
 from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
 #dataSet = HospitalHoloClean()
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
@@ -150,17 +151,20 @@ datan.clean_pd[datan.clean_pd.columns[8]] = datan.clean_pd[datan.clean_pd.column
 dataSet = BartDataset(datan, "Salary_outlier_20percent")
 '''
 
-from datasets.electronics.Electronics import Electronics
+from datasets.electronics.Electronics_small import Electronics
 #dataSet = Electronics()
 
-from datasets.ebooks1.EBooks1 import EBooks1
+from datasets.ebooks1.EBooks1_small import EBooks1
 #dataSet = EBooks1()
 
-from datasets.products.Products import Products
+from datasets.products.Products_small import Products
 #dataSet = Products()
 
 #from datasets.songs.Songs import Songs
 #dataSet = Songs()
+
+from ml.datasets.HospitalDomainError.HospitalDomainError import HospitalDomainError
+dataSet = HospitalDomainError()
 
 
 
@@ -170,7 +174,7 @@ start_time = time.time()
 
 number_of_round_robin_rounds = 2
 
-train_fraction = 0.6
+train_fraction = 1.0
 ngrams = 1
 runSVD = False
 use_metadata = True
@@ -182,11 +186,11 @@ cross_validation_rounds = 1  # 1
 
 use_change_features = True
 
-checkN = 10  # 5
+checkN = 10  # 10
 # total runs
 label_iterations = 6  # 6
 
-run_round_robin = False
+run_round_robin = True
 if run_round_robin:
 	number_of_round_robin_rounds = 10000
 	label_iterations = 41
@@ -274,7 +278,7 @@ for check_this in range(checkN):
 
 	classifier = XGBoostClassifier(all_matrix_train, all_matrix_test)
 	from ml.active_learning.classifier.LinearSVMClassifier import LinearSVMClassifier
-	# classifier = LinearSVMClassifier(all_matrix_train, all_matrix_test)
+	#classifier = LinearSVMClassifier(all_matrix_train, all_matrix_test)
 	from ml.active_learning.classifier.NaiveBayesClassifier import NaiveBayesClassifier
 
 	# classifier = NaiveBayesClassifier(all_matrix_train, all_matrix_test)
@@ -342,6 +346,10 @@ for check_this in range(checkN):
 			if train[column_id] == None:
 				certainty[column_id] = 1.0
 				#pred_potential[column_id] = -1.0
+
+
+				if np.sum(dataSet.matrix_is_error[:, column_id]) == dataSet.shape[0]:
+					all_error_status[:, column_id] = True
 				column_id = go_to_next_column_round(column_id)
 				continue
 
@@ -461,6 +469,7 @@ for check_this in range(checkN):
 		print ("column: " + str(column_id))
 		print_stats(target_run, res[column_id])
 		print_stats_whole(dataSet.matrix_is_error[train_indices, :], all_error_status, "run all")
+		#np.save("save_detected", all_error_status)
 		calc_my_fscore(dataSet.matrix_is_error[train_indices, :], all_error_status, dataSet)
 		if all_matrix_test != None:
 			print_stats_whole(dataSet.matrix_is_error[test_indices, :], all_error_status_test, "test general")
