@@ -18,6 +18,7 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.pipeline import Pipeline
+import collections
 import time
 from ml.features.CompressedDeepFeatures import read_compressed_deep_features
 from ml.configuration.Config import Config
@@ -77,55 +78,149 @@ def create_next_part(feature_matrix, target, y_pred, n, data, column_id, user_er
 
     certainty = (np.sum(diff) / len(diff)) * 2
 
-    next_target = []
+    #print diff
 
-    next_x = []
+    if np.sum(diff) == 0.0:
+        np.random.shuffle(sorted_ids)
 
-    current_set = Set()
-    i = 0
-    internal_id_list = []
-    while len(current_set) < n and i < len(sorted_ids):
-        if not data.dirty_pd.values[sorted_ids[i],column_id] in current_set:
-            if not sorted_ids[i] in id_list:
-                current_set.add(data.dirty_pd.values[sorted_ids[i],column_id])
-                internal_id_list.append(sorted_ids[i])
-                print(data.dirty_pd.values[sorted_ids[i],column_id])
-                #if len(id_list) > 0:
-                #    id_list.append(sorted_ids[i])
+    if False:#np.sum(diff) == 0.0: #fall back to outlier detection
+        print "tets"
+        #get value frequencies
+        '''
 
-                next_x.append(feature_matrix[sorted_ids[i]])
-                #train = vstack((train, feature_matrix[sorted_ids[i]]))
+        distinct_values_count = collections.OrderedDict()
+        for tuple_id in range(data.shape[0]):
+            val = data.dirty_pd.values[tuple_id, column_id]
+            if val in distinct_values_count:
+                distinct_values_count[val].append(tuple_id)
+            else:
+                distinct_values_count[val] = list([tuple_id])
 
-                random01 = random.random()
-                if random01 < user_error_probability: # introduce user error
-                    next_target.append([not target[sorted_ids[i]]])
-                else:
-                    next_target.append([target[sorted_ids[i]]])
-        i += 1
+        #print "distinct values: " + str(len(distinct_values_count))
 
-    i = 0
-    while len(internal_id_list) < n:
-        if not sorted_ids[i] in internal_id_list:
-            if not sorted_ids[i] in id_list:
-                print(data.dirty_pd.values[sorted_ids[i], column_id])
-                internal_id_list.append(sorted_ids[i])
-                #if len(id_list) > 0:
-                #    id_list.append(sorted_ids[i])
+        #get least n frequent values
+        def top_k_hybrid(a, k):
+            b = np.argpartition(a, k)[:k]
+            return b[np.argsort(a[b])]
 
-                next_x.append(feature_matrix[sorted_ids[i]])
-                #train = vstack((train, feature_matrix[sorted_ids[i]]))
+        count_array = []
+        key_array = []
+        for key, value in distinct_values_count.iteritems():
+            count_array.append(len(value))
+            key_array.append(key)
+
+        sort_key_ids = np.argsort(count_array)
+
+        #print "key array: " + str(len(key_array))
+
+        #round robin
+
+        next_target = []
+        next_x = []
+        current_set = Set()
+        internal_id_list = []
+
+        k_distinct = 0
+
+        #kn = n
+        #if len(key_array) < n:
+        #    kn = len(key_array)
+        kn = len(key_array)
+
+        while len(internal_id_list) < n:
+            #choose one id of kth value randomly
+            cur_val_id = sort_key_ids[k_distinct]
+            cur_value = key_array[cur_val_id]
+            dif_id_list = set(distinct_values_count[cur_value]).difference(id_list).difference(internal_id_list)
+            #print id_list
+            if len(dif_id_list) == 0:
+                k_distinct += 1
+                if k_distinct >= kn:
+                    k_distinct = 0
+                continue
+
+            dif_id_list = list(dif_id_list)
+            random_id = dif_id_list[np.random.randint(len(dif_id_list))]
+            print random_id
+
+
+            if not random_id in id_list and not random_id in internal_id_list:
+                k_distinct += 1
+                if k_distinct >= kn:
+                    k_distinct = 0
+
+                print internal_id_list
+
+                current_set.add(data.dirty_pd.values[random_id, column_id])
+                internal_id_list.append(random_id)
+                print(data.dirty_pd.values[random_id, column_id])
+
+                next_x.append(feature_matrix[random_id])
 
                 random01 = random.random()
                 if random01 < user_error_probability:  # introduce user error
-                    next_target.append([not target[sorted_ids[i]]])
+                    next_target.append([not target[random_id]])
                 else:
-                    next_target.append([target[sorted_ids[i]]])
-        i += 1
+                    next_target.append([target[random_id]])
+        
+        if len(id_list) == 0:
+            return next_x, next_target, diff
+        else:
+            return next_x, next_target, diff, internal_id_list
+        '''
 
-    if len(id_list) == 0:
-        return next_x, next_target, diff
+
+
     else:
-        return next_x, next_target, diff, internal_id_list
+        next_target = []
+
+        next_x = []
+
+        current_set = Set()
+        i = 0
+        internal_id_list = []
+        while len(current_set) < n and i < len(sorted_ids):
+            if not data.dirty_pd.values[sorted_ids[i],column_id] in current_set:
+                if not sorted_ids[i] in id_list and not sorted_ids[i] in internal_id_list:
+                    current_set.add(data.dirty_pd.values[sorted_ids[i],column_id])
+                    internal_id_list.append(sorted_ids[i])
+                    print(data.dirty_pd.values[sorted_ids[i],column_id])
+                    #if len(id_list) > 0:
+                    #    id_list.append(sorted_ids[i])
+
+                    next_x.append(feature_matrix[sorted_ids[i]])
+                    #train = vstack((train, feature_matrix[sorted_ids[i]]))
+
+                    random01 = random.random()
+                    if random01 < user_error_probability: # introduce user error
+                        next_target.append([not target[sorted_ids[i]]])
+                    else:
+                        next_target.append([target[sorted_ids[i]]])
+            i += 1
+
+        i = 0
+        while len(internal_id_list) < n:
+            if not sorted_ids[i] in internal_id_list:
+                if not sorted_ids[i] in id_list:
+                    print(data.dirty_pd.values[sorted_ids[i], column_id])
+                    internal_id_list.append(sorted_ids[i])
+                    #if len(id_list) > 0:
+                    #    id_list.append(sorted_ids[i])
+
+                    next_x.append(feature_matrix[sorted_ids[i]])
+                    #train = vstack((train, feature_matrix[sorted_ids[i]]))
+
+                    random01 = random.random()
+                    if random01 < user_error_probability:  # introduce user error
+                        next_target.append([not target[sorted_ids[i]]])
+                    else:
+                        next_target.append([target[sorted_ids[i]]])
+            i += 1
+
+        if len(id_list) == 0:
+            return next_x, next_target, diff
+        else:
+            return next_x, next_target, diff, internal_id_list
 
 
 def create_next_dumm(feature_matrix, target, y_pred, n, data, column_id, user_error_probability = 0.0, id_list=[]):
