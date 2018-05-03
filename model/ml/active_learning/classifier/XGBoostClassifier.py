@@ -54,6 +54,20 @@ class XGBoostClassifier(object):
 
         self.params[column_id] = our_params
 
+    def train_predict_all(self, x, y, column_id, x_all):
+        if self.balance:
+            ratio = float(np.sum(y == False)) / np.sum(y == True)
+            print "weight ratio: " + str(ratio)
+            self.params[column_id]['scale_pos_weight'] = ratio
+        xgdmat = xgb.DMatrix(x, y)
+        self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=3000, verbose_eval=False)
+        # predict
+        all_records = xgb.DMatrix(x_all)
+        probability_prediction = self.model[column_id].predict(all_records)
+        class_prediction = (probability_prediction > 0.5)
+
+        return probability_prediction, class_prediction
+
     def explain_prediction(self, x, column_id, feature_names):
         from eli5.explain import explain_prediction
         params = {}
