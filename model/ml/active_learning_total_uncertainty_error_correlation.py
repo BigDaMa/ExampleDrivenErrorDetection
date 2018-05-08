@@ -173,6 +173,7 @@ number_of_round_robin_rounds = 2
 train_fraction = 1.0
 ngrams = 1
 runSVD = False
+is_word = False
 use_metadata = True
 use_metadata_only = False
 use_lstm = False
@@ -186,7 +187,7 @@ checkN = 10  # 5
 # total runs
 label_iterations = 6  # 6
 
-run_round_robin = False
+run_round_robin = True
 if run_round_robin:
 	number_of_round_robin_rounds = 10000
 	label_iterations = 41
@@ -250,7 +251,7 @@ for check_this in range(checkN):
 	feature_gen_start = time.time()
 
 	all_matrix_train, all_matrix_test, feature_name_list = create_features(dataSet, train_indices, test_indices, ngrams,
-																		   runSVD)
+																		   runSVD, is_word)
 
 	if use_metadata:
 		all_matrix_train, all_matrix_test, feature_name_list = add_metadata_features(dataSet, train_indices,

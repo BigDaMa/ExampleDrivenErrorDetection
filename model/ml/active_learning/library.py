@@ -414,12 +414,16 @@ def go_to_next_column(column_id, min_certainties, dataSet):
         return min_certainty_index
 
 
-def create_features(dataSet, train_indices, test_indices, ngrams=2, runSVD=False):
+def create_features(dataSet, train_indices, test_indices, ngrams=2, runSVD=False, is_word=False):
     feature_name_list = []
     feature_list_train = []
     feature_list_test = []
 
-    pipeline = Pipeline([('vect', CountVectorizer(analyzer='char', lowercase=False, ngram_range=(1, ngrams))),
+    analyzer = 'char'
+    if is_word:
+        analyzer = 'word'
+
+    pipeline = Pipeline([('vect', CountVectorizer(analyzer=analyzer, lowercase=False, ngram_range=(1, ngrams))),
                          ('tfidf', TfidfTransformer())
                          ])
 
