@@ -72,7 +72,7 @@ def add_data_next(trainx, trainy, id_list, x_next, y_next, id_next):
     return trainx, trainy, id_list
 
 
-def create_next_part(feature_matrix, target, y_pred, n, data, column_id, user_error_probability = 0.0, id_list=[]):
+def create_next_part(feature_matrix, target, y_pred, n, data, column_id, user_error_probability = 0.0, id_list=[], shuffle_seed=42):
     diff = np.absolute(y_pred - 0.5)
     sorted_ids = np.argsort(diff)
 
