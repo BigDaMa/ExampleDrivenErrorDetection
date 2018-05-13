@@ -1,6 +1,6 @@
 import numpy as np
 
-from ml.datasets.flights import FlightHoloClean
+from ml.datasets.flights.FlightHoloClean import FlightHoloClean
 from ml.tools.dboost.TestDBoost import test_multiple_sizes_hist
 
 data = FlightHoloClean()
@@ -14,12 +14,12 @@ test_multiple_sizes_hist(data, steps, N, sizes)
 '''
 
 steps = 100
-N = 5
+N = 10
 labels = 216
 
 nr_rows = int(float(labels) / data.shape[1])
-#sizes = np.array([50, 100, 150, 200], dtype=float) # in cells
-sizes = np.array([200], dtype=float) # in cells
+sizes = np.array([50, 100, 150, 200], dtype=float) # in cells
+#sizes = np.array([200], dtype=float) # in cells
 
 print sizes
 dirty_column_fraction = data.get_number_dirty_columns() / float(data.shape[1])
@@ -28,6 +28,6 @@ sizes /= float(data.shape[1])
 print sizes
 row_sizes = np.array(sizes, dtype=int) # in rows
 
-log_file = "/home/felix/SequentialPatternErrorDetection/dboost/log/Flights_hist_new.txt"
+log_file = "/home/felix/ExampleDrivenErrorDetection/log/dBoost/Flights_hist_new.txt"
 
 test_multiple_sizes_hist(data, steps, N, row_sizes, log_file)
