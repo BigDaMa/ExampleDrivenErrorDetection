@@ -12,9 +12,9 @@ class Electronics(DataSet):
 		return data[["Brand","Name","Price","Features"]]
 
 	def __init__(self):
-		amazon = "/home/felix/new_datasets/electronics/csv_files/amazon.csv"
-		bestbuy = "/home/felix/new_datasets/electronics/csv_files/best_buy.csv"
-		labelled = "/home/felix/new_datasets/electronics/csv_files/labeled_data.csv"
+		amazon = "/home/felix/datasets/duplicate_data/electronics/csv_files/amazon.csv"
+		bestbuy = "/home/felix/datasets/duplicate_data/electronics/csv_files/best_buy.csv"
+		labelled = "/home/felix/datasets/duplicate_data/electronics/csv_files/labeled_data.csv"
 
 		amazon_df = self.select_columns(pd.read_csv(amazon, header=0, dtype=object, na_filter=False, names=["ID","Brand","Name","Amazon_Price","Price","Features"]))
 		bestbuy_df = self.select_columns(pd.read_csv(bestbuy, header=0, dtype=object, na_filter=False, names=["ID","Brand","Name","Price","Description","Features"]))

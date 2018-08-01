@@ -8,12 +8,12 @@ data = BlackOakDataSetUppercase()
 
 rules = []
 
-rules.append(FD(Set(["ZIP"]), "City"))
+#rules.append(FD(Set(["ZIP"]), "City"))
 rules.append(FD(Set(["ZIP"]), "State"))
 
-#rules.append(FD(Set(["POCityStateZip"]), "POBox"))
-#rules.append(FD(Set(["POCityStateZip"]), "City")) #runs out of memory
-#rules.append(FD(Set(["POCityStateZip"]), "ZIP")) #runs out of memory
+rules.append(FD(Set(["POCityStateZip"]), "POBox"))
+rules.append(FD(Set(["POCityStateZip"]), "City")) #runs out of memory
+rules.append(FD(Set(["POCityStateZip"]), "ZIP")) #runs out of memory
 
 '''
 # by information gain
@@ -24,4 +24,4 @@ rules.append(FD(Set(["Address","FirstName","POBox"]), "POCityStateZip"))
 rules.append(FD(Set(["Address", "City", "FirstName", "POCityStateZip"]), "POBox"))
 '''
 
-nadeef = NadeefDetect(data, rules, log_file="/home/felix/SequentialPatternErrorDetection/nadeef/log/BlackoakUppercase.txt")
+nadeef = NadeefDetect(data, rules, log_file="/home/felix/ExampleDrivenErrorDetection/log/NADEEF/BlackoakUppercase.txt")

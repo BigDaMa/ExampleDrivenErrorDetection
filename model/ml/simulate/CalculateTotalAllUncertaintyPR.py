@@ -20,7 +20,6 @@ from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
 from ml.datasets.luna.book.Book import Book
 from ml.datasets.salary_data.Salary import Salary
 from ml.datasets.luna.restaurant.Restaurant import Restaurant
-from ml.datasets.food.FoodHoloClean import FoodHoloClean
 
 def plot(y, y_pred):
     fig = plt.figure()
@@ -205,12 +204,18 @@ N_datasets = 7
 #log_folder = "unigrams"
 #log_folder = "bigrams"
 #log_folder = "metadata"
-log_folder = "unique_batch"
+#log_folder = "unique_batch"
 #log_folder = "unigram_metadata_naivebayes"
 #log_folder = "unigram_metadata_linearsvm"
 #log_folder = "food"
 #log_folder = "deep_all"
-
+#log_folder = "hospital_random"
+#log_folder = "hospital_correlation"
+#log_folder = "hospital_lstm_meta"
+#log_folder = "flights_unigram_meta_corr_noshuffle"
+#log_folder = "hospital_row_shuffle"
+#log_folder = "address_corr_noshuffle"
+log_folder = "address_naivesbayes"
 
 #dataset = FoodHoloClean()
 #dataset = FlightHoloClean()#FlightHoloClean()#BlackOakDataSetUppercase()#HospitalHoloClean() #BlackOakDataSetUppercase()
@@ -221,7 +226,11 @@ dataset = BlackOakDataSetUppercase()
 from ml.datasets.BartDataset.BartDataSet import BartDataset
 dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_20percent")
 '''
-future_steps = 60 # 60
+
+from ml.datasets.HospitalDomainError.HospitalDomainError import HospitalDomainError
+#dataset = HospitalDomainError()
+
+future_steps = 20 # 60
 
 
 n = dataset.get_number_dirty_columns()
@@ -234,7 +243,7 @@ precision_list ={}
 
 
 for d in range(10):
-    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log_data/" + log_folder + "/log_progress_"+ dataset.name +"_" + str(d)  +".csv"
+    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log/" + log_folder + "/log_progress_"+ dataset.name +"_" + str(d)  +".csv"
     x, fp, fn, tp = read_csv1(file_path, None)
 
     certainty_sum = get_all_certainty_sum(x, feature_names)
@@ -291,6 +300,7 @@ for d in range(10):
 
 print best_col_seq
 
+print list(best_sum_total_f.values())
 
 average_best = np.sum(best_sum_total_f.values(), axis=0) / float(len(best_sum_total_f))
 average_recall = np.sum(recall_list.values(), axis=0) / float(len(recall_list))

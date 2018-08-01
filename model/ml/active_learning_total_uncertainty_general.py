@@ -72,7 +72,7 @@ def add_lstm_features(data, use_lstm_only, all_matrix_train, feature_name_list):
 	if dataSet.name == 'Flight HoloClean':
 		lstm_path = "/home/felix/SequentialPatternErrorDetection/deepfeatures/Flights/last/"
 	elif dataSet.name == 'HospitalHoloClean':
-		lstm_path = "/home/felix/SequentialPatternErrorDetection/deepfeatures/HospitalHoloClean/last/"
+		lstm_path = "/home/felix/ExampleDrivenErrorDetection/deepfeatures/Hospital_new_last_state/"
 	elif dataSet.name == 'BlackOakUppercase':
 		#lstm_path = "/home/felix/ExampleDrivenErrorDetection/deepfeatures/BlackOakUppercase/last/"
 		lstm_path = "/home/felix/ExampleDrivenErrorDetection/deepfeatures/Address_last_state/"
@@ -101,7 +101,7 @@ start_time = time.time()
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
 #dataSet = FlightHoloClean()
 from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
-#dataSet = HospitalHoloClean()
+dataSet = HospitalHoloClean()
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
 #dataSet = BlackOakDataSetUppercase()
 
@@ -163,8 +163,8 @@ from datasets.products.Products_small import Products
 #from datasets.songs.Songs import Songs
 #dataSet = Songs()
 
-from ml.datasets.HospitalDomainError.HospitalDomainError import HospitalDomainError
-dataSet = HospitalDomainError()
+#from ml.datasets.HospitalDomainError.HospitalDomainError import HospitalDomainError
+#dataSet = HospitalDomainError()
 
 
 
@@ -177,6 +177,7 @@ number_of_round_robin_rounds = 2
 train_fraction = 1.0
 ngrams = 1
 runSVD = False
+is_word = False
 use_metadata = True
 use_metadata_only = False
 use_lstm = False
@@ -254,7 +255,7 @@ for check_this in range(checkN):
 	feature_gen_start = time.time()
 
 	all_matrix_train, all_matrix_test, feature_name_list = create_features(dataSet, train_indices, test_indices, ngrams,
-																		   runSVD)
+																		   runSVD, is_word)
 
 	if use_metadata:
 		all_matrix_train, all_matrix_test, feature_name_list = add_metadata_features(dataSet, train_indices,
@@ -281,7 +282,7 @@ for check_this in range(checkN):
 	#classifier = LinearSVMClassifier(all_matrix_train, all_matrix_test)
 	from ml.active_learning.classifier.NaiveBayesClassifier import NaiveBayesClassifier
 
-	# classifier = NaiveBayesClassifier(all_matrix_train, all_matrix_test)
+	#classifier = NaiveBayesClassifier(all_matrix_train, all_matrix_test)
 
 	all_error_status = np.zeros((all_matrix_train.shape[0], dataSet.shape[1]), dtype=bool)
 	if all_matrix_test != None:

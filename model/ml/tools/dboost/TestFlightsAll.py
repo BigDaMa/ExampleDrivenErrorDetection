@@ -14,11 +14,11 @@ test_multiple_sizes(data, steps, N, sizes)
 '''
 
 steps = 100
-N = 10
+N = 1
 labels = 216
 
 nr_rows = int(float(labels) / data.shape[1])
-sizes = np.array([50, 100, 150, 200], dtype=float) # in cells
+sizes = np.array([4000], dtype=float) # in cells
 #sizes = np.array([150], dtype=float) # in cells
 
 print sizes
@@ -28,7 +28,7 @@ sizes /= float(data.shape[1])
 print sizes
 row_sizes = np.array(sizes, dtype=int) # in rows
 
-log_file = "/home/felix/ExampleDrivenErrorDetection/log/dBoost/Flights_gaus_new.txt"
+log_file = "/home/felix/ExampleDrivenErrorDetection/log/dBoost/flights/Flights_gaus_new.txt"
 
 
 test_multiple_sizes_gaussian(data, steps, N, row_sizes, log_file)

@@ -195,12 +195,23 @@ N_datasets = 7
 
 
 
-log_folder = "unique_batch" #"unique"
+#log_folder = "unique_batch" #"unique"
+#log_folder = "hospital_random"
+#log_folder = "hospital_correlation"
+#log_folder = "address_corr_noshuffle"
+#dataset = BlackOakDataSetUppercase()
 
-dataset = FlightHoloClean() #BlackOakDataSetUppercase()
+log_folder = "flights_unigram_meta_corr_noshuffle"
+dataset = FlightHoloClean()
+
+from ml.datasets.HospitalDomainError.HospitalDomainError import HospitalDomainError
+#dataset = HospitalHoloClean()
+
+#dataset = FlightHoloClean() #BlackOakDataSetUppercase()
 #future_steps = 8+9 #Flights = 9
-future_steps = 8+20 #BlackOak = 7
+#future_steps = 8+20 #BlackOak = 7
 #future_steps = 17*2 + 60
+future_steps = 4*2 + 20
 
 n = dataset.get_number_dirty_columns()
 
@@ -211,7 +222,8 @@ best_col_seq  = {}
 inner_d = 0
 
 for d in range(10):
-    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log_data/" + log_folder + "/log_progress_"+ dataset.name +"_" + str(d)  +".csv"
+    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log/" + log_folder + "/log_progress_" + dataset.name + "_" + str(
+        d) + ".csv"
     x, fp, fn, tp = read_csv1(file_path, None)
 
     print "train: " + str(x.shape[0])

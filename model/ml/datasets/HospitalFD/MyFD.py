@@ -19,13 +19,23 @@ class MyFD(DataSet):
             number_errors = int(clean_pd.shape[0] * number_errors)
 
 
-        cities_set = set(clean_pd[column_name].unique())
+        cities = list(clean_pd[column_name].unique())
+
+        zips = list(clean_pd['zip code'].unique())
+
+
+        zip_dict = {}
+        for row_cur in range(dataset.shape[0]):
+            zip_cur = clean_pd['zip code'][row_cur]
+            if not zip_cur in zip_dict:
+                zip_dict[zip_cur] = set()
+            zip_dict[zip_cur].add(row_cur)
+
 
         ids = set()
 
-        error_count=0
+        error_count = 0
         while error_count < number_errors:
-            cities = list(cities_set)
             city = rng.randint(len(cities))
             row = rng.randint(clean_pd.shape[0])
 
@@ -35,50 +45,14 @@ class MyFD(DataSet):
                 continue
             ids.add(row)
 
-            if dirty_pd[column_name].values[row] != cities[city]:
-                #dirty_pd.at['city', row] = cities[city]
+            if len(zip_dict[dirty_pd['zip code'].values[row]]) > 1:
                 print str(dirty_pd[column_name][row]) + "->" + str(cities[city])
-                if dirty_pd[column_name][row] in cities_set:
-                    cities_set.remove(dirty_pd[column_name][row])
+                zip_dict[dirty_pd['zip code'].values[row]].remove(row)
                 dirty_pd[column_name][row] = cities[city]
 
                 error_count += 1
 
-
-        #print dirty_pd.shape
-        #print clean_pd.shape
-
-        #dirty_pd.to_csv('hospital.csv', index=False)
-        #clean_pd.to_csv('hospital_clean.csv', index=False)
-
         super(MyFD, self).__init__(MyFD.name, dirty_pd, clean_pd)
-
-
-    def to_matrix(self, df):
-        columns = ['provider number', 'hospital name','address1', 'address2', 'address3', 'city','state','zip code',
-                  'county name', 'phone number', 'hospital type', 'hospital owner', 'emergency service', 'condition',
-                  'measure code','measure name', 'score', 'sample', 'stateavg']
-
-        mapColumns = {}
-        for i in range(len(columns)):
-            mapColumns[columns[i]] = i
-
-        #print "shape: " + str(df.shape[0])
-        #print "column: " + str(len(columns))
-
-        pd_matrix = df.values
-        matrix = np.empty([df.shape[0] / len(columns), len(columns)], dtype=object)
-
-        for i in range(len(pd_matrix)):
-            name = str(pd_matrix[i][1])
-            if name in mapColumns:
-                row = int(pd_matrix[i][0]) - 1
-                column = mapColumns[name]
-                matrix[row][column] = pd_matrix[i][2]
-
-        newdf = pd.DataFrame(data=matrix, columns=columns)
-        return newdf
-
 
     def validate(self):
         print "validate"

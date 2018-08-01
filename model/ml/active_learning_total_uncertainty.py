@@ -74,11 +74,11 @@ def load_model(dataSet, classifier):
 def add_lstm_features(data, use_lstm_only, all_matrix_train, feature_name_list):
 	lstm_path = ""
 	if dataSet.name == 'Flight HoloClean':
-		lstm_path = "/home/felix/SequentialPatternErrorDetection/deepfeatures/Flights/last/"
+		lstm_path = "/home/felix/ExampleDrivenErrorDetection/deepfeatures/Flights/last/"
 	elif dataSet.name == 'HospitalHoloClean':
-		lstm_path = "/home/felix/SequentialPatternErrorDetection/deepfeatures/HospitalHoloClean/last/"
+		lstm_path = "/home/felix/ExampleDrivenErrorDetection/deepfeatures/HospitalHoloClean/last/"
 	elif dataSet.name == 'BlackOakUppercase':
-		lstm_path = "/home/felix/SequentialPatternErrorDetection/deepfeatures/BlackOakUppercase/last/"
+		lstm_path = "/home/felix/ExampleDrivenErrorDetection/deepfeatures/BlackOakUppercase/last/"
 	else:
 		raise Exception('We have no potential model for this dataset yet')
 
@@ -102,11 +102,14 @@ def add_lstm_features(data, use_lstm_only, all_matrix_train, feature_name_list):
 start_time = time.time()
 
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
-dataSet = FlightHoloClean()
+#dataSet = FlightHoloClean()
 from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
 #dataSet = HospitalHoloClean()
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
 #dataSet = BlackOakDataSetUppercase()
+
+from ml.datasets.HospitalDomainError.HospitalDomainError import HospitalDomainError
+dataSet = HospitalDomainError()
 
 from ml.datasets.salary_data.Salary import Salary
 #dataSet = Salary()
@@ -167,6 +170,8 @@ from datasets.products.Products import Products
 #dataSet = Songs()
 
 
+#from datasets.HospitalFD.MyFD import MyFD
+#dataSet = MyFD(HospitalHoloClean(), 0.3, "city")
 
 print("read: %s seconds ---" % (time.time() - start_time))
 
@@ -178,19 +183,19 @@ train_fraction = 1.0
 ngrams = 1
 runSVD = False
 use_metadata = True
-use_metadata_only = False
-use_lstm = False
+use_metadata_only = False #here
+use_lstm = False #here
 user_error_probability = 0.00
 step_size = 10
 cross_validation_rounds = 1  # 1
 
 use_change_features = True
 
-checkN = 7  # 5
+checkN = 1  # 5
 # total runs
 label_iterations = 6  # 6
 
-run_round_robin = True
+run_round_robin = False #here
 if run_round_robin:
 	number_of_round_robin_rounds = 10000
 	label_iterations = 41
@@ -276,9 +281,9 @@ for check_this in range(checkN):
 
 	from ml.active_learning.classifier.XGBoostClassifier import XGBoostClassifier
 
-	classifier = XGBoostClassifier(all_matrix_train, all_matrix_test)
+	#classifier = XGBoostClassifier(all_matrix_train, all_matrix_test)
 	from ml.active_learning.classifier.LinearSVMClassifier import LinearSVMClassifier
-	# classifier = LinearSVMClassifier(all_matrix_train, all_matrix_test)
+	classifier = LinearSVMClassifier(all_matrix_train, all_matrix_test)
 	from ml.active_learning.classifier.NaiveBayesClassifier import NaiveBayesClassifier
 
 	# classifier = NaiveBayesClassifier(all_matrix_train, all_matrix_test)
@@ -465,6 +470,9 @@ for check_this in range(checkN):
 		print ("column: " + str(column_id))
 		print_stats(target_run, res[column_id])
 		print_stats_whole(dataSet.matrix_is_error[train_indices, :], all_error_status, "run all")
+
+		#np.save("save_detected.np", all_error_status)
+
 		calc_my_fscore(dataSet.matrix_is_error[train_indices, :], all_error_status, dataSet)
 		if all_matrix_test != None:
 			print_stats_whole(dataSet.matrix_is_error[test_indices, :], all_error_status_test, "test general")

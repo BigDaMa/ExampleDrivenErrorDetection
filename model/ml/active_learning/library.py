@@ -7,7 +7,7 @@ from sets import Set
 import jinja2
 import numpy as np
 from eli5 import explain_weights
-# from eli5 import show_weights
+from eli5 import show_weights
 from eli5.formatters import format_as_text
 from scipy.sparse import hstack
 from scipy.sparse import vstack
@@ -529,12 +529,22 @@ def visualize_model(dataSet, column_id, final_gb, feature_name_list, train, targ
     try:
         column_name = dataSet.clean_pd.columns[column_id]
 
-        directory = '/home/felix/SequentialPatternErrorDetection/html/' + dataSet.name
+        feature_name_list_err_corr = list(feature_name_list)
+        print "missing features: " + str(len(final_gb[column_id].feature_names)- len(feature_name_list))
+
+        if len(final_gb[column_id].feature_names)- len(feature_name_list) > 0:
+            errors_per_column = np.sum(dataSet.matrix_is_error, axis=0)
+
+            for err_corr_id in range(dataSet.shape[1]):
+                if errors_per_column[err_corr_id] > 0 and err_corr_id != column_id:
+                    feature_name_list_err_corr.append("error_corr_" + str(dataSet.clean_pd.columns[err_corr_id]))
+
+        directory = '/home/felix/ExampleDrivenErrorDetection/html/' + dataSet.name
         if not os.path.exists(directory):
             os.makedirs(directory)
         path = directory + '/' + str(column_name) + '.html'
 
-        table_content = show_weights(final_gb[column_id], feature_names=feature_name_list, importance_type="gain").data
+        table_content = show_weights(final_gb[column_id], feature_names=feature_name_list_err_corr, importance_type="gain").data
 
         # print table_content
         from ml.VisualizeSVD import replace_with_url

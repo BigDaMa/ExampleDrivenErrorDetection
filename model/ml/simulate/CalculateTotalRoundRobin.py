@@ -202,13 +202,14 @@ N_datasets = 7
 #log_folder = "bart/fd1/30percent"
 #log_folder = "bart/fd1_add"
 #log_folder = "hospitalFD/30percent"
-log_folder ="bartstupid/30percent"
+#log_folder ="bartstupid/30percent"
+log_folder = "hospital_domain_error"
 
 from ml.datasets.HospitalFD.MyFD import MyFD
 #dataset = MyFD(HospitalHoloClean(), 0.3, "city") # 0.01, 0.05, 0.1, 0.2, 0.3
 
-from ml.datasets.BartDataset.BartDataSet import BartDataset
-dataset = BartDataset(HospitalHoloClean(), "bart_fd_stupid/30percent")
+#from ml.datasets.BartDataset.BartDataSet import BartDataset
+#dataset = BartDataset(HospitalHoloClean(), "bart_fd_stupid/30percent")
 
 
 #dataset = HospitalHoloClean()
@@ -216,7 +217,16 @@ dataset = BartDataset(HospitalHoloClean(), "bart_fd_stupid/30percent")
 #future_steps = 8+9 #BlackOak = 7, Flights = 9
 #future_steps = 8+20 #BlackOak = 7
 #future_steps = 17*2 + 60
-future_steps = 6
+#future_steps = 6
+
+#log_folder = "hospital_random"
+#log_folder = "address_corr_noshuffle"
+#dataset = BlackOakDataSetUppercase()
+
+log_folder = "flights_unigram_meta_corr_noshuffle"
+dataset = FlightHoloClean()
+
+future_steps = 4 * 2 + 20 # 60
 
 '''
 from ml.datasets.BartDataset.BartDataSet import BartDataset
@@ -247,7 +257,8 @@ precision_list ={}
 
 
 for d in range(10):
-    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log_data/" + log_folder + "/log_progress_"+ dataset.name +"_" + str(d)  +".csv"
+    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log/" + log_folder + "/log_progress_" + dataset.name + "_" + str(
+        d) + ".csv"
     x, fp, fn, tp = read_csv1(file_path, None)
 
     print "train: " + str(x.shape[0])

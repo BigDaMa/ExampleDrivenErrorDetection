@@ -98,9 +98,9 @@ def add_lstm_features(data, use_lstm_only, all_matrix_train, feature_name_list):
 start_time = time.time()
 
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
-#dataSet = FlightHoloClean()
+dataSet = FlightHoloClean()
 from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
-dataSet = HospitalHoloClean()
+#dataSet = HospitalHoloClean()
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
 #dataSet = BlackOakDataSetUppercase()
 
@@ -179,18 +179,18 @@ use_metadata_only = False
 use_lstm = False
 user_error_probability = 0.00
 step_size = 10
-cross_validation_rounds = 1  # 1
+cross_validation_rounds = 1#10000  # 1
 
 use_change_features = True
 
-checkN = 10  # 5
+checkN = 1  # 10
 # total runs
 label_iterations = 6  # 6
 
-run_round_robin = True
+run_round_robin = False
 if run_round_robin:
 	number_of_round_robin_rounds = 10000
-	label_iterations = 41
+	label_iterations = 61
 	checkN = 10
 
 feature_names_potential = ['distinct_values_fraction', 'labels', 'certainty', 'certainty_stddev', 'minimum_certainty']
@@ -275,10 +275,9 @@ for check_this in range(checkN):
 
 	classifier = XGBoostClassifier(all_matrix_train, all_matrix_test)
 	from ml.active_learning.classifier.LinearSVMClassifier import LinearSVMClassifier
-	# classifier = LinearSVMClassifier(all_matrix_train, all_matrix_test)
+	#classifier = LinearSVMClassifier(all_matrix_train, all_matrix_test, True)
 	from ml.active_learning.classifier.NaiveBayesClassifier import NaiveBayesClassifier
-
-	# classifier = NaiveBayesClassifier(all_matrix_train, all_matrix_test)
+	#classifier = NaiveBayesClassifier(all_matrix_train, all_matrix_test)
 
 	all_error_status = np.zeros((all_matrix_train.shape[0], dataSet.shape[1]), dtype=bool)
 	if all_matrix_test != None:
@@ -458,7 +457,8 @@ for check_this in range(checkN):
 			dataSet,
 			column_id,
 			user_error_probability,
-			train_chosen_ids[column_id])
+			train_chosen_ids[column_id],
+			check_this)
 
 		print "size x: " + str(len(x_next[column_id]))
 
@@ -482,7 +482,7 @@ for check_this in range(checkN):
 
 			all_error_status_test[:, column_id] = res_gen
 
-		# visualize_model(dataSet, column_id, final_gb, feature_name_list, train, target_run, res)
+		visualize_model(dataSet, column_id, classifier.model, feature_name_list, train, target_run, res)
 
 		print ("current train shape: " + str(train[column_id].shape))
 

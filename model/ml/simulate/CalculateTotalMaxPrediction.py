@@ -197,10 +197,18 @@ N_datasets = 7
 
 
 
-log_folder = "unique_batch" #"unique"
+#log_folder = "unique_batch" #"unique"
+#log_folder = "hospital_random"
+#log_folder = "hospital_correlation"
+#log_folder = "address_corr_noshuffle"
 
-dataset = FlightHoloClean() #BlackOakDataSetUppercase()
-future_steps = 20 #BlackOak = 7, Flights = 9
+#dataset = HospitalHoloClean()
+#dataset = BlackOakDataSetUppercase()
+
+log_folder = "flights_unigram_meta_corr_noshuffle"
+dataset = FlightHoloClean()
+
+future_steps = 20# 60
 
 n = dataset.get_number_dirty_columns()
 
@@ -210,7 +218,8 @@ best_col_seq  = {}
 
 
 for d in range(10):
-    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log_data/" + log_folder + "/log_progress_"+ dataset.name +"_" + str(d)  +".csv"
+    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log/" + log_folder + "/log_progress_" + dataset.name + "_" + str(
+        d) + ".csv"
     x, fp, fn, tp = read_csv1(file_path, None)
 
     change_sum = get_prediction_change(x, feature_names)
