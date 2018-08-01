@@ -9,8 +9,8 @@ class HospitalHoloClean(DataSet):
     name = "HospitalHoloClean"
 
     def __init__(self):
-        path_to_dirty = Config.get("holoclean.data") + "/hospital_input.csv"
-        path_to_clean = Config.get("holoclean.data") + "/hospital_clean.csv"
+        path_to_dirty = Config.get("datapool.folder") + "/HOSP_HoloClean/dirty/hospital_input.csv"
+        path_to_clean = Config.get("datapool.folder") + "/HOSP_HoloClean/ground-truth/hospital_clean.csv"
 
         dirty_wrong_format = pd.read_csv(path_to_dirty, header=0, dtype=object)
         clean_wrong_format = pd.read_csv(path_to_clean, header=0, dtype=object)

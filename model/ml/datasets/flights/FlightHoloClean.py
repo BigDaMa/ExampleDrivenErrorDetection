@@ -9,8 +9,8 @@ class FlightHoloClean(DataSet):
     name="Flight HoloClean"
 
     def __init__(self):
-        path_to_dirty = Config.get("holoclean.data") + "/flights_input.csv"
-        path_to_clean = Config.get("holoclean.data") + "/flights_clean.csv"
+        path_to_dirty = Config.get("datapool.folder") + "/FLIGHTS_HoloClean/dirty/flights_input.csv"
+        path_to_clean = Config.get("datapool.folder") + "/FLIGHTS_HoloClean/ground-truth/flights_clean.csv"
 
         dirty_wrong_format = pd.read_csv(path_to_dirty, header=0, dtype=object)
         clean_wrong_format = pd.read_csv(path_to_clean, header=0, dtype=object)
