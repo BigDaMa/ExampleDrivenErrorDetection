@@ -26,7 +26,7 @@ class DBoostMe(Tool):
                 old_value = matrix_outliers[i][2]
 
                 #print str(old_value) + " vs " + str(blackOakDataSet.dirty_pd.values[row_id][attribute_id])
-                assert old_value == dataSet.dirty_pd.values[row_id][attribute_id], '#' + str(old_value) + "# vs our: #" + str(dataSet.dirty_pd.values[row_id][attribute_id] + "#")
+                #assert old_value == dataSet.dirty_pd.values[row_id][attribute_id], '#' + str(old_value) + "# vs our: #" + str(dataSet.dirty_pd.values[row_id][attribute_id] + "#")
                 matrix_detected[row_id][attribute_id] = True
 
         super(DBoostMe, self).__init__("DBoost_me", dataSet, matrix_detected)

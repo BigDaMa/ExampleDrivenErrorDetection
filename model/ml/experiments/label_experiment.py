@@ -12,7 +12,7 @@ import numpy as np
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean]
-data_list =[Restaurant]
+data_list =[HospitalHoloClean]
 
 
 classifier = XGBoostClassifier
@@ -21,7 +21,7 @@ for dataset in data_list:
     method = ActiveLearningErrorCorrelation()
 
     data = dataset()
-    fscore_lists, label = method.run(data, classifier, checkN=1)
+    fscore_lists, label = method.run(data, classifier, checkN=10)
 
     f_matrix = np.matrix(fscore_lists)
 

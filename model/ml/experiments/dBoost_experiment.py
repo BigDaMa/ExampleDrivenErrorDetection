@@ -27,14 +27,22 @@ N = 1
 
 dBoost_methods = [test_multiple_sizes_hist, test_multiple_sizes_gaussian, test_multiple_sizes_mixture]
 
+my_range = [100, 1000, 10000, 50000]
 
 for dataset in data_list:
     data = dataset()
-    number_rows = data.shape[0] #how big is the evaluation set
+
+    new_range = []
+    for i in my_range:
+        if i < data.shape[0]:
+            new_range.append(i)
+        else:
+            break
+    new_range.append(data.shape[0])
     for dBoost in dBoost_methods:
         ts = time.time()
         log_file = path_folder + "/" + str(data.name) + "_time_" + str(ts) + "_dBoost_" + dBoost.func_name  + ".txt"
-        dBoost(data, steps, N, [number_rows], log_file)
+        dBoost(data, steps, N, new_range, log_file)
 
 '''
 str(best_params) + ", " +
