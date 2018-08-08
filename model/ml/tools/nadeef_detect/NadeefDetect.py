@@ -22,7 +22,7 @@ class NadeefDetect:
                 header_name = h[0:pos]
             else:
                 header_name = h
-            header_name = header_name.replace(" ", "_")
+            header_name = header_name.replace(" ", "_").replace("-","_")
             new_header[h] = header_name + " string"
             column_map[header_name.lower()] = i
             i += 1
@@ -44,7 +44,7 @@ class NadeefDetect:
                "    },\n" + \
                "    \"rule\" : [\n" + \
                "        {\n" + \
-               "\t\t    \"type\" : \"fd\",\n" + \
+               "\t\t    \"type\" : \"" + rule.type + "\",\n" + \
                "            \"value\" : [\"" + str(rule) + "\"]\n" + \
                "        }\n" + \
                "    ]\n" + \
@@ -132,7 +132,8 @@ class NadeefDetect:
         ts = int(time.time())
         name = "dirty_data" + str(ts)
         csv_path = '/tmp/' + name + '.csv'
-        dirty.to_csv(csv_path, index=False)
+        #dirty.to_csv(csv_path, index=False, quoting=csv.QUOTE_ALL, quotechar='"')
+        dirty.to_csv(csv_path, index=False, encoding='utf8')
         '''
         dirty.to_csv(csv_path,
                index=False,
@@ -156,7 +157,7 @@ class NadeefDetect:
         first_row = True
         for row in source_fp:
             if first_row:
-                row = row.replace("'", "")
+                row = row.replace("'", "").replace('"', '')
                 first_row = False
             target_fp.write(row)
         target_fp.flush()
@@ -164,6 +165,9 @@ class NadeefDetect:
         target_fp.close()
 
         #os.remove(old_path1)
+
+        # compile
+        os.system("cd " + Config.get("nadeef.home") + "/\n" + "ant all")
 
         for rule in rules:
 
@@ -217,6 +221,7 @@ class NadeefDetect:
 
             #clean up
             self.clean_up(connection, name, cursor, result_path)
+            rule.clean()
             
 
         #final clean up

@@ -34,7 +34,11 @@ class NadeefParse(Tool):
     def __init__(self, data, path, column_map):
         path_to_tool_result = path
 
-        outliers = pd.read_csv(path_to_tool_result, header=None, na_filter=False)
+        try:
+            outliers = pd.read_csv(path_to_tool_result, header=None, na_filter=False)
+        except pd.errors.EmptyDataError:
+            super(NadeefParse, self).__init__("Nadeef_Detect", data, np.zeros(data.matrix_is_error.shape, dtype=bool))
+            return
 
         print outliers.columns
 

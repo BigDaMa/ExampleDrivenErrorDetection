@@ -7,7 +7,7 @@ from ml.tools.Tool import Tool
 class Katara(Tool):
 
     def __init__(self, path_to_tool_result, data):
-        outliers = pd.read_csv(path_to_tool_result, header=0, sep=',', dtype=int)
+        outliers = pd.read_csv(path_to_tool_result, header=None, sep=',', dtype=int)
 
         print "detected: " + str(outliers.shape)
 

@@ -1,5 +1,5 @@
 from ml.tools.openrefine.python_api.RefineIT import RefineIT
-from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
+from ml.datasets.RestaurantMohammad.Restaurant import Restaurant
 from ml.tools.openrefine.OpenRefine import OpenRefine
 import shutil
 import time
@@ -29,8 +29,17 @@ class TutorialTestFacets(RefineIT):
         print "Recall: " + str(tool.calculate_total_recall())
 
     def run_transforms(self):
-        for column in self.data.dirty_pd.columns:
-            print self.project.text_transform(column=column, expression='if(contains(value, "x"), "error", value)')
+        print self.data.dirty_pd.columns
+
+        columns = []
+        transformations = []
+
+        columns.append('website')
+        transformations.append('if(not(or(startsWith(toString(value), "http"), value == null)), "error", value)')
+
+
+        for i in range(len(columns)):
+            print self.project.text_transform(column=columns[i], expression=transformations[i])
 
         response = self.project.export(export_format='tsv')
 
@@ -41,5 +50,5 @@ class TutorialTestFacets(RefineIT):
 
 
 if __name__ == '__main__':
-    data = HospitalHoloClean()
+    data = Restaurant()
     run = TutorialTestFacets(data)

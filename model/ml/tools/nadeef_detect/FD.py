@@ -3,6 +3,7 @@ class FD:
         self.determinant_set = determinant_set
         self.dependant = dependant
         self.data = data
+        self.type = 'fd'
 
     def __str__(self):
         rule_str = ""
@@ -18,5 +19,8 @@ class FD:
             rule_str += self.dependant
 
         return rule_str
+
+    def clean(self):
+        pass
 
     __repr__ = __str__

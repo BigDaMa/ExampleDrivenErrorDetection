@@ -1,0 +1,35 @@
+from sets import Set
+
+from ml.datasets.BeerDataset.Beers import Beers
+from ml.tools.nadeef_detect.FD import FD
+from ml.tools.nadeef_detect.UDF import UDF
+from ml.tools.nadeef_detect.NadeefDetect import NadeefDetect
+
+
+#according to FUN and fdmine, no perfect FDs
+data = Beers()
+
+my_list = list(data.clean_pd.columns)
+my_list[0] = 'anid'
+data.clean_pd.columns=my_list
+data.dirty_pd.columns=my_list
+
+rules = []
+
+rules.append(UDF('brewery_id', 'value.length() != 2'))
+rules.append(UDF('ibu', '!value.equals("N/A")'))
+rules.append(UDF('ounces', 'value.length() > 4'))
+rules.append(UDF('abv', '(value != null && !isNumeric(value))'))
+
+#FDs
+#only big FDs that do not bring any benefit
+#rules.append(FD(Set(["aka", 'extra_phones', 'name', 'streetAddress', 'website', 'years_in_business']), "payment_method"))
+
+
+
+
+
+
+
+
+nadeef = NadeefDetect(data, rules, log_file="/home/felix/ExampleDrivenErrorDetection/log/NADEEF/BlackoakUppercase.txt")

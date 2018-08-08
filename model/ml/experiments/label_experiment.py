@@ -6,13 +6,23 @@ from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUpperca
 from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
 from ml.datasets.MoviesMohammad.Movies import Movies
 from ml.datasets.RestaurantMohammad.Restaurant import Restaurant
+from ml.datasets.BeerDataset.Beers import Beers
+from ml.datasets.Citations.Citation import Citation
 
 from ml.active_learning.classifier.XGBoostClassifier import XGBoostClassifier
 import numpy as np
 
+from ml.configuration.Config import Config
+import os
 
-#data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean]
-data_list =[HospitalHoloClean]
+
+path_folder = Config.get("logging.folder") + "/out/labels"
+if not os.path.exists(path_folder):
+    os.makedirs(path_folder)
+
+
+#data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Beers]
+data_list = [Restaurant]
 
 
 classifier = XGBoostClassifier
@@ -39,7 +49,7 @@ for dataset in data_list:
     import time
     ts = time.time()
 
-    my_file = open('out/labels_experiment_data_' + str(data.name) + "_time_" + str(ts) + '.csv', 'w+')
+    my_file = open( path_folder + '/labels_experiment_data_' + str(data.name) + "_time_" + str(ts) + '.csv', 'w+')
     my_file.write(latex)
     my_file.close()
 

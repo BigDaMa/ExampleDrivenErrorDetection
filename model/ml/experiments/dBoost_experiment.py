@@ -3,6 +3,8 @@ from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUpperca
 from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
 from ml.datasets.MoviesMohammad.Movies import Movies
 from ml.datasets.RestaurantMohammad.Restaurant import Restaurant
+from ml.datasets.BeerDataset.Beers import Beers
+from ml.datasets.Citations.Citation import Citation
 
 import time
 from ml.tools.dboost.TestDBoost import test_multiple_sizes_hist
@@ -20,20 +22,23 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Restaurant, Movies]
+#data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Restaurant, Movies, Beers, Citation]
+data_list = [Citation]
 
-steps = 100 #size of grid
+steps = 100
 N = 1
 
-dBoost_methods = [test_multiple_sizes_hist, test_multiple_sizes_gaussian, test_multiple_sizes_mixture]
+
+dBoost_methods = [test_multiple_sizes_gaussian, test_multiple_sizes_mixture]
 
 for dataset in data_list:
     data = dataset()
+    rows_number= data.shape[0]
 
     for dBoost in dBoost_methods:
         ts = time.time()
         log_file = path_folder + "/" + str(data.name) + "_time_" + str(ts) + "_dBoost_" + dBoost.func_name  + ".txt"
-        dBoost(data, steps, N, [data.shape[0]], log_file)
+        dBoost(data, steps, N, [rows_number], log_file)
 
 '''
 str(best_params) + ", " +

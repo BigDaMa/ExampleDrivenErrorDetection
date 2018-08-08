@@ -1,4 +1,4 @@
-from ml.tools.openrefine.python_api.refinetest import RefineIT
+from ml.tools.openrefine.python_api.RefineIT import RefineIT
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
 from ml.tools.openrefine.OpenRefine import OpenRefine
 import shutil
@@ -34,15 +34,18 @@ class TutorialTestFacets(RefineIT):
         columns = []
         transformations = []
 
+        '''
         columns.append('State(String)')
         transformations.append('if(value.length() != 2, "error", value)')
 
         columns.append('ZIP(String)')
         transformations.append('if(value.length() != 5, "error", value)')
 
+        '''
         columns.append('SSN(String)')
         transformations.append('if(isNumeric(value), value, "error")')
 
+        '''
         columns.append('ZIP(String)')
         transformations.append('if(isNumeric(value), value, "error")')
 
@@ -66,7 +69,7 @@ class TutorialTestFacets(RefineIT):
 
         columns.append('City(String)')
         transformations.append('if(value == "WEST", "error", value)')
-
+        '''
 
         '''
         #more

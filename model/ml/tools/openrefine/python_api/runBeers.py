@@ -1,5 +1,5 @@
 from ml.tools.openrefine.python_api.RefineIT import RefineIT
-from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
+from ml.datasets.BeerDataset.Beers import Beers
 from ml.tools.openrefine.OpenRefine import OpenRefine
 import shutil
 import time
@@ -29,8 +29,30 @@ class TutorialTestFacets(RefineIT):
         print "Recall: " + str(tool.calculate_total_recall())
 
     def run_transforms(self):
-        for column in self.data.dirty_pd.columns:
-            print self.project.text_transform(column=column, expression='if(contains(value, "x"), "error", value)')
+        print self.data.dirty_pd.columns
+
+        columns = []
+        transformations = []
+
+        '''
+        len(brewery_id) = 2
+        ounces: not 'oz.'
+        ibu not #N/A#
+        '''
+
+
+        columns.append('brewery_id')
+        transformations.append('if(not(or(length(toString(value)) == 2, value == null)), "error", value)')
+
+        columns.append('ounces')
+        transformations.append('if(and(contains(toString(value), "oz."),not(value == null)), "error", value)')
+
+        columns.append('ibu')
+        transformations.append('if(and(contains(toString(value), "N/A"),not(value == null)), "error", value)')
+
+
+        for i in range(len(columns)):
+            print self.project.text_transform(column=columns[i], expression=transformations[i])
 
         response = self.project.export(export_format='tsv')
 
@@ -41,5 +63,5 @@ class TutorialTestFacets(RefineIT):
 
 
 if __name__ == '__main__':
-    data = HospitalHoloClean()
+    data = Beers()
     run = TutorialTestFacets(data)

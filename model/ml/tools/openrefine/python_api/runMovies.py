@@ -1,5 +1,5 @@
 from ml.tools.openrefine.python_api.RefineIT import RefineIT
-from ml.datasets.flights.FlightHoloClean import FlightHoloClean
+from ml.datasets.MoviesMohammad.Movies import Movies
 from ml.tools.openrefine.OpenRefine import OpenRefine
 import shutil
 import time
@@ -29,13 +29,37 @@ class TutorialTestFacets(RefineIT):
         print "Recall: " + str(tool.calculate_total_recall())
 
     def run_transforms(self):
-        for columni in range(2, data.shape[1]):
-            print self.project.text_transform(column=data.dirty_pd.columns[columni], expression='if(isNotNull(value.match(/\d+\:\d+ [p,a]\.m\./)), value, "error")')
+        print self.data.dirty_pd.columns
+
+        columns = []
+        transformations = []
 
         '''
-        for columni in range(2, data.shape[1]):
-            print self.project.text_transform(column=data.dirty_pd.columns[columni], expression='if(isNull(value), "error", value)')
+        # len(Year) =4
+        # duration: not "hr"
+        # Genre: not "&"
+        # len(RatingValue) = 3
+        # len(Id) = 9
         '''
+
+
+        columns.append('Year')
+        transformations.append('if(not(or(length(toString(value)) == 4, value == null)), "error", value)')
+
+        columns.append('RatingValue')
+        transformations.append('if(not(or(length(toString(value)) == 3, value == null)), "error", value)')
+
+        columns.append('Id')
+        transformations.append('if(not(or(length(toString(value)) == 9, value == null)), "error", value)')
+
+        columns.append('Duration')
+        transformations.append('if(and(contains(toString(value), "hr"),not(value == null)), "error", value)')
+
+        columns.append('Genre')
+        transformations.append('if(and(contains(toString(value), "&"),not(value == null)), "error", value)')
+
+        for i in range(len(columns)):
+            print self.project.text_transform(column=columns[i], expression=transformations[i])
 
         response = self.project.export(export_format='tsv')
 
@@ -46,5 +70,5 @@ class TutorialTestFacets(RefineIT):
 
 
 if __name__ == '__main__':
-    data = FlightHoloClean()
+    data = Movies()
     run = TutorialTestFacets(data)
