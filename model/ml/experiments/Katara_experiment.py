@@ -19,12 +19,15 @@ path_folder = Config.get("logging.folder") + "/out/katara"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
-#data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Beers]
-data_list = [Movies]
+data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Beers]
+
 
 for dataset in data_list:
 
     data = dataset()
+
+    data.clean_pd.to_csv(Config.get('abstractionlayer.folder') + '/tools/KATARA/domainGroundtruth/groundtruth.rel.txt',
+                         header=None, index=False, encoding='utf-8', sep='\t')
 
     ts = time.time()
     log_file = path_folder + "/" + str(data.name) + "_time_" + str(ts) + "_KATARA_"  + ".txt"

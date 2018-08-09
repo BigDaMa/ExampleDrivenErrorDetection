@@ -1,6 +1,6 @@
 from sets import Set
 
-from ml.datasets.Citations.Citation import Citation
+from ml.datasets.salary_data.Salary import Salary
 from ml.tools.nadeef_detect.FD import FD
 from ml.tools.nadeef_detect.UDF import UDF
 from ml.tools.nadeef_detect.NadeefDetect import NadeefDetect
@@ -15,19 +15,13 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-# according to FUN and fdmine, no perfect FDs
-# HyFD only finds ID columns that are involved into FDs
-data = Citation()
-
+#according to FUN and fdmine, no perfect FDs
+# according to HyFD only ID columns are involved into FDs #check
+data = Salary()
 
 rules = []
 
-#rules.append(FD(Set(['article_title']), 'article_languange'))
-'''
-rules.append(FD(Set(['article_title']), 'article_jcreated_at'))
-rules.append(FD(Set(['article_title']), 'author_list'))
-'''
-
+rules.append(UDF('totalpay', 'Double.parseDouble(value) < 0'))
 
 #FDs
 #only big FDs that do not bring any benefit

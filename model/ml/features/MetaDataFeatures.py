@@ -46,8 +46,10 @@ class MetaDataFeatures:
         feature = np.zeros((data.shape[0],1))
         for i in range(data.shape[0]):
             value = data[i, column_id]
-            #feature[i] = len(str(value.encode('utf-8')))
-            feature[i] = len(str(value))
+            try:
+                feature[i] = len(str(value.encode('utf-8')))
+            except:
+                feature[i] = len(str(value))
         return feature, 'string_length'
 
     def is_alphabetical(self, data, column_id):

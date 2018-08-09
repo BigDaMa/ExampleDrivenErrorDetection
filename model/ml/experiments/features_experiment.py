@@ -8,7 +8,6 @@ from ml.datasets.MoviesMohammad.Movies import Movies
 from ml.datasets.RestaurantMohammad.Restaurant import Restaurant
 from ml.datasets.BeerDataset.Beers import Beers
 from ml.datasets.Citations.Citation import Citation
-from ml.datasets.SalariesLarysa.Salaries import Salaries
 
 from ml.active_learning.classifier.XGBoostClassifier import XGBoostClassifier
 import numpy as np
@@ -23,12 +22,36 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Beers]
-data_list = [Salaries]
+data_list = [Beers]
 
 
 classifier = XGBoostClassifier
 
+parameters = []
+
+parameters.append({'use_metadata': False, }) #unigrams
+
 for dataset in data_list:
+
+    '''
+    dataSet,
+				 classifier_model,
+				 number_of_round_robin_rounds=2,
+				 train_fraction=1.0,
+				 ngrams=1,
+				 runSVD=False,
+				 is_word=False,
+				 use_metadata = True,
+				 use_metadata_only = False,
+				 use_lstm=False,
+				 user_error_probability=0.00,
+				 step_size=10,
+				 cross_validation_rounds=1,
+				 checkN=10,
+				 label_iterations=6,
+				 run_round_robin=False
+    '''
+
     method = ActiveLearningErrorCorrelation()
 
     data = dataset()
@@ -36,16 +59,8 @@ for dataset in data_list:
 
     f_matrix = np.matrix(fscore_lists)
 
-    lower_quartile = np.percentile(f_matrix, 25, axis=0)
-    median = np.percentile(f_matrix, 50, axis=0)
-    upper_quartile = np.percentile(f_matrix, 75, axis=0)
-    minimum = np.min(f_matrix, axis=0).A1
-    maximum = np.max(f_matrix, axis=0).A1
 
-    latex = ""
 
-    for i in range(len(lower_quartile)):
-        latex += "\\boxplotlabels{"+ str(label[i]) +"}{"+ str(median[i]) +"}{"+ str(lower_quartile[i]) +"}{"+ str(upper_quartile[i]) +"}{"+ str(minimum[i]) +"}{"+ str(maximum[i]) +"}\n"
 
     import time
     ts = time.time()

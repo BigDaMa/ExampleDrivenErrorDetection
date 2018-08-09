@@ -5,6 +5,7 @@ from ml.datasets.MoviesMohammad.Movies import Movies
 from ml.datasets.RestaurantMohammad.Restaurant import Restaurant
 from ml.datasets.BeerDataset.Beers import Beers
 from ml.datasets.Citations.Citation import Citation
+from ml.datasets.salary_data.Salary import Salary
 
 import time
 from ml.tools.dboost.TestDBoost import test_multiple_sizes_hist
@@ -23,13 +24,13 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Restaurant, Movies, Beers, Citation]
-data_list = [Citation]
+data_list = [Salary]
 
 steps = 100
 N = 1
 
 
-dBoost_methods = [test_multiple_sizes_gaussian, test_multiple_sizes_mixture]
+dBoost_methods = [test_multiple_sizes_hist, test_multiple_sizes_gaussian, test_multiple_sizes_mixture]
 
 for dataset in data_list:
     data = dataset()

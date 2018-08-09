@@ -5,12 +5,21 @@ from ml.tools.nadeef_detect.FD import FD
 from ml.tools.nadeef_detect.UDF import UDF
 from ml.tools.nadeef_detect.NadeefDetect import NadeefDetect
 
+from ml.configuration.Config import Config
+import os
+import time
+
+path_folder = Config.get("logging.folder") + "/out/nadeef"
+
+if not os.path.exists(path_folder):
+    os.makedirs(path_folder)
+
 data = FlightHoloClean()
 
 rules = []
 
 
-#no FDs with general coverage = 1.0
+#no FDs with general coverage = 1.0 # HyFD-1.1 #check
 
 
 rules.append(UDF('sched_dep_time', 'value == null || (value != null && value.length() > 10)'))
@@ -19,7 +28,6 @@ rules.append(UDF('sched_arr_time', 'value == null || (value != null && value.len
 rules.append(UDF('act_arr_time', 'value == null || (value != null && value.length() > 10)'))
 
 
-
-
-
-nadeef = NadeefDetect(data, rules, log_file="/home/felix/ExampleDrivenErrorDetection/log/NADEEF/BlackoakUppercase.txt")
+ts = time.time()
+log_file = path_folder + "/" + str(data.name) + "_time_" + str(ts) + "_Nadeef.txt"
+nadeef = NadeefDetect(data, rules, log_file=log_file)
