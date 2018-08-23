@@ -30,7 +30,8 @@ rules.append(FD(Set(["aka", 'extra_phones', 'name', 'streetAddress', 'website', 
 rules.append(FD(Set(["aka", 'name', 'streetAddress', 'neighborhood', 'phone', 'categories']), "extra_phones"))
 '''
 
-#rules.append(FD(Set(["aka", 'extra_phones', 'name', 'streetAddress', 'website', 'years_in_business']), "payment_method"))
+#rules.append(FD(Set(['city']), "state"))
+#rules.append(FD(Set(['zipCode']), "state"))
 
 
 

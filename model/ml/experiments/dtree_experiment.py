@@ -10,6 +10,7 @@ from ml.datasets.BeersMohammad.Beers import Beers
 from ml.datasets.Citations.Citation import Citation
 from ml.datasets.salary_data.Salary import Salary
 
+from ml.active_learning.classifier.MyDecisionTreeClassifier import MyDecisionTreeClassifier
 from ml.active_learning.classifier.XGBoostClassifier import XGBoostClassifier
 import numpy as np
 
@@ -22,17 +23,18 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-data_list = [Beers
+data_list = [FlightHoloClean
              ]
 
 
+#classifier = MyDecisionTreeClassifier
 classifier = XGBoostClassifier
 
 for dataset in data_list:
     method = ActiveLearningErrorCorrelation()
 
     data = dataset()
-    fscore_lists, label = method.run(data, classifier, checkN=10)
+    fscore_lists, label = method.run(data, classifier, checkN=1, correlationFeatures=False, use_tf_idf=False) #cross_validation_rounds=100
 
     f_matrix = np.matrix(fscore_lists)
 

@@ -22,11 +22,15 @@ data = Citation()
 
 rules = []
 
-#rules.append(FD(Set(['article_title']), 'article_languange'))
-'''
-rules.append(FD(Set(['article_title']), 'article_jcreated_at'))
-rules.append(FD(Set(['article_title']), 'author_list'))
-'''
+
+
+
+rules.append(UDF('article_jissue', 'value == null'))
+rules.append(UDF('article_jvolumn', 'value == null'))
+
+#rules.append(FD(Set(['jounral_abbreviation']), 'journal_title'))
+rules.append(FD(Set(['jounral_abbreviation']), 'journal_issn'))
+
 
 
 #FDs

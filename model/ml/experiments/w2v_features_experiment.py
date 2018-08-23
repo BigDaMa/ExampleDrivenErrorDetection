@@ -22,28 +22,20 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-#data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Beers]
-data_list = [FlightHoloClean]
+data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Beers]
+
 
 
 classifier = XGBoostClassifier
 
 parameters = []
-parameters.append({'use_metadata': False, 'correlationFeatures': False}) #char unigrams
-#parameters.append({'use_metadata': False, 'correlationFeatures': False, 'is_word': True}) #word unigrams
-#parameters.append({'use_metadata_only': True, 'correlationFeatures': False}) #metadata
-#parameters.append({'use_metadata': False, 'ngrams': 2, 'correlationFeatures': False}) #char unigrams + bigrams
-#parameters.append({'correlationFeatures': False}) #char unigrams + meta data
-#parameters.append({}) #char unigrams + meta data + correlation
-#LSTM
+parameters.append({'use_metadata': False,
+                   'correlationFeatures': False,
+                   'use_word2vec': True,
+                   'use_word2vec_only': True,
+                   'w2v_size': 20})
 
-feature_names = ['char_unigrams',
-                 'word_unigrams',
-                 'metadata',
-                 'char unigrams and bigrams',
-                 'char unigrams + meta data',
-                 'char unigrams + meta data + correlation'
-                 ]
+feature_names = ['word2vec']
 
 
 for dataset in data_list:
@@ -66,6 +58,9 @@ for dataset in data_list:
 				 label_iterations=6,
 				 run_round_robin=False,
 				 correlationFeatures=True
+				 use_tf_idf=True,
+				 use_word2vec=False,
+				 use_word2vec_only=False
     '''
 
     for param_i in range(len(parameters)):

@@ -1,7 +1,8 @@
-from ml.datasets.salary_data.Salary import Salary
+#from ml.datasets.salary_data.Salary import Salary
+from ml.datasets.LarysaSalaries.Salaries import Salaries
 
 
-data = Salary()
+data = Salaries()
 
 for x in range(data.shape[0]):
     for y in range(data.shape[1]):

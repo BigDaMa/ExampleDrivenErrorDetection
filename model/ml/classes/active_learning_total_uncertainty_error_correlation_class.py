@@ -3,6 +3,7 @@ import pickle
 from ml.active_learning.library import *
 import xgboost as xgb
 from sklearn.metrics import confusion_matrix
+from ml.Word2VecFeatures.Word2VecFeatures import Word2VecFeatures
 
 
 
@@ -113,13 +114,21 @@ class ActiveLearningErrorCorrelation():
 				 cross_validation_rounds=1,
 				 checkN=10,
 				 label_iterations=6,
-				 run_round_robin=False
+				 run_round_robin=False,
+				 correlationFeatures=True,
+				 use_tf_idf=True,
+				 use_word2vec=False,
+				 use_word2vec_only=False,
+				 w2v_size=100
 				 ):
 
 		start_time = time.time()
 
 
-		all_fscore = []
+		self.all_fscore = []
+		self.all_precision = []
+		self.all_recall = []
+		self.all_time = []
 
 		use_change_features = True
 
@@ -186,7 +195,7 @@ class ActiveLearningErrorCorrelation():
 			feature_gen_start = time.time()
 
 			all_matrix_train, all_matrix_test, feature_name_list = create_features(dataSet, train_indices, test_indices, ngrams,
-																				   runSVD, is_word)
+																				   runSVD, is_word, use_tf_idf)
 
 			if use_metadata:
 				all_matrix_train, all_matrix_test, feature_name_list = add_metadata_features(dataSet, train_indices,
@@ -198,13 +207,26 @@ class ActiveLearningErrorCorrelation():
 				all_matrix_train, all_matrix_test, feature_name_list = add_lstm_features(dataSet, False, all_matrix_train,
 																						 feature_name_list)
 
+
+			if use_word2vec:
+				w2v_features = Word2VecFeatures(vector_size=w2v_size)
+				all_matrix_train, all_matrix_test, feature_name_list = w2v_features.add_word2vec_features(dataSet, train_indices,
+																							 test_indices,
+																							 all_matrix_train,
+																							 all_matrix_test,
+																							 feature_name_list,
+																							 use_word2vec_only)
+
 			print("features: %s seconds ---" % (time.time() - start_time))
 
 			data_result = []
 
 			column_id = 0
 
-			feature_matrix = all_matrix_train.tocsr()
+			try:
+				feature_matrix = all_matrix_train.tocsr()
+			except:
+				feature_matrix = all_matrix_train
 
 			classifier = classifier_model(all_matrix_train, all_matrix_test)
 
@@ -216,6 +238,10 @@ class ActiveLearningErrorCorrelation():
 			print("Feature Generation Time: " + str(feature_gen_time))
 
 			save_fscore = []
+			save_precision = []
+			save_recall = []
+
+
 			save_labels = []
 			save_certainty = []
 			save_fscore_general = []
@@ -261,11 +287,17 @@ class ActiveLearningErrorCorrelation():
 					start_time = time.time()
 
 					num_errors = 2
-					train[column_id], train_target[column_id], train_chosen_ids[column_id] = create_user_start_data(feature_matrix.tocsr(), target_run,
+					train[column_id], train_target[column_id], train_chosen_ids[column_id] = create_user_start_data(feature_matrix, target_run,
 																					   num_errors, return_ids=True)
-					if train[column_id] == None:
+					if type(train[column_id]) == type(None):
 						certainty[column_id] = 1.0
 						#pred_potential[column_id] = -1.0
+						
+						print "column " + str(column_id) + " is not applicable" + " errors: " + str(np.sum(dataSet.matrix_is_error[:,column_id]))
+
+						if np.sum(dataSet.matrix_is_error[:,column_id]) == dataSet.shape[0]:
+							all_error_status[:, column_id] = np.ones(dataSet.shape[0])
+
 						column_id = go_to_next_column_round(column_id, dataSet)
 						continue
 
@@ -285,7 +317,7 @@ class ActiveLearningErrorCorrelation():
 					x_all = all_matrix_train.copy()
 
 				else:
-					if train[column_id] == None:
+					if type(train[column_id]) == type(None):
 						if round < dataSet.shape[1] * number_of_round_robin_rounds:
 							column_id = go_to_next_column_round(column_id, dataSet)
 						else:
@@ -336,11 +368,12 @@ class ActiveLearningErrorCorrelation():
 
 					data_x_matrix = train[column_id].copy()
 					x_all = all_matrix_train.copy()
-					for column_number, last_predictions in current_predictions.iteritems():
-						if column_number != column_id:
-							select_predictions = np.matrix(last_predictions).transpose()
-							data_x_matrix = hstack((data_x_matrix, select_predictions[train_chosen_ids[column_id], :])).tocsr()
-							x_all= hstack((x_all, select_predictions))
+					if correlationFeatures:
+						for column_number, last_predictions in current_predictions.iteritems():
+							if column_number != column_id:
+								select_predictions = np.matrix(last_predictions).transpose()
+								data_x_matrix = hstack((data_x_matrix, select_predictions[train_chosen_ids[column_id], :])).tocsr()
+								x_all= hstack((x_all, select_predictions))
 
 					#print "len: " + str(len(train[column_id])) + " - " + str(len(train_target[column_id]))
 
@@ -359,8 +392,18 @@ class ActiveLearningErrorCorrelation():
 
 				# train
 				# predict
-				y_pred_current_prediction, res_new = classifier.train_predict_all(data_x_matrix, train_target[column_id],
-																			  column_id, x_all)
+
+				#todo check
+
+				#y_pred_current_prediction, res_new = classifier.train_predict_all(data_x_matrix, train_target[column_id], column_id, x_all,
+				#																  feature_name_list, dataSet.clean_pd.columns)
+
+				y_pred_current_prediction, res_new = classifier.train_predict_all(data_x_matrix,
+																				  train_target[column_id], column_id,
+																				  x_all)
+
+
+
 
 				current_predictions[column_id] = y_pred_current_prediction
 
@@ -417,7 +460,7 @@ class ActiveLearningErrorCorrelation():
 
 				number_samples = 0
 				for key, value in train.iteritems():
-					if value != None:
+					if type(value) != type(None):
 						number_samples += value.shape[0]
 				print("total labels: " + str(number_samples) + " in %: " + str(
 					float(number_samples) / (dataSet.shape[0] * dataSet.shape[1])))
@@ -430,6 +473,11 @@ class ActiveLearningErrorCorrelation():
 				print("total certainty: " + str(sum_certainty))
 
 				save_fscore.append(f1_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
+				save_precision.append(precision_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
+				save_recall.append(recall_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
+
+
+
 				if all_matrix_test != None:
 					save_fscore_general.append(
 						f1_score(dataSet.matrix_is_error[test_indices, :].flatten(), all_error_status_test.flatten()))
@@ -555,6 +603,9 @@ class ActiveLearningErrorCorrelation():
 			print (save_time)
 			f.close()
 
-			all_fscore.append(save_fscore)
+			self.all_fscore.append(save_fscore)
+			self.all_precision.append(save_precision)
+			self.all_recall.append(save_recall)
+			self.all_time.append(save_time)
 
-		return all_fscore, save_labels
+		return self.all_fscore, save_labels

@@ -3,7 +3,7 @@ from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUpperca
 from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
 from ml.datasets.MoviesMohammad.Movies import Movies
 from ml.datasets.RestaurantMohammad.Restaurant import Restaurant
-from ml.datasets.BeerDataset.Beers import Beers
+from ml.datasets.BeersMohammad.Beers import Beers
 from ml.datasets.Citations.Citation import Citation
 from ml.datasets.salary_data.Salary import Salary
 
@@ -24,7 +24,7 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Restaurant, Movies, Beers, Citation]
-data_list = [Salary]
+data_list = [Beers]
 
 steps = 100
 N = 1

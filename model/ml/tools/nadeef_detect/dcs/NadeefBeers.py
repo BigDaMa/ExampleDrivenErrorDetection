@@ -1,6 +1,6 @@
 from sets import Set
 
-from ml.datasets.BeerDataset.Beers import Beers
+from ml.datasets.BeersMohammad.Beers import Beers
 from ml.tools.nadeef_detect.FD import FD
 from ml.tools.nadeef_detect.UDF import UDF
 from ml.tools.nadeef_detect.NadeefDetect import NadeefDetect
@@ -26,8 +26,7 @@ data.dirty_pd.columns=my_list
 
 rules = []
 
-rules.append(UDF('brewery_id', 'value.length() != 2'))
-rules.append(UDF('ibu', '!value.equals("N/A")'))
+rules.append(UDF('ibu', 'value.equals("N/A")'))
 rules.append(UDF('ounces', 'value.length() > 4'))
 rules.append(UDF('abv', '(value != null && !isNumeric(value))'))
 

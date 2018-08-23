@@ -414,7 +414,7 @@ def go_to_next_column(column_id, min_certainties, dataSet):
         return min_certainty_index
 
 
-def create_features(dataSet, train_indices, test_indices, ngrams=2, runSVD=False, is_word=False):
+def create_features(dataSet, train_indices, test_indices, ngrams=2, runSVD=False, is_word=False, use_tf_idf=True):
     feature_name_list = []
     feature_list_train = []
     feature_list_test = []
@@ -423,9 +423,12 @@ def create_features(dataSet, train_indices, test_indices, ngrams=2, runSVD=False
     if is_word:
         analyzer = 'word'
 
-    pipeline = Pipeline([('vect', CountVectorizer(analyzer=analyzer, lowercase=False, ngram_range=(1, ngrams))),
-                         ('tfidf', TfidfTransformer())
-                         ])
+    if use_tf_idf:
+        pipeline = Pipeline([('vect', CountVectorizer(analyzer=analyzer, lowercase=False, ngram_range=(1, ngrams))),
+                             ('tfidf', TfidfTransformer())
+                             ])
+    else:
+        pipeline = Pipeline([('vect', CountVectorizer(analyzer=analyzer, lowercase=False, ngram_range=(1, ngrams)))])
 
     #create features
     for column_id in range(dataSet.shape[1]):
@@ -440,7 +443,7 @@ def create_features(dataSet, train_indices, test_indices, ngrams=2, runSVD=False
             feature_matrix_test = pipeline.transform(data_column_test).astype(float)
 
         listed_tuples = sorted(pipeline.named_steps['vect'].vocabulary_.items(), key=operator.itemgetter(1))
-        feature_name_list.extend([str(dataSet.clean_pd.columns[column_id]) + "_letter_" + tuple_dict_sorted[0] for tuple_dict_sorted in listed_tuples])
+        feature_name_list.extend([str(dataSet.clean_pd.columns[column_id]) + "_letter_" + tuple_dict_sorted[0] + "_" for tuple_dict_sorted in listed_tuples])
 
         # correlations
         if runSVD:

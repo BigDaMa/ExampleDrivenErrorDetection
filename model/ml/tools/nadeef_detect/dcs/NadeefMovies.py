@@ -100,6 +100,9 @@ rules.append(UDF('Id', 'value != null && value.length() != 9'))
 rules.append(UDF('Duration', 'value != null && value.length() > 7'))
 
 
+#FDs with best info gain did not bring anything
+
+
 #FDs
 #only big FDs that do not bring any benefit
 #rules.append(FD(Set(["aka", 'extra_phones', 'name', 'streetAddress', 'website', 'years_in_business']), "payment_method"))

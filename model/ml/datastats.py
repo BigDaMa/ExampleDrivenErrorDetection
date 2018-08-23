@@ -25,12 +25,93 @@ print float(np.sum(data.matrix_is_error)) / float(data.shape[0] * data.shape[1])
 import csv
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
 
-data = BlackOakDataSetUppercase()
+#data = BlackOakDataSetUppercase()
 
-data.clean_pd.columns =['RecID','FirstName','MiddleName','LastName','Address','City','State','ZIP','POBox','POCityStateZip','SSN','DOB']
+#data.clean_pd.columns =['RecID','FirstName','MiddleName','LastName','Address','City','State','ZIP','POBox','POCityStateZip','SSN','DOB']
 
-data.clean_pd.to_csv('/tmp/address.csv', index=False, quoting=csv.QUOTE_ALL)
+#data.clean_pd.to_csv('/tmp/address.csv', index=False, quoting=csv.QUOTE_ALL)
 #data.clean_pd.to_csv('/tmp/address.csv', index=False)
+
+
+from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
+#data = HospitalHoloClean()
+
+
+from ml.datasets.HospitalDomainError.HospitalDomainError import HospitalDomainError
+#data = HospitalDomainError()
+#data.dirty_pd.to_csv('/tmp/hospitaldomain.csv', index=False)
+
+#print np.sum(data.matrix_is_error,axis=0)
+
+import csv
+from ml.datasets.RestaurantMohammad.Restaurant import Restaurant
+#data = Restaurant()
+#data.clean_pd.to_csv('/home/felix/Software/Metanome/deployment/target/test/backend/WEB-INF/classes/inputData/restaurant.csv', index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)#
+#print data.shape
+
+
+from ml.datasets.salary_data.Salary import Salary
+#data = Salary()
+
+#data.clean_pd.to_csv('/tmp/Salary_Felix_clean.csv', index=False, encoding='utf-8')
+#data.dirty_pd.to_csv('/tmp/Salary_Felix_dirty.csv', index=False, encoding='utf-8')
+
+
+
+from ml.datasets.MoviesMohammad.Movies import Movies
+#data = Movies()
+
+
+#print list(np.sum(data.matrix_is_error, axis=0) / float(data.shape[0]))
+
+
+#data.clean_pd.to_csv('/home/felix/Software/Metanome/deployment/target/test/backend/WEB-INF/classes/inputData/movies.csv', index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
+#print data.shape
+
+from ml.datasets.Citations.Citation import Citation
+#data = Citation()
+#data.clean_pd.to_csv('/home/felix/Software/Metanome/deployment/target/test/backend/WEB-INF/classes/inputData/citation.csv', index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
+
+
+
+
+#from ml.datasets.BeerDataset.Beers import Beers
+#data = Beers()
+#data.clean_pd.to_csv('/home/felix/Software/Metanome/deployment/target/test/backend/WEB-INF/classes/inputData/beers.csv', index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
+#print data.shape
+
+
+from ml.datasets.BeersMohammad.Beers import Beers
+data = Beers()
+
+
+from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
+#data = BlackOakDataSetUppercase()
+#data.clean_pd.to_csv('/home/felix/Software/Metanome/deployment/target/test/backend/WEB-INF/classes/inputData/address.csv', index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
+
+#from ml.datasets.flights.FlightHoloClean import FlightHoloClean
+#data = FlightHoloClean()
+#data.clean_pd.to_csv('/home/felix/Software/Metanome/deployment/target/test/backend/WEB-INF/classes/inputData/flights.csv', index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
+
+
+from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
+#data = HospitalHoloClean()
+#data.clean_pd.to_csv('/home/felix/Software/Metanome/deployment/target/test/backend/WEB-INF/classes/inputData/hospital.csv', index=False, quoting=csv.QUOTE_ALL)
+
+
+
+
+print data.shape
+print "percentage dirty:" + str((np.sum(data.matrix_is_error) / float(data.shape[0] * data.shape[1])) * 100)
+per_column = np.sum(data.matrix_is_error, axis=0) / float(data.shape[0])
+
+print "dirty: " + str(np.sum(per_column != 0.0))
+
+print list(np.sum(data.matrix_is_error, axis=0) / float(data.shape[0]))
+print list(np.sum(data.matrix_is_error, axis=0))
+
+
+
 '''
 
 

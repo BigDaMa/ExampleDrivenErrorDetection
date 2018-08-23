@@ -3,8 +3,7 @@ from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUpperca
 from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
 from ml.datasets.MoviesMohammad.Movies import Movies
 from ml.datasets.RestaurantMohammad.Restaurant import Restaurant
-from ml.datasets.BeersMohammad.Beers import Beers
-from ml.datasets.salary_data.Salary import Salary
+#from ml.datasets.BeerDataset.Beers import Beers
 from ml.datasets.Citations.Citation import Citation
 
 import time
@@ -23,10 +22,7 @@ if not os.path.exists(path_folder):
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Beers]
 
-#data_list = [Movies]
-
-data_list = [HospitalHoloClean]
-
+data_list = [Movies]
 
 for dataset in data_list:
 
@@ -41,18 +37,22 @@ for dataset in data_list:
 
     dirty_dataset = '/tmp/dirty_dataset.csv'
 
-    dirty_df = data.dirty_pd.copy()
+    def null2String(mystring):
+        if len(str(mystring)) == 0:
+            return '#NULL#'
+        else:
+            return mystring
 
-    for column_i in range(dirty_df.shape[1]):
-        dirty_df[dirty_df.columns[column_i]] = dirty_df[dirty_df.columns[column_i]].apply(lambda x: x.upper())
+    data.dirty_pd['Duration'] = data.dirty_pd['Duration'].apply(null2String)
 
-    dirty_df.to_csv(dirty_dataset, index=False, encoding='utf-8')
+
+    data.dirty_pd.to_csv(dirty_dataset, index=False, encoding='utf-8')
 
     start_time = time.time()
 
     command = "cd " + Config.get("abstractionlayer.folder") + "/\n" + "python2 cleaning_api.py"
     print command
-    os.system(command)
+    #os.system(command)
 
 
     if os.stat('/tmp/katara_log_felix.txt').st_size == 0:
@@ -66,6 +66,12 @@ for dataset in data_list:
         my_file.write("Recall: " + str(tool.calculate_total_recall()) + "\n")
         my_file.write("Runtime: " + str(time.time() - start_time) + "\n")
         my_file.close()
+
+        for i in range(data.shape[0]):
+            if tool.matrix_detected[i, 4] and not data.matrix_is_error[i,4]:
+                print "index " + str(i) + ": " + str(data.dirty_pd.values[i,1]) + " -> " + str(data.dirty_pd.values[i,4]) + "clean: " + str(data.clean_pd.values[i,4])
+
+
 
         for c in range(data.shape[1]):
             print str(data.clean_pd.columns[c]) + ": " + str(tool.calculate_recall_by_column(c))

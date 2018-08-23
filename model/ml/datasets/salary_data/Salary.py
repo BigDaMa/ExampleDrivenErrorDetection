@@ -28,9 +28,27 @@ class Salary(DataSet):
 
         assert np.all(dirty_pd['oid'] == clean_pd['oid'])
         assert np.all(dirty_pd['id'] == clean_pd['id'])
+        assert np.all(dirty_pd['employeename'] == clean_pd['employeename'])
+        assert np.all(dirty_pd['jobtitle'] == clean_pd['jobtitle'])
+        assert np.all(dirty_pd['overtimepay'] == clean_pd['overtimepay'])
+        assert np.all(dirty_pd['otherpay'] == clean_pd['otherpay'])
+        assert np.all(dirty_pd['benefits'] == clean_pd['benefits'])
+        assert np.all(dirty_pd['totalpaybenefits'] == clean_pd['totalpaybenefits'])
+        assert np.all(dirty_pd['year'] == clean_pd['year'])
+        assert np.all(dirty_pd['agency'] == clean_pd['agency'])
+        assert np.all(dirty_pd['status'] == clean_pd['status'])
+
 
         super(Salary, self).__init__("Salary", dirty_pd, clean_pd)
 
 
     def validate(self):
         print "validate"
+
+if __name__ == '__main__':
+    data = Salary()
+
+    print data.clean_pd.columns
+
+    print data.clean_pd.values[200,:]
+    print data.dirty_pd.values[200,:]

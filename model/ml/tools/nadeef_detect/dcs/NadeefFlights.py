@@ -28,6 +28,28 @@ rules.append(UDF('sched_arr_time', 'value == null || (value != null && value.len
 rules.append(UDF('act_arr_time', 'value == null || (value != null && value.length() > 10)'))
 
 
+rules.append(FD(Set(["flight"]), "act_arr_time"))
+rules.append(FD(Set(["flight"]), "sched_arr_time"))
+rules.append(FD(Set(["flight"]), "act_dep_time"))
+rules.append(FD(Set(["flight"]), "sched_dep_time"))
+
+
+rules.append(FD(Set(["act_arr_time", "sched_arr_time"]), "act_dep_time"))
+rules.append(FD(Set(["act_arr_time", "sched_arr_time"]), "sched_dep_time"))
+
+rules.append(FD(Set(["act_arr_time", "act_dep_time"]), "sched_arr_time"))
+rules.append(FD(Set(["act_arr_time", "act_dep_time"]), "sched_dep_time"))
+
+rules.append(FD(Set(["act_arr_time", "sched_dep_time"]), "sched_arr_time"))
+rules.append(FD(Set(["act_arr_time", "sched_dep_time"]), "act_dep_time"))
+
+rules.append(FD(Set(["act_dep_time", "sched_arr_time"]), "act_arr_time"))
+rules.append(FD(Set(["act_dep_time", "sched_arr_time"]), "sched_dep_time"))
+
+rules.append(FD(Set(["sched_arr_time", "sched_dep_time"]), "act_arr_time"))
+rules.append(FD(Set(["sched_arr_time", "sched_dep_time"]), "act_dep_time"))
+
+
 ts = time.time()
 log_file = path_folder + "/" + str(data.name) + "_time_" + str(ts) + "_Nadeef.txt"
 nadeef = NadeefDetect(data, rules, log_file=log_file)
