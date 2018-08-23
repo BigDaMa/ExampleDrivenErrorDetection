@@ -159,7 +159,7 @@ def grid_search_by_sample_gaussian(data, sample_size, steps):
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
 
-    data_sample.to_csv(sample_file, index=False, encoding='utf8')
+    data_sample.to_csv(sample_file, index=False, encoding='utf8', header=None)
 
 
     total_start_time = time.time()
@@ -188,7 +188,7 @@ def grid_search_by_sample_hist(data, sample_size, steps):
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
 
-    data_sample.to_csv(sample_file, index=False, encoding="utf8")
+    data_sample.to_csv(sample_file, index=False, encoding="utf8", header=None)
 
 
     total_start_time = time.time()
@@ -218,7 +218,7 @@ def grid_search_by_sample_mixture(data, sample_size, steps):
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
 
-    data_sample.to_csv(sample_file, index=False, encoding='utf8')
+    data_sample.to_csv(sample_file, index=False, encoding='utf8', header=None)
 
 
     total_start_time = time.time()
@@ -247,7 +247,7 @@ def run_params_gaussian(data, params):
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
 
-    data_sample.to_csv(sample_file, index=False, encoding='utf8')
+    data_sample.to_csv(sample_file, index=False, encoding='utf8', header=None)
 
     total_start_time = time.time()
 
@@ -274,7 +274,7 @@ def run_params_hist(data, params):
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
 
-    data_sample.to_csv(sample_file, index=False, encoding="utf8")
+    data_sample.to_csv(sample_file, index=False, encoding="utf8", header=None)
 
     total_start_time = time.time()
 
@@ -303,7 +303,7 @@ def run_params_mixture(data, params):
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
 
-    data_sample.to_csv(sample_file, index=False, encoding="utf8")
+    data_sample.to_csv(sample_file, index=False, encoding="utf8", header=None)
 
     total_start_time = time.time()
 
