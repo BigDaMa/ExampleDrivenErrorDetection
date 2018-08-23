@@ -18,9 +18,11 @@ if not os.path.exists(path_folder):
 
 available_datasets_dir = Config.get("bench.folder") + "/data"
 
-datasets = os.listdir(available_datasets_dir)
+datasets_folders = os.listdir(available_datasets_dir)
 
-for dataset_dir in datasets:
+print datasets_folders
+
+for dataset_dir in datasets_folders:
     #get all files in folder
     mypath = available_datasets_dir + "/" + dataset_dir
     dirtyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
