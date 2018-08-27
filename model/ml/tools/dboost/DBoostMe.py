@@ -25,14 +25,14 @@ class DBoostMe(Tool):
         matrix_outliers = outliers.values
 
         for i in range(len(matrix_outliers)):
-            #if matrix_outliers[i][0] > 0: # not header
-            row_id = matrix_outliers[i][0]
-            attribute_id = matrix_outliers[i][1]
-            old_value = matrix_outliers[i][2]
+            if matrix_outliers[i][0] > 0:
+                row_id = matrix_outliers[i][0]-1
+                attribute_id = matrix_outliers[i][1]
+                old_value = matrix_outliers[i][2]
 
-            print str(old_value) + " vs " + str(dataSet.dirty_pd.values[row_id][attribute_id])
-            assert old_value == dataSet.dirty_pd.values[row_id][attribute_id], '#' + str(old_value) + "# vs our: #" + str(dataSet.dirty_pd.values[row_id][attribute_id] + "#")
-            matrix_detected[row_id][attribute_id] = True
+                print str(old_value) + " vs " + str(dataSet.dirty_pd.values[row_id][attribute_id])
+                assert old_value == dataSet.dirty_pd.values[row_id][attribute_id], '#' + str(old_value) + "# vs our: #" + str(dataSet.dirty_pd.values[row_id][attribute_id] + "#")
+                matrix_detected[row_id][attribute_id] = True
 
         super(DBoostMe, self).__init__("DBoost_me", dataSet, matrix_detected)
 
