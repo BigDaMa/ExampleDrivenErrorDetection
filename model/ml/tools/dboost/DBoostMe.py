@@ -19,15 +19,12 @@ class DBoostMe(Tool):
 
         print outliers
 
-        import time
-        #time.sleep(30)
-
         matrix_outliers = outliers.values
 
         for i in range(len(matrix_outliers)):
-            if matrix_outliers[i][0] > 0:
-                row_id = matrix_outliers[i][0]-1
-                attribute_id = matrix_outliers[i][1]
+            if int(matrix_outliers[i][0]) > 0:
+                row_id = int(matrix_outliers[i][0])-1
+                attribute_id = int(matrix_outliers[i][1])
                 old_value = matrix_outliers[i][2]
 
                 print str(old_value) + " vs " + str(dataSet.dirty_pd.values[row_id][attribute_id])

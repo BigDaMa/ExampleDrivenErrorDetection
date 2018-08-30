@@ -22,7 +22,8 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
+#data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
+data_list = [FlightHoloClean, Beers]
 
 params = {'use_word2vec': True,
           'use_word2vec_only': False,
@@ -31,6 +32,7 @@ params = {'use_word2vec': True,
 
 classifier = XGBoostClassifier
 
+my_array = []
 for dataset in data_list:
     method = ActiveLearningErrorCorrelation()
 
@@ -38,9 +40,27 @@ for dataset in data_list:
     my_dict = params.copy()
     my_dict['dataSet'] = data
     my_dict['classifier_model'] = classifier
-    my_dict['checkN'] = 10
+    my_dict['checkN'] = 1
+    my_array.append(my_dict)
 
-    fscore_lists, label = method.run(**my_dict)
+
+from multiprocessing.dummy import Pool as ThreadPool
+pool = ThreadPool(2)
+
+method = ActiveLearningErrorCorrelation()
+
+results = pool.map(method.run_multi, my_array)
+
+
+for r_i in range(len(results)):
+    r = results[r_i]
+    data = my_array[r_i]['dataSet']
+
+    fscore_lists = r['fscore']
+    label = r['labels']
+    all_precision = r['precision']
+    all_recall = r['recall']
+    all_time = r['time']
 
     f_matrix = np.matrix(fscore_lists)
 
@@ -62,20 +82,21 @@ for dataset in data_list:
     my_file.write(latex)
     my_file.write("\n\n")
 
-    avg_prec = list(np.mean(np.matrix(method.all_precision), axis=0).A1)
-    avg_rec = list(np.mean(np.matrix(method.all_recall), axis=0).A1)
-    avg_f = list(np.mean(np.matrix(method.all_fscore), axis=0).A1)
-    avg_time = list(np.mean(np.matrix(method.all_time), axis=0).A1)
+    avg_prec = list(np.mean(np.matrix(all_precision), axis=0).A1)
+    avg_rec = list(np.mean(np.matrix(all_recall), axis=0).A1)
+    avg_f = list(np.mean(np.matrix(fscore_lists), axis=0).A1)
+    avg_time = list(np.mean(np.matrix(all_time), axis=0).A1)
 
     for i in range(len(label)):
         my_file.write(str(label[i]) + "," + str(avg_time[i]) + "," + str(avg_prec[i]) + "," + str(avg_rec[i]) + "," + str(avg_f[i]) + "\n" )
 
     my_file.write("\n\n\nAVG Precision: " + str(avg_prec))
-    my_file.write("\nAll Precision: " + str(method.all_precision))
+    my_file.write("\nAll Precision: " + str(all_precision))
     my_file.write("\n\nAVG Recall: " + str(avg_rec))
-    my_file.write("\nAll Recall: " + str(method.all_recall))
+    my_file.write("\nAll Recall: " + str(all_recall))
     my_file.write("\n\nLabels: " + str(label))
 
     my_file.close()
+
 
 

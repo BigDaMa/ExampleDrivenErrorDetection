@@ -26,8 +26,13 @@ for dataset_dir in datasets_folders:
     #get all files in folder
     mypath = available_datasets_dir + "/" + dataset_dir
     dirtyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
-    
-    groundtruth_dir = [x[0] for x in os.walk(mypath)][1]
+
+    groundtruth_dirs = [x[0] for x in os.walk(mypath)]
+    groundtruth_dir = ""
+    for file_i in groundtruth_dirs:
+        if '_GT' in file_i:
+            groundtruth_dir = file_i
+
     cleanfile = [f for f in listdir(groundtruth_dir) if isfile(join(groundtruth_dir, f))][0]
     
     #create datasets

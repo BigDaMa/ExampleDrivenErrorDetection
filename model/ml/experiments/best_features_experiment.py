@@ -22,26 +22,18 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-data_list = [BlackOakDataSetUppercase]
+data_list = [HospitalHoloClean, BlackOakDataSetUppercase]
 
 
 
 classifier = XGBoostClassifier
 
 parameters = []
-'''
-parameters.append({'use_metadata': False,
-                   'correlationFeatures': False,
-                   'use_word2vec': True,
-                   'use_word2vec_only': True,
+
+parameters.append({'use_word2vec': True,
+                   'use_word2vec_only': False,
                    'w2v_size': 20})
-feature_names = ['word2vec']
-'''
-parameters.append({'use_metadata': False,
-                   'correlationFeatures': False,
-                   'use_active_clean': True,
-                   'use_activeclean_only': True})
-feature_names = ['activeclean']
+feature_names = ['meta + corr + unigram + word2vec']
 
 
 

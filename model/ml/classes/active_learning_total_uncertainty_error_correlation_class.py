@@ -4,6 +4,7 @@ from ml.active_learning.library import *
 import xgboost as xgb
 from sklearn.metrics import confusion_matrix
 from ml.Word2VecFeatures.Word2VecFeatures import Word2VecFeatures
+from ml.features.ActiveCleanFeatures import ActiveCleanFeatures
 
 
 
@@ -99,6 +100,9 @@ class ActiveLearningErrorCorrelation():
 	def __init__(self):
 		return
 
+	def run_multi(self, params):
+		return self.run(**params)
+
 	def run(self, dataSet,
 				 classifier_model,
 				 number_of_round_robin_rounds=2,
@@ -119,16 +123,18 @@ class ActiveLearningErrorCorrelation():
 				 use_tf_idf=True,
 				 use_word2vec=False,
 				 use_word2vec_only=False,
-				 w2v_size=100
+				 w2v_size=100,
+				 use_active_clean=False,
+			     use_activeclean_only=False
 				 ):
 
 		start_time = time.time()
 
 
-		self.all_fscore = []
-		self.all_precision = []
-		self.all_recall = []
-		self.all_time = []
+		all_fscore = []
+		all_precision = []
+		all_recall = []
+		all_time = []
 
 		use_change_features = True
 
@@ -185,7 +191,8 @@ class ActiveLearningErrorCorrelation():
 
 		for check_this in range(checkN):
 
-			f = open(Config.get("folder.logfile") + "/log_progress_" + dataSet.name + "_" + str(check_this) + ".csv",
+			ts = time.time()
+			f = open(Config.get("folder.logfile") + "/log_progress_" + dataSet.name + "_" + str(check_this) + "_" +  str(ts) + ".csv",
 					 'w+')
 
 			train_indices, test_indices = split_data_indices(dataSet, train_fraction, fold_number=check_this)
@@ -216,6 +223,17 @@ class ActiveLearningErrorCorrelation():
 																							 all_matrix_test,
 																							 feature_name_list,
 																							 use_word2vec_only)
+
+
+			if use_active_clean:
+				ac_features = ActiveCleanFeatures()  # active clean
+				all_matrix_train, all_matrix_test, feature_name_list = ac_features.add_features(dataSet,
+																										  train_indices,
+																										  test_indices,
+																										  all_matrix_train,
+																										  all_matrix_test,
+																										  feature_name_list,
+																										  use_activeclean_only)
 
 			print("features: %s seconds ---" % (time.time() - start_time))
 
@@ -603,9 +621,17 @@ class ActiveLearningErrorCorrelation():
 			print (save_time)
 			f.close()
 
-			self.all_fscore.append(save_fscore)
-			self.all_precision.append(save_precision)
-			self.all_recall.append(save_recall)
-			self.all_time.append(save_time)
+			all_fscore.append(save_fscore)
+			all_precision.append(save_precision)
+			all_recall.append(save_recall)
+			all_time.append(save_time)
 
-		return self.all_fscore, save_labels
+
+		return_dict = {}
+		return_dict['labels'] = save_labels
+		return_dict['fscore'] = all_fscore
+		return_dict['precision'] = all_precision
+		return_dict['recall'] = all_recall
+		return_dict['time'] = all_time
+
+		return return_dict
