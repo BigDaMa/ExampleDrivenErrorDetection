@@ -1,5 +1,5 @@
 from ml.classes.active_learning_total_uncertainty_error_correlation_lib import run_multi
-import time
+
 
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
@@ -8,44 +8,48 @@ from ml.datasets.MoviesMohammad.Movies import Movies
 from ml.datasets.RestaurantMohammad.Restaurant import Restaurant
 from ml.datasets.BeersMohammad.Beers import Beers
 from ml.datasets.Citations.Citation import Citation
-from ml.datasets.salary_data.Salary import Salary
 
 from ml.active_learning.classifier.XGBoostClassifier import XGBoostClassifier
+from ml.active_learning.classifier.LinearSVMClassifier import LinearSVMClassifier
+from ml.active_learning.classifier.NaiveBayesClassifier import NaiveBayesClassifier
+
+from ml.datasets.salary_data.Salary import Salary
 import numpy as np
 
 from ml.configuration.Config import Config
 import os
+import time
 
 
-path_folder = Config.get("logging.folder") + "/out/labels"
+path_folder = Config.get("logging.folder") + "/out/model"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
 data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
+classifiers = [XGBoostClassifier,LinearSVMClassifier, NaiveBayesClassifier]
 
-params = {'use_word2vec': True,
-          'use_word2vec_only': False,
-          'w2v_size': 20}
+parameters = []
+parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 20})#char unigrams + meta data + correlation + word2vec
 
 
-classifier = XGBoostClassifier
 
 my_array = []
 for dataset in data_list:
     data = dataset()
-    my_dict = params.copy()
-    my_dict['dataSet'] = data
-    my_dict['classifier_model'] = classifier
-    my_dict['checkN'] = 1
-    my_array.append(my_dict)
+    for classifier in classifiers:
+        for param_i in range(len(parameters)):
+            my_dict = parameters[param_i].copy()
+            my_dict['dataSet'] = data
+            my_dict['classifier_model'] = classifier
+            my_dict['checkN'] = 10
 
+            my_array.append(my_dict)
 
 import multiprocessing as mp
 pool = mp.Pool(processes=10)
 
 results = pool.map(run_multi, my_array)
-
 
 for r_i in range(len(results)):
     r = results[r_i]
@@ -59,22 +63,21 @@ for r_i in range(len(results)):
 
     f_matrix = np.matrix(fscore_lists)
 
-    lower_quartile = np.percentile(f_matrix, 25, axis=0)
-    median = np.percentile(f_matrix, 50, axis=0)
-    upper_quartile = np.percentile(f_matrix, 75, axis=0)
-    minimum = np.min(f_matrix, axis=0).A1
-    maximum = np.max(f_matrix, axis=0).A1
+    average = list(np.mean(f_matrix, axis=0).A1)
 
     latex = ""
+    latex += "\\addplot+[mark=none] coordinates{"
 
-    for i in range(len(lower_quartile)):
-        latex += "\\boxplotlabels{"+ str(label[i]) +"}{"+ str(median[i]) +"}{"+ str(lower_quartile[i]) +"}{"+ str(upper_quartile[i]) +"}{"+ str(minimum[i]) +"}{"+ str(maximum[i]) +"}\n"
+    for c in range(len(average)):
+        latex += "(" + str(label[c]) + "," + str(average[c]) + ")"
+    latex += "};\n"
 
 
     ts = time.time()
 
-    my_file = open(path_folder + '/labels_experiment_data_' + str(data.name) + "_time_" + str(ts) + '.csv', 'w+')
+    my_file = open( path_folder + '/labels_experiment_data_' + str(data.name) + "_" + classifier.name  + "_time_" + str(ts) + '.csv', 'w+')
     my_file.write(latex)
+
     my_file.write("\n\n")
 
     avg_prec = list(np.mean(np.matrix(all_precision), axis=0).A1)
@@ -83,7 +86,9 @@ for r_i in range(len(results)):
     avg_time = list(np.mean(np.matrix(all_time), axis=0).A1)
 
     for i in range(len(label)):
-        my_file.write(str(label[i]) + "," + str(avg_time[i]) + "," + str(avg_prec[i]) + "," + str(avg_rec[i]) + "," + str(avg_f[i]) + "\n" )
+        my_file.write(
+            str(label[i]) + "," + str(avg_time[i]) + "," + str(avg_prec[i]) + "," + str(avg_rec[i]) + "," + str(
+                avg_f[i]) + "\n")
 
     my_file.write("\n\n\nAVG Precision: " + str(avg_prec))
     my_file.write("\nAll Precision: " + str(all_precision))
@@ -92,6 +97,5 @@ for r_i in range(len(results)):
     my_file.write("\n\nLabels: " + str(label))
 
     my_file.close()
-
 
 
