@@ -48,7 +48,7 @@ for dataset in data_list:
     data = dataset()
     my_array.append(data)
 
-pool = mp.Pool(processes=20)
+pool = mp.Pool(processes=26)
 
 results = pool.map(run_katara, my_array)
 
