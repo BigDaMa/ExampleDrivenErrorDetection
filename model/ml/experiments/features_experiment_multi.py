@@ -36,6 +36,8 @@ parameters.append({'use_metadata': False, 'ngrams': 2, 'correlationFeatures': Fa
 parameters.append({'correlationFeatures': False}) #char unigrams + meta data
 parameters.append({}) #char unigrams + meta data + correlation
 parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 20})#char unigrams + meta data + correlation + word2vec
+parameters.append({'use_metadata_only': True, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True}) #word2vec
+parameters.append({'use_metadata_only': True, 'correlationFeatures': False, 'use_metadata': False, 'use_active_clean': True, 'use_activeclean_only': True}) #active clean
 
 #LSTM
 
@@ -45,7 +47,9 @@ feature_names = ['char_unigrams',
                  'char unigrams and bigrams',
                  'char unigrams + meta data',
                  'char unigrams + meta data + correlation',
-                 'char unigrams + meta data + correlation + word2vec'
+                 'char unigrams + meta data + correlation + word2vec',
+                 'word2vec',
+                 'ActiveClean'
                  ]
 
 my_array = []

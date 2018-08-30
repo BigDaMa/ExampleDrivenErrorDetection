@@ -37,7 +37,7 @@ for dataset in data_list:
     my_dict = params.copy()
     my_dict['dataSet'] = data
     my_dict['classifier_model'] = classifier
-    my_dict['checkN'] = 1
+    my_dict['checkN'] = 10
     my_array.append(my_dict)
 
 
