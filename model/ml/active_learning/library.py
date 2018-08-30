@@ -6,9 +6,9 @@ from sets import Set
 
 import jinja2
 import numpy as np
-from eli5 import explain_weights
-from eli5 import show_weights
-from eli5.formatters import format_as_text
+#from eli5 import explain_weights
+#from eli5 import show_weights
+#from eli5.formatters import format_as_text
 from scipy.sparse import hstack
 from scipy.sparse import vstack
 from sklearn.decomposition import TruncatedSVD
@@ -527,7 +527,7 @@ def add_metadata_features(data, train_indices, test_indices, all_features_train,
 
     return all_features_train_new, all_features_test_new, feature_names
 
-
+'''
 def visualize_model(dataSet, column_id, final_gb, feature_name_list, train, target_run, res):
     try:
         column_name = dataSet.clean_pd.columns[column_id]
@@ -566,7 +566,7 @@ def visualize_model(dataSet, column_id, final_gb, feature_name_list, train, targ
         # webbrowser.open(url)
     except jinja2.exceptions.UndefinedError:
         print(format_as_text(explain_weights(final_gb[column_id], feature_names=feature_name_list)))
-
+'''
 
 
 def split_data_indices(dataSet, train_fraction, fold_number=0):
