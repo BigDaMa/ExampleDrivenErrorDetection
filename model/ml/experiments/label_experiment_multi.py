@@ -1,4 +1,4 @@
-from ml.classes.active_learning_total_uncertainty_error_correlation_class import ActiveLearningErrorCorrelation
+from ml.classes.active_learning_total_uncertainty_error_correlation_lib import run_multi
 import time
 
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
@@ -34,8 +34,6 @@ classifier = XGBoostClassifier
 
 my_array = []
 for dataset in data_list:
-    method = ActiveLearningErrorCorrelation()
-
     data = dataset()
     my_dict = params.copy()
     my_dict['dataSet'] = data
@@ -44,12 +42,10 @@ for dataset in data_list:
     my_array.append(my_dict)
 
 
-from multiprocessing.dummy import Pool as ThreadPool
-pool = ThreadPool(2)
+import multiprocessing as mp
+pool = mp.Pool(processes=2)
 
-method = ActiveLearningErrorCorrelation()
-
-results = pool.map(method.run_multi, my_array)
+results = pool.map(run_multi, my_array)
 
 
 for r_i in range(len(results)):
