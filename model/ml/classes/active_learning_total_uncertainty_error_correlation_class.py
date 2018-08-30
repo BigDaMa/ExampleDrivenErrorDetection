@@ -192,7 +192,7 @@ class ActiveLearningErrorCorrelation():
 		for check_this in range(checkN):
 
 			ts = time.time()
-			f = open(Config.get("folder.logfile") + "/log_progress_" + dataSet.name + "_" + str(check_this) + "_" +  str(ts) + ".csv",
+			f = open(Config.get("logging.folder") + "/logging_output/log_progress_" + dataSet.name + "_" + str(check_this) + "_" +  str(ts) + ".csv",
 					 'w+')
 
 			train_indices, test_indices = split_data_indices(dataSet, train_fraction, fold_number=check_this)
