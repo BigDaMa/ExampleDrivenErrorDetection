@@ -1,7 +1,7 @@
 import pickle
 
 from ml.active_learning.library import *
-import xgboost as xgb
+import sys
 from sklearn.metrics import confusion_matrix
 from ml.Word2VecFeatures.Word2VecFeatures import Word2VecFeatures
 from ml.features.ActiveCleanFeatures import ActiveCleanFeatures
@@ -99,7 +99,18 @@ def add_lstm_features(data, use_lstm_only, all_matrix_train, feature_name_list):
 
 
 def run_multi( params):
-	return run(**params)
+	try:
+		return run(**params)
+	except:
+		return_dict = {}
+		return_dict['labels'] = []
+		return_dict['fscore'] = []
+		return_dict['precision'] = []
+		return_dict['recall'] = []
+		return_dict['time'] = []
+		return_dict['error'] = "Unexpected error:" + str(sys.exc_info()[0])
+
+		return return_dict
 
 def run(dataSet,
 			 classifier_model,
