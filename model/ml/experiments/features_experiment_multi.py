@@ -61,6 +61,7 @@ for dataset in data_list:
         my_dict['dataSet'] = data
         my_dict['classifier_model'] = classifier
         my_dict['checkN'] = 10
+        my_dict['feature_vector_name'] = feature_names[param_i]
 
         my_array.append(my_dict)
 
@@ -78,8 +79,7 @@ for r_i in range(len(results)):
 
     ts = time.time()
     my_file = open(
-        path_folder + '/labels_experiment_data_' + str(data.name) + "_" + feature_names[r_i] + "_time_" + str(
-            ts) + '.csv', 'w+')
+        path_folder + '/labels_experiment_data_' + str(data.name) + '_' + str(my_array[r_i]['feature_vector_name']) + '_time_' + str(ts) + '.csv', 'w+')
 
     if len(fscore_lists) > 0:
         label = r['labels']
