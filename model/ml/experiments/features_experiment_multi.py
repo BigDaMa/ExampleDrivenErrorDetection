@@ -1,5 +1,5 @@
 from ml.classes.active_learning_total_uncertainty_error_correlation_lib import run_multi
-
+import multiprocessing as mp
 
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
@@ -35,7 +35,7 @@ parameters.append({'use_metadata_only': True, 'correlationFeatures': False}) #me
 parameters.append({'use_metadata': False, 'ngrams': 2, 'correlationFeatures': False}) #char unigrams + bigrams
 parameters.append({'correlationFeatures': False}) #char unigrams + meta data
 parameters.append({}) #char unigrams + meta data + correlation
-parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 20})#char unigrams + meta data + correlation + word2vec
+parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 20}) #char unigrams + meta data + correlation + word2vec
 parameters.append({'use_metadata_only': True, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True}) #word2vec
 parameters.append({'use_metadata_only': True, 'correlationFeatures': False, 'use_metadata': False, 'use_active_clean': True, 'use_activeclean_only': True}) #active clean
 
@@ -52,6 +52,7 @@ feature_names = ['char_unigrams',
                  'ActiveClean'
                  ]
 
+fnames = []
 my_array = []
 for dataset in data_list:
     data = dataset()
@@ -61,13 +62,11 @@ for dataset in data_list:
         my_dict['dataSet'] = data
         my_dict['classifier_model'] = classifier
         my_dict['checkN'] = 10
-        my_dict['feature_vector_name'] = feature_names[param_i]
+        fnames.append(feature_names[param_i])
 
         my_array.append(my_dict)
 
-import multiprocessing as mp
-
-pool = mp.Pool(processes=10)
+pool = mp.Pool(processes=4)
 
 results = pool.map(run_multi, my_array)
 
@@ -79,7 +78,7 @@ for r_i in range(len(results)):
 
     ts = time.time()
     my_file = open(
-        path_folder + '/labels_experiment_data_' + str(data.name) + '_' + str(my_array[r_i]['feature_vector_name']) + '_time_' + str(ts) + '.csv', 'w+')
+        path_folder + '/labels_experiment_data_' + str(data.name) + '_' + str(fnames[r_i]) + '_time_' + str(ts) + '.csv', 'w+')
 
     if len(fscore_lists) > 0:
         label = r['labels']
