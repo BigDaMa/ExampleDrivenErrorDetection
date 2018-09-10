@@ -5,6 +5,7 @@ import sys
 from sklearn.metrics import confusion_matrix
 from ml.Word2VecFeatures.Word2VecFeatures import Word2VecFeatures
 from ml.features.ActiveCleanFeatures import ActiveCleanFeatures
+from ml.features.ValueCorrelationFeatures import ValueCorrelationFeatures
 
 
 
@@ -134,7 +135,9 @@ def run(dataSet,
 			 use_word2vec_only=False,
 			 w2v_size=100,
 			 use_active_clean=False,
-			 use_activeclean_only=False
+			 use_activeclean_only=False,
+			 use_cond_prob=False,
+			 use_cond_prob_only=False
 			 ):
 
 	start_time = time.time()
@@ -243,6 +246,16 @@ def run(dataSet,
 																									  all_matrix_test,
 																									  feature_name_list,
 																									  use_activeclean_only)
+
+		if use_cond_prob:
+			ac_features = ValueCorrelationFeatures()
+			all_matrix_train, all_matrix_test, feature_name_list = ac_features.add_features(dataSet,
+																							train_indices,
+																							test_indices,
+																							all_matrix_train,
+																							all_matrix_test,
+																							feature_name_list,
+																							use_cond_prob_only)
 
 		print("features: %s seconds ---" % (time.time() - start_time))
 
