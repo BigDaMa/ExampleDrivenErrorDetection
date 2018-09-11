@@ -436,35 +436,39 @@ def create_features(dataSet, train_indices, test_indices, ngrams=2, runSVD=False
         data_column_test = dataSet.dirty_pd.values[test_indices, column_id]
 
         # bag of characters
-        pipeline.fit(data_column_train)
+        try:
+            pipeline.fit(data_column_train)
 
-        feature_matrix_train = pipeline.transform(data_column_train).astype(float)
-        if len(data_column_test) > 0:
-            feature_matrix_test = pipeline.transform(data_column_test).astype(float)
-
-        listed_tuples = sorted(pipeline.named_steps['vect'].vocabulary_.items(), key=operator.itemgetter(1))
-        feature_name_list.extend([str(dataSet.clean_pd.columns[column_id]) + "_letter_" + tuple_dict_sorted[0] + "_" for tuple_dict_sorted in listed_tuples])
-
-        # correlations
-        if runSVD:
-            svd = TruncatedSVD(n_components=(feature_matrix_train.shape[1] - 1), n_iter=10)
-            svd.fit(feature_matrix_train)
-            correlated_matrix_train = svd.transform(feature_matrix_train)
-            #print(svd.explained_variance_ratio_)
-
-            print(pipeline.named_steps['vect'].vocabulary_)
-            print(svd.components_)
-
-            from ml.VisualizeSVD import visualize_svd
-            visualize_svd(svd.components_, dataSet, pipeline.named_steps['vect'].vocabulary_, column_id)
-
-
-            feature_name_list.extend([str(dataSet.clean_pd.columns[column_id]) + "_svd_" + str(svd_id) for svd_id in range(feature_matrix_train.shape[1] - 1)])
-            feature_matrix_train = hstack((feature_matrix_train, correlated_matrix_train)).tocsr()
-
+            feature_matrix_train = pipeline.transform(data_column_train).astype(float)
             if len(data_column_test) > 0:
-                correlated_matrix_test = svd.transform(feature_matrix_test)
-                feature_matrix_test = hstack((feature_matrix_test, correlated_matrix_test)).tocsr()
+                feature_matrix_test = pipeline.transform(data_column_test).astype(float)
+
+            listed_tuples = sorted(pipeline.named_steps['vect'].vocabulary_.items(), key=operator.itemgetter(1))
+            feature_name_list.extend([str(dataSet.clean_pd.columns[column_id]) + "_letter_" + tuple_dict_sorted[0] + "_" for tuple_dict_sorted in listed_tuples])
+
+            # correlations
+            if runSVD:
+                svd = TruncatedSVD(n_components=(feature_matrix_train.shape[1] - 1), n_iter=10)
+                svd.fit(feature_matrix_train)
+                correlated_matrix_train = svd.transform(feature_matrix_train)
+                #print(svd.explained_variance_ratio_)
+
+                print(pipeline.named_steps['vect'].vocabulary_)
+                print(svd.components_)
+
+                from ml.VisualizeSVD import visualize_svd
+                visualize_svd(svd.components_, dataSet, pipeline.named_steps['vect'].vocabulary_, column_id)
+
+
+                feature_name_list.extend([str(dataSet.clean_pd.columns[column_id]) + "_svd_" + str(svd_id) for svd_id in range(feature_matrix_train.shape[1] - 1)])
+                feature_matrix_train = hstack((feature_matrix_train, correlated_matrix_train)).tocsr()
+
+                if len(data_column_test) > 0:
+                    correlated_matrix_test = svd.transform(feature_matrix_test)
+                    feature_matrix_test = hstack((feature_matrix_test, correlated_matrix_test)).tocsr()
+
+        except ValueError:
+            pass
 
 
         feature_list_train.append(feature_matrix_train)

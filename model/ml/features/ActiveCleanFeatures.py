@@ -57,8 +57,13 @@ class ActiveCleanFeatures():
                 row_str += data_matrix[row_i, col_i] + ' '
             data.append(row_str)
 
-        text = [unicodedata.normalize('NFKD', unicode(row_txt, errors='replace')).encode('ascii', 'ignore')
-                for row_txt in data]
+        try:
+            text = [unicodedata.normalize('NFKD', unicode(row_txt, errors='replace')).encode('ascii', 'ignore')
+                    for row_txt in data]
+        except TypeError:
+            text = [unicodedata.normalize('NFKD', row_txt).encode('ascii', 'ignore')
+                    for row_txt in data]
+
         return text
 
     def fit(self, data_matrix):

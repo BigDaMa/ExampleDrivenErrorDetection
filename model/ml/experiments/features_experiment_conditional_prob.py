@@ -32,7 +32,7 @@ parameters = []
 #parameters.append({'correlationFeatures': False, 'use_metadata': False, 'use_cond_prob': True, 'use_cond_prob_only': True}) #word2vec
 #feature_names = ['conditional probability']
 #LSTM
-parameters.append({'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 20}) #word2vec
+parameters.append({'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 25}) #word2vec
 feature_names = ['word2vec']
 
 

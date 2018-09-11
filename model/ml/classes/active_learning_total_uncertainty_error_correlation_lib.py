@@ -98,7 +98,7 @@ def add_lstm_features(data, use_lstm_only, all_matrix_train, feature_name_list):
 
 
 
-
+'''
 def run_multi( params):
 	try:
 		return run(**params)
@@ -112,6 +112,10 @@ def run_multi( params):
 		return_dict['error'] = "Unexpected error:" + str(sys.exc_info()[0])
 
 		return return_dict
+'''
+
+def run_multi( params):
+	return run(**params)
 
 def run(dataSet,
 			 classifier_model,
