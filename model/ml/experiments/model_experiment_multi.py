@@ -30,7 +30,7 @@ data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movie
 classifiers = [XGBoostClassifier,LinearSVMClassifier, NaiveBayesClassifier]
 
 parameters = []
-parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 20})#char unigrams + meta data + correlation + word2vec
+
 
 
 
