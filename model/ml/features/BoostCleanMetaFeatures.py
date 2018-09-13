@@ -34,7 +34,10 @@ class BoostCleanMetaFeatures():
             all_features_test_new = all_matrix_test
 
         else:
-            all_features_train_new = hstack((all_matrix_train, features_train)).tocsr()
+            try:
+                all_features_train_new = hstack((all_matrix_train, features_train)).tocsr()
+            except:
+                all_features_train_new = np.hstack((all_matrix_train, features_train))
             feature_name_list.extend(names)
 
             if data_test.shape[0] > 0:
@@ -48,7 +51,7 @@ class BoostCleanMetaFeatures():
 
     def get_feature_names(self, dataSet):
         feature_names = []
-        for col_i in range(data.shape[1]):
+        for col_i in range(dataSet.shape[1]):
             for m in self.method_list:
                 feature_names.append(str(dataSet.clean_pd.columns[col_i]) + '_' + str(m.__name__))
         return feature_names
