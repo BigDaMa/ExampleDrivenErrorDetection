@@ -62,7 +62,7 @@ class Word2VecFeatures():
             self.column_dictionaries.append(col_val2word)
 
         # train word2vec
-        self.model = Word2Vec(words.tolist(), size=self.vector_size, window=words.shape[1] * 2, min_count=1, workers=4, negative=0, hs=1)
+        self.model = Word2Vec(words.tolist(), size=self.vector_size, window=words.shape[1] * 2, min_count=1, workers=20, negative=0, hs=1)
         self.model.train(words.tolist(), total_examples=words.shape[0], epochs=self.epochs)
 
     def transform(self, data):

@@ -23,7 +23,7 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
+data_list = [BlackOakDataSetUppercase]
 
 
 classifier = XGBoostClassifier
@@ -56,12 +56,12 @@ feature_names = [#'char_unigrams',
                  ]
 '''
 parameters = []
-parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100, 'use_boostclean_metadata': True}) #boostclean
+parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100}) #word2vec
 
 
 #LSTM
 
-feature_names = ['BoostClean'
+feature_names = ['word2vec'
                  ]
 
 fnames = []
@@ -78,7 +78,7 @@ for dataset in data_list:
 
         my_array.append(my_dict)
 
-pool = mp.Pool(processes=12)
+pool = mp.Pool(processes=1)
 
 results = pool.map(run_multi, my_array)
 
