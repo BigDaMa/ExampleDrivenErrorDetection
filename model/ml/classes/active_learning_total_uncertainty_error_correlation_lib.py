@@ -6,6 +6,7 @@ from sklearn.metrics import confusion_matrix
 from ml.Word2VecFeatures.Word2VecFeatures import Word2VecFeatures
 from ml.features.ActiveCleanFeatures import ActiveCleanFeatures
 from ml.features.ValueCorrelationFeatures import ValueCorrelationFeatures
+from ml.features.BoostCleanMetaFeatures import BoostCleanMetaFeatures
 
 
 
@@ -98,7 +99,7 @@ def add_lstm_features(data, use_lstm_only, all_matrix_train, feature_name_list):
 
 
 
-'''
+
 def run_multi( params):
 	try:
 		return run(**params)
@@ -112,10 +113,6 @@ def run_multi( params):
 		return_dict['error'] = "Unexpected error:" + str(sys.exc_info()[0])
 
 		return return_dict
-'''
-
-def run_multi( params):
-	return run(**params)
 
 def run(dataSet,
 			 classifier_model,
@@ -141,7 +138,9 @@ def run(dataSet,
 			 use_active_clean=False,
 			 use_activeclean_only=False,
 			 use_cond_prob=False,
-			 use_cond_prob_only=False
+			 use_cond_prob_only=False,
+		     use_boostclean_metadata=False,
+		     use_boostclean_metadata_only=False
 			 ):
 
 	start_time = time.time()
@@ -261,9 +260,18 @@ def run(dataSet,
 																							feature_name_list,
 																							use_cond_prob_only)
 
-		print("features: %s seconds ---" % (time.time() - start_time))
 
-		data_result = []
+		if use_boostclean_metadata:
+			ac_features = BoostCleanMetaFeatures()  # boost clean metadatda
+			all_matrix_train, all_matrix_test, feature_name_list = ac_features.add_features(dataSet,
+																									  train_indices,
+																									  test_indices,
+																									  all_matrix_train,
+																									  all_matrix_test,
+																									  feature_name_list,
+																							          use_boostclean_metadata_only)
+
+		print("features: %s seconds ---" % (time.time() - start_time))
 
 		column_id = 0
 

@@ -27,29 +27,41 @@ data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movie
 
 
 classifier = XGBoostClassifier
-
+'''
 parameters = []
-parameters.append({'use_metadata': False, 'correlationFeatures': False}) #char unigrams
+#parameters.append({'use_metadata': False, 'correlationFeatures': False}) #char unigrams
 parameters.append({'use_metadata': False, 'correlationFeatures': False, 'is_word': True}) #word unigrams
-parameters.append({'use_metadata_only': True, 'correlationFeatures': False}) #metadata
-parameters.append({'use_metadata': False, 'ngrams': 2, 'correlationFeatures': False}) #char unigrams + bigrams
-parameters.append({'correlationFeatures': False}) #char unigrams + meta data
-parameters.append({}) #char unigrams + meta data + correlation
-parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 20}) #char unigrams + meta data + correlation + word2vec
-parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True}) #word2vec
+#parameters.append({'use_metadata_only': True, 'correlationFeatures': False}) #metadata
+#parameters.append({'use_metadata': False, 'ngrams': 2, 'correlationFeatures': False}) #char unigrams + bigrams
+#parameters.append({'correlationFeatures': False}) #char unigrams + meta data
+#parameters.append({}) #char unigrams + meta data + correlation
+parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100}) #char unigrams + meta data + correlation + word2vec
+parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100}) #word2vec
 parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_active_clean': True, 'use_activeclean_only': True}) #active clean
+parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100, 'use_boostclean_metadata': True}) #boostclean
+
 
 #LSTM
 
-feature_names = ['char_unigrams',
+feature_names = [#'char_unigrams',
                  'word_unigrams',
-                 'metadata',
-                 'char unigrams and bigrams',
-                 'char unigrams + meta data',
-                 'char unigrams + meta data + correlation',
+                 #'metadata',
+                 #'char unigrams and bigrams',
+                 #'char unigrams + meta data',
+                 #'char unigrams + meta data + correlation',
                  'char unigrams + meta data + correlation + word2vec',
                  'word2vec',
-                 'ActiveClean'
+                 'ActiveClean',
+                 'BoostClean'
+                 ]
+'''
+parameters = []
+parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100, 'use_boostclean_metadata': True}) #boostclean
+
+
+#LSTM
+
+feature_names = ['BoostClean'
                  ]
 
 fnames = []
@@ -61,12 +73,12 @@ for dataset in data_list:
         my_dict = parameters[param_i].copy()
         my_dict['dataSet'] = data
         my_dict['classifier_model'] = classifier
-        my_dict['checkN'] = 10
+        my_dict['checkN'] = 1
         fnames.append(feature_names[param_i])
 
         my_array.append(my_dict)
 
-pool = mp.Pool(processes=11)
+pool = mp.Pool(processes=12)
 
 results = pool.map(run_multi, my_array)
 

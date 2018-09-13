@@ -1,6 +1,4 @@
 import numpy as np
-import pandas as pd
-from gensim.models import Word2Vec
 from scipy.sparse import hstack
 import dateutil
 import usaddress
