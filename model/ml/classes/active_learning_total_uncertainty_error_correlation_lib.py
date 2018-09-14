@@ -140,7 +140,8 @@ def run(dataSet,
 			 use_cond_prob=False,
 			 use_cond_prob_only=False,
 		     use_boostclean_metadata=False,
-		     use_boostclean_metadata_only=False
+		     use_boostclean_metadata_only=False,
+             store_results=False
 			 ):
 
 	start_time = time.time()
@@ -527,6 +528,9 @@ def run(dataSet,
 			save_fscore.append(f1_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
 			save_precision.append(precision_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
 			save_recall.append(recall_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
+
+			if store_results:
+				np.save(Config.get("logging.folder") + "/results/result" + dataSet.name + "_" + str(check_this) + "_" +  str(ts), all_error_status)
 
 
 

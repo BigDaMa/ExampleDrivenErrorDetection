@@ -131,14 +131,22 @@ class BoostCleanMetaFeatures():
         return False
 
     def is_empty_string(self, value):
-        return len(str(value)) == 0
+        try:
+            return len(str(value)) == 0
+        except UnicodeEncodeError:
+            return len(value) == 0
 
     def is_NAN(self, value):
-        return str(value).upper() == 'NAN'
+        try:
+            return str(value).upper() == 'NAN'
+        except UnicodeEncodeError:
+            return value.upper() == 'NAN'
 
     def is_INF(self, value):
-        return str(value).upper() == 'INF'
-
+        try:
+            return str(value).upper() == 'INF'
+        except UnicodeEncodeError:
+            return value.upper() == 'INF'
 
     def transform(self, data):
         result = np.zeros((data.shape[0], data.shape[1] * len(self.method_list) ))
