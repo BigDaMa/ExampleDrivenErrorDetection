@@ -73,7 +73,7 @@ for dataset in data_list:
 
             my_array.append(my_dict)
 
-pool = mp.Pool(processes=12)
+pool = mp.Pool(processes=10)
 
 results = pool.map(run_multi, my_array)
 
