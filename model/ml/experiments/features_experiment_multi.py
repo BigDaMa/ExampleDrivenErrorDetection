@@ -11,6 +11,9 @@ from ml.datasets.Citations.Citation import Citation
 from ml.datasets.salary_data.Salary import Salary
 
 from ml.active_learning.classifier.XGBoostClassifier import XGBoostClassifier
+from ml.active_learning.classifier.LinearSVMClassifier import LinearSVMClassifier
+from ml.active_learning.classifier.NaiveBayesClassifier import NaiveBayesClassifier
+
 import numpy as np
 
 from ml.configuration.Config import Config
@@ -18,15 +21,13 @@ import os
 import time
 
 
-path_folder = Config.get("logging.folder") + "/out/features"
+path_folder = Config.get("logging.folder") + "/out/models"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-data_list = [Citation]
+data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Restaurant, Movies, Beers, Citation, Salary]
 
-
-classifier = XGBoostClassifier
 
 parameters = []
 #parameters.append({'use_metadata': False, 'correlationFeatures': False}) #char unigrams
@@ -35,10 +36,10 @@ parameters = []
 #parameters.append({'use_metadata': False, 'ngrams': 2, 'correlationFeatures': False}) #char unigrams + bigrams
 #parameters.append({'correlationFeatures': False}) #char unigrams + meta data
 #parameters.append({}) #char unigrams + meta data + correlation
-#parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100}) #char unigrams + meta data + correlation + word2vec
+parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100}) #char unigrams + meta data + correlation + word2vec
 #parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100}) #word2vec
 #parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_active_clean': True, 'use_activeclean_only': True}) #active clean
-parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100, 'use_boostclean_metadata': True}) #boostclean
+#parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100, 'use_boostclean_metadata': True}) #boostclean
 
 
 #LSTM
@@ -49,11 +50,13 @@ feature_names = [#'char_unigrams',
                  #'char unigrams and bigrams',
                  #'char unigrams + meta data',
                  #'char unigrams + meta data + correlation',
-                 #'char unigrams + meta data + correlation + word2vec',
+                 'char unigrams + meta data + correlation + word2vec',
                  #'word2vec',
                  #'ActiveClean',
-                 'BoostClean'
+                 #'BoostClean'
                  ]
+
+classifiers = [XGBoostClassifier, LinearSVMClassifier, NaiveBayesClassifier]
 
 fnames = []
 my_array = []
@@ -61,13 +64,14 @@ for dataset in data_list:
     data = dataset()
 
     for param_i in range(len(parameters)):
-        my_dict = parameters[param_i].copy()
-        my_dict['dataSet'] = data
-        my_dict['classifier_model'] = classifier
-        my_dict['checkN'] = 10
-        fnames.append(feature_names[param_i])
+        for classifier in classifiers:
+            my_dict = parameters[param_i].copy()
+            my_dict['dataSet'] = data
+            my_dict['classifier_model'] = classifier
+            my_dict['checkN'] = 10
+            fnames.append(feature_names[param_i])
 
-        my_array.append(my_dict)
+            my_array.append(my_dict)
 
 pool = mp.Pool(processes=12)
 
@@ -81,7 +85,7 @@ for r_i in range(len(results)):
 
     ts = time.time()
     my_file = open(
-        path_folder + '/labels_experiment_data_' + str(data.name) + '_' + str(fnames[r_i]) + '_time_' + str(ts) + '.csv', 'w+')
+        path_folder + '/labels_experiment_data_' + str(data.name) + '_' + str(fnames[r_i]) + '_' + my_array[r_i]['classifier_model'].name + '_time_' + str(ts) + '.csv', 'w+')
 
     if len(fscore_lists) > 0:
         label = r['labels']

@@ -23,7 +23,7 @@ class NaiveBayesClassifier(object):
 
         self.scaler = StandardScaler(with_mean=False, copy=True)
 
-        self.scaler.fit(X_train)
+        self.scaler.fit(np.abs(X_train))
         '''
 
         self.X_train = self.scaler.transform(X_train)
@@ -42,7 +42,7 @@ class NaiveBayesClassifier(object):
 
         print train.shape
 
-        optimized_GBM.fit(self.scaler.transform(train), train_target)
+        optimized_GBM.fit(self.scaler.transform(np.abs(train)), train_target)
 
         our_params = ind_params.copy()
         our_params.update(optimized_GBM.best_params_)
@@ -56,9 +56,9 @@ class NaiveBayesClassifier(object):
         self.model[column_id] = MultinomialNB(**param)
         self.scaler = StandardScaler(with_mean=False, copy=True)
         self.scaler.fit(x)
-        self.model[column_id].fit(self.scaler.transform(x), y)
+        self.model[column_id].fit(self.scaler.transform(np.abs(x)), y)
         # predict
-        probability_prediction_all = self.model[column_id].predict_proba(self.scaler.transform(self.X_train))
+        probability_prediction_all = self.model[column_id].predict_proba(self.scaler.transform(np.abs(self.X_train)))
 
         if self.model[column_id].classes_[1] == True:
             probability_prediction = probability_prediction_all[:, 1]
@@ -76,9 +76,9 @@ class NaiveBayesClassifier(object):
         self.scaler = StandardScaler(with_mean=False, copy=True)
         self.scaler.fit(x)
 
-        self.model[column_id].fit(self.scaler.transform(x), y)
+        self.model[column_id].fit(self.scaler.transform(np.abs(x)), y)
         # predict
-        probability_prediction_all = self.model[column_id].predict_proba(self.scaler.transform(x_all))
+        probability_prediction_all = self.model[column_id].predict_proba(self.scaler.transform(np.abs(x_all)))
 
         if self.model[column_id].classes_[1] == True:
             probability_prediction = probability_prediction_all[:, 1]
