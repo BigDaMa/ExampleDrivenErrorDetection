@@ -1,4 +1,5 @@
 from ml.classes.active_learning_total_uncertainty_error_correlation_lib import run_multi
+from ml.classes.active_learning_total_uncertainty_error_correlation_lib import run
 import multiprocessing as mp
 
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
@@ -26,7 +27,7 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Restaurant, Movies, Beers, Citation, Salary]
+data_list = [Restaurant]
 
 
 parameters = []
@@ -56,7 +57,7 @@ feature_names = [#'char_unigrams',
                  #'BoostClean'
                  ]
 
-classifiers = [XGBoostClassifier, LinearSVMClassifier, NaiveBayesClassifier]
+classifiers = [LinearSVMClassifier]
 
 fnames = []
 my_array = []
@@ -73,9 +74,9 @@ for dataset in data_list:
 
             my_array.append(my_dict)
 
-pool = mp.Pool(processes=10)
-
-results = pool.map(run_multi, my_array)
+#pool = mp.Pool(processes=10)
+#results = pool.map(run_multi, my_array)
+run(**my_array[0])
 
 for r_i in range(len(results)):
     r = results[r_i]

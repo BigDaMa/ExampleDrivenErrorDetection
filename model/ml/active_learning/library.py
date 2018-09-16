@@ -31,7 +31,7 @@ def create_user_start_data(feature_matrix, target, num_errors=2, return_ids=Fals
     error_ids = np.where(target == True)[0]
     correct_ids = np.where(target == False)[0]
 
-    if (len(error_ids) == 0 or len(correct_ids) == 0):
+    if (len(error_ids) < 2 or len(correct_ids) < 2):
         if return_ids:
             return None, None, None
         else:

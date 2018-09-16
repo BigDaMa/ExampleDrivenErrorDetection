@@ -348,8 +348,7 @@ def run(dataSet,
 
 					print "column " + str(column_id) + " is not applicable" + " errors: " + str(np.sum(dataSet.matrix_is_error[:,column_id]))
 
-					if np.sum(dataSet.matrix_is_error[:,column_id]) == dataSet.shape[0]:
-						all_error_status[:, column_id] = np.ones(dataSet.shape[0])
+					all_error_status[:, column_id] = dataSet.matrix_is_error[:, column_id]
 
 					column_id = go_to_next_column_round(column_id, dataSet)
 					continue
