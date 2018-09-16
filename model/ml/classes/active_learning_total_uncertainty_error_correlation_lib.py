@@ -156,7 +156,7 @@ def run(dataSet,
 
 	if run_round_robin:
 		number_of_round_robin_rounds = 10000
-		label_iterations = 61
+		label_iterations = 71
 		checkN = 10
 
 	feature_names_potential = ['distinct_values_fraction', 'labels', 'certainty', 'certainty_stddev', 'minimum_certainty']
@@ -208,7 +208,7 @@ def run(dataSet,
 	for check_this in range(checkN):
 
 		ts = time.time()
-		f = open(Config.get("logging.folder") + "/logging_output/log_progress_" + dataSet.name + "_" + str(check_this) + "_" +  str(ts) + ".csv",
+		f = open(Config.get("logging.folder") + "/logging_output/label_log_progress_" + dataSet.name + "_" + str(check_this) + "_" +  str(ts) + ".csv",
 				 'w+')
 
 		train_indices, test_indices = split_data_indices(dataSet, train_fraction, fold_number=check_this)
