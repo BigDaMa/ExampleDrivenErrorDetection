@@ -27,7 +27,7 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-data_list = [Restaurant]
+data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
 
 
 parameters = []
@@ -61,6 +61,7 @@ feature_names = [#'char_unigrams',
                  #'BoostClean'
                  ]
 
+#classifiers = [XGBoostClassifier, LinearSVMClassifier, NaiveBayesClassifier]
 classifiers = [XGBoostClassifier]
 
 fnames = []
