@@ -74,9 +74,8 @@ for dataset in data_list:
 
             my_array.append(my_dict)
 
-#pool = mp.Pool(processes=10)
-#results = pool.map(run_multi, my_array)
-run(**my_array[0])
+pool = mp.Pool(processes=10)
+results = pool.map(run_multi, my_array)
 
 for r_i in range(len(results)):
     r = results[r_i]
