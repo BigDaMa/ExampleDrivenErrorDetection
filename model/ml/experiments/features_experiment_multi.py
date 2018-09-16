@@ -57,7 +57,7 @@ feature_names = [#'char_unigrams',
                  #'BoostClean'
                  ]
 
-classifiers = [LinearSVMClassifier]
+classifiers = [LinearSVMClassifier, XGBoostClassifier, NaiveBayesClassifier]
 
 fnames = []
 my_array = []
