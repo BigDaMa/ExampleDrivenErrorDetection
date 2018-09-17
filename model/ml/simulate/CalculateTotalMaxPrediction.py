@@ -195,20 +195,11 @@ N_datasets = 7
 '''
 
 
-
-
-#log_folder = "unique_batch" #"unique"
-#log_folder = "hospital_random"
-#log_folder = "hospital_correlation"
-#log_folder = "address_corr_noshuffle"
-
 #dataset = HospitalHoloClean()
 #dataset = BlackOakDataSetUppercase()
 
-log_folder = "flights_unigram_meta_corr_noshuffle"
-dataset = FlightHoloClean()
 
-future_steps = 20# 60
+dataset = FlightHoloClean()
 
 n = dataset.get_number_dirty_columns()
 
@@ -216,9 +207,21 @@ best_sum_total_f = {}
 best_col_seq  = {}
 
 
+def getConfig(dataset):
+    path = None
+    future_steps = -1
+    if type(dataset) == type(FlightHoloClean()):
+        path = '/home/felix/phd/round_robin_part/flights'
+        future_steps = 4 * 2 + 20
+
+    return path, future_steps
+
+mypath, future_steps = getConfig(dataset)
+
+
 
 for d in range(10):
-    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log/" + log_folder + "/log_progress_" + dataset.name + "_" + str(
+    file_path = mypath + "/label_log_progress_" + dataset.name + "_" + str(
         d) + ".csv"
     x, fp, fn, tp = read_csv1(file_path, None)
 
@@ -235,7 +238,7 @@ for d in range(10):
     print "number dirty attributes: " + str(n)
 
 
-    runs = 41
+    runs = 71
     tensor_run = np.zeros((n, runs, 3))
 
     matrix_change_sum = np.zeros((n, runs))
@@ -291,6 +294,18 @@ plt.show()
 
 print list(average_best)
 print labels
+
+latex = '\n\n\n'
+latex += "\\addplot+[mark=none] coordinates{"
+
+for c in range(len(average_best)):
+    if np.isnan(average_best[c]):
+        latex += "(" + str(labels[c]) + "," + str(0.0) + ")"
+    else:
+        latex += "(" + str(labels[c]) + "," + str(average_best[c]) + ")"
+latex += "};\n"
+
+print latex
 
 
 

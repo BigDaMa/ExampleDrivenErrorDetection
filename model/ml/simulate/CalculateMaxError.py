@@ -162,54 +162,21 @@ use_potential = False
 
 
 classifier_log_paths = {}
-#classifier_log_paths[XGBoostClassifier.name] = "/home/felix/SequentialPatternErrorDetection/progress_log_data/log_newer/xgboost"
-#classifier_log_paths[LinearSVMClassifier.name] = "/home/felix/SequentialPatternErrorDetection/progress_log_data/log_newer/linearsvm"
-#classifier_log_paths[NaiveBayesClassifier.name] = "/home/felix/SequentialPatternErrorDetection/progress_log_data/log_newer/naivebayes"
-
-#classifier_log_paths[XGBoostClassifier.name] = "/home/felix/ExampleDrivenErrorDetection/progress_log_data/unique"
 
 
-'''
-dataset_log_files = {}
-dataset_log_files[HospitalHoloClean().name] = "hospital"
-dataset_log_files[BlackOakDataSetUppercase().name] = "blackoak"
-dataset_log_files[FlightHoloClean().name] = "flight"
-dataset_log_files[Book().name] = "book"
-dataset_log_files[Salary().name] = "salaries"
-dataset_log_files[Restaurant().name] = "restaurant"
-
-
-classifier_to_use = XGBoostClassifier
-model_for_dataset = HospitalHoloClean()
-
-datasets = [HospitalHoloClean(), BlackOakDataSetUppercase(), FlightHoloClean(), Book(), Salary(), Restaurant()]
-
-for i in range(len(datasets)):
-    if datasets[i].name == model_for_dataset.name:
-        datasets.pop(i)
-        break
-
-print "datasets used for training:"
-for i in range(len(datasets)):
-    print datasets[i]
-
-N_datasets = 7
-'''
-
-
-
-
-#log_folder = "hospital_random"
-#log_folder = "hospital_correlation"
-log_folder = "flights_unigram_meta_corr_noshuffle"
 dataset = FlightHoloClean()
 
 
-#dataset = HospitalHoloClean()
-future_steps = 20 #BlackOak = 7, Flights = 9
+def getConfig(dataset):
+    path = None
+    future_steps = -1
+    if type(dataset) == type(FlightHoloClean()):
+        path = '/home/felix/phd/round_robin_part/flights'
+        future_steps = 4 * 2 + 20
 
-#log_folder = "address_corr_noshuffle"
-#dataset = BlackOakDataSetUppercase()
+    return path, future_steps
+
+mypath, future_steps = getConfig(dataset)
 
 
 n = dataset.get_number_dirty_columns()
@@ -220,7 +187,7 @@ best_col_seq  = {}
 
 
 for d in range(10):
-    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log/" + log_folder + "/log_progress_" + dataset.name + "_" + str(
+    file_path = mypath + "/label_log_progress_" + dataset.name + "_" + str(
         d) + ".csv"
     x, fp, fn, tp = read_csv1(file_path, None)
 
@@ -236,7 +203,7 @@ for d in range(10):
 
     print "number dirty attributes: " + str(n)
 
-    runs = 41
+    runs = 71
     tensor_run = np.zeros((n, runs, 3))
 
     matrix_cross_mean = np.zeros((n, runs))
@@ -291,6 +258,18 @@ plt.show()
 print list(average_best)
 print labels
 
+
+latex = '\n\n\n'
+latex += "\\addplot+[mark=none] coordinates{"
+
+for c in range(len(average_best)):
+    if np.isnan(average_best[c]):
+        latex += "(" + str(labels[c]) + "," + str(0.0) + ")"
+    else:
+        latex += "(" + str(labels[c]) + "," + str(average_best[c]) + ")"
+latex += "};\n"
+
+print latex
 
 
 

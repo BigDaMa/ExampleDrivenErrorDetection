@@ -193,15 +193,6 @@ N_datasets = 7
 '''
 
 
-
-
-#log_folder = "unique_batch" #"unique"
-#log_folder = "hospital_random"
-#log_folder = "hospital_correlation"
-#log_folder = "address_corr_noshuffle"
-#dataset = BlackOakDataSetUppercase()
-
-log_folder = "flights_unigram_meta_corr_noshuffle"
 dataset = FlightHoloClean()
 
 from ml.datasets.HospitalDomainError.HospitalDomainError import HospitalDomainError
@@ -211,7 +202,7 @@ from ml.datasets.HospitalDomainError.HospitalDomainError import HospitalDomainEr
 #future_steps = 8+9 #Flights = 9
 #future_steps = 8+20 #BlackOak = 7
 #future_steps = 17*2 + 60
-future_steps = 4*2 + 20
+#future_steps = 4*2 + 20
 
 n = dataset.get_number_dirty_columns()
 
@@ -221,8 +212,27 @@ best_col_seq  = {}
 
 inner_d = 0
 
+def getConfig(dataset):
+    path = None
+    future_steps = -1
+    if type(dataset) == type(FlightHoloClean()):
+        path = '/home/felix/phd/round_robin_part/flights'
+        future_steps = 30
+
+    if type(dataset) == type(FlightHoloClean()):
+        path = '/home/felix/phd/round_robin_part/flights'
+        future_steps = 30
+
+    return path, future_steps
+
+mypath, future_steps = getConfig(dataset)
+
+
+
+
+
 for d in range(10):
-    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log/" + log_folder + "/log_progress_" + dataset.name + "_" + str(
+    file_path = mypath + "/label_log_progress_" + dataset.name + "_" + str(
         d) + ".csv"
     x, fp, fn, tp = read_csv1(file_path, None)
 
@@ -234,7 +244,7 @@ for d in range(10):
 
     print "number dirty attributes: " + str(n)
 
-    runs = 41
+    runs = 71
     tensor_run = np.zeros((n, runs, 3))
 
     matrix_change_sum = np.zeros((n, runs))
@@ -289,6 +299,18 @@ plt.show()
 
 print list(average_best)
 print labels
+
+latex = '\n\n\n'
+latex += "\\addplot+[mark=none] coordinates{"
+
+for c in range(len(average_best)):
+    if np.isnan(average_best[c]):
+        latex += "(" + str(labels[c]) + "," + str(0.0) + ")"
+    else:
+        latex += "(" + str(labels[c]) + "," + str(average_best[c]) + ")"
+latex += "};\n"
+
+print latex
 
 
 

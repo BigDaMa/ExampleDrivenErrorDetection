@@ -12,12 +12,14 @@ from ml.simulate.RoundRobin.round import select_by_round_robin_all_measures
 
 from ml.active_learning.classifier.XGBoostClassifier import XGBoostClassifier
 
-from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
+from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
 from ml.datasets.hospital.HospitalHoloClean import HospitalHoloClean
-from ml.datasets.luna.book.Book import Book
+from ml.datasets.MoviesMohammad.Movies import Movies
+from ml.datasets.RestaurantMohammad.Restaurant import Restaurant
+from ml.datasets.BeersMohammad.Beers import Beers
+from ml.datasets.Citations.Citation import Citation
 from ml.datasets.salary_data.Salary import Salary
-from ml.datasets.luna.restaurant.Restaurant import Restaurant
 
 def plot(y, y_pred):
     fig = plt.figure()
@@ -159,95 +161,40 @@ use_potential = False
 
 
 classifier_log_paths = {}
-#classifier_log_paths[XGBoostClassifier.name] = "/home/felix/SequentialPatternErrorDetection/progress_log_data/log_newer/xgboost"
-#classifier_log_paths[LinearSVMClassifier.name] = "/home/felix/SequentialPatternErrorDetection/progress_log_data/log_newer/linearsvm"
-#classifier_log_paths[NaiveBayesClassifier.name] = "/home/felix/SequentialPatternErrorDetection/progress_log_data/log_newer/naivebayes"
 
-#classifier_log_paths[XGBoostClassifier.name] = "/home/felix/ExampleDrivenErrorDetection/progress_log_data/unique"
-
-
-'''
-dataset_log_files = {}
-dataset_log_files[HospitalHoloClean().name] = "hospital"
-dataset_log_files[BlackOakDataSetUppercase().name] = "blackoak"
-dataset_log_files[FlightHoloClean().name] = "flight"
-dataset_log_files[Book().name] = "book"
-dataset_log_files[Salary().name] = "salaries"
-dataset_log_files[Restaurant().name] = "restaurant"
-
-
-classifier_to_use = XGBoostClassifier
-model_for_dataset = HospitalHoloClean()
-
-datasets = [HospitalHoloClean(), BlackOakDataSetUppercase(), FlightHoloClean(), Book(), Salary(), Restaurant()]
-
-for i in range(len(datasets)):
-    if datasets[i].name == model_for_dataset.name:
-        datasets.pop(i)
-        break
-
-print "datasets used for training:"
-for i in range(len(datasets)):
-    print datasets[i]
-
-N_datasets = 7
-'''
-
-
-
-
-#log_folder = "unique_batch"
-#log_folder = "bart/fd1/5percent"
-#log_folder = "bart/outlier/20percent"
-#log_folder = "bart/fd1/30percent"
-#log_folder = "bart/fd1_add"
-#log_folder = "hospitalFD/30percent"
-#log_folder ="bartstupid/30percent"
-log_folder = "hospital_domain_error"
-
-from ml.datasets.HospitalFD.MyFD import MyFD
-#dataset = MyFD(HospitalHoloClean(), 0.3, "city") # 0.01, 0.05, 0.1, 0.2, 0.3
-
-#from ml.datasets.BartDataset.BartDataSet import BartDataset
-#dataset = BartDataset(HospitalHoloClean(), "bart_fd_stupid/30percent")
 
 
 #dataset = HospitalHoloClean()
-#dataset.name = "MyFD"
 #future_steps = 8+9 #BlackOak = 7, Flights = 9
 #future_steps = 8+20 #BlackOak = 7
 #future_steps = 17*2 + 60
 #future_steps = 6
 
-#log_folder = "hospital_random"
-#log_folder = "address_corr_noshuffle"
-#dataset = BlackOakDataSetUppercase()
 
-log_folder = "flights_unigram_meta_corr_noshuffle"
-dataset = FlightHoloClean()
-
-future_steps = 4 * 2 + 20 # 60
-
-'''
-from ml.datasets.BartDataset.BartDataSet import BartDataset
-#dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_30percent")
-dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_10percent_AddStar")
-future_steps = 9
-'''
+#dataset = FlightHoloClean()
+dataset = Beers()
 
 
-#outlier data
-'''
-datan = Salary()
-def convert_to_int(value):
-    return str(int(float(value)))
-datan.clean_pd[datan.clean_pd.columns[8]] = datan.clean_pd[datan.clean_pd.columns[8]].apply(convert_to_int)
-dataset = BartDataset(datan, "Salary_outlier_20percent")
+def getConfig(dataset):
+    path = None
+    future_steps = -1
+    if type(dataset) == type(FlightHoloClean()):
+        path = '/home/felix/phd/round_robin_part/flights'
+        future_steps = 4 * 2 + 20
 
-future_steps = 2 + 10
-'''
+    if type(dataset) == type(Beers()):
+        path = '/home/felix/phd/round_robin_part/beers'
+        future_steps = 4 * 2 + 10
 
-n = dataset.get_number_dirty_columns()
+    return path, future_steps
+
+mypath, future_steps = getConfig(dataset)
+
+n = dataset.get_number_applicable_columns()
+
+print n
+print dataset.get_number_applicable_columns()
+print "-----"
 
 best_sum_total_f = {}
 best_col_seq  = {}
@@ -257,7 +204,7 @@ precision_list ={}
 
 
 for d in range(10):
-    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log/" + log_folder + "/log_progress_" + dataset.name + "_" + str(
+    file_path = mypath + "/label_log_progress_" + dataset.name + "_" + str(
         d) + ".csv"
     x, fp, fn, tp = read_csv1(file_path, None)
 
@@ -270,7 +217,7 @@ for d in range(10):
     print "number dirty attributes: " + str(n)
 
 
-    runs = 41
+    runs = 71
     tensor_run = np.zeros((n, runs, 3))
 
     matrix_change_sum = np.zeros((n, runs))
@@ -335,6 +282,18 @@ print "Precision:"
 print list(average_precision)
 print "labels"
 print labels
+
+latex = '\n\n\n'
+latex += "\\addplot+[mark=none] coordinates{"
+
+for c in range(len(average_best)):
+    if np.isnan(average_best[c]):
+        latex += "(" + str(labels[c]) + "," + str(0.0) + ")"
+    else:
+        latex += "(" + str(labels[c]) + "," + str(average_best[c]) + ")"
+latex += "};\n"
+
+print latex
 
 
 

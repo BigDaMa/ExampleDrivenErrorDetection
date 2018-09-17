@@ -7,44 +7,14 @@ from ml.Word2VecFeatures.Word2VecFeatures import Word2VecFeatures
 from ml.features.ActiveCleanFeatures import ActiveCleanFeatures
 from ml.features.ValueCorrelationFeatures import ValueCorrelationFeatures
 from ml.features.BoostCleanMetaFeatures import BoostCleanMetaFeatures
+import operator
 
-
-
-# best version
-def go_to_next_column_prob1(column_id, pred_potential):
-
-	minimum_pred = 0.0
-	for column_step in range(len(pred_potential)):
-		if pred_potential[column_step] != -1.0:
-			if pred_potential[column_step] < minimum_pred:
-				minimum_pred = pred_potential[column_step]
-
-	new_potential = pred_potential - minimum_pred
-
-	for column_step in range(len(pred_potential)):
-		if pred_potential[column_step] == -1.0:
-			new_potential[column_step] = 0.0
-
-
-	# print str(new_potential)
-	# print str(np.sum(new_potential))
-
-	new_potential = np.square(new_potential)
-	new_potential = new_potential / np.sum(new_potential)
-
-	print "pot: " + str(new_potential) + " sum: " + str(np.sum(new_potential))
-
-	# return np.random.choice(len(new_potential), 1, p=new_potential)[0]
-	return np.argmax(new_potential)
-
-
-def go_to_next_column_prob(id_next, diff_certainty):
+def go_to_next_column_prob(diff_certainty):
 	certainty_columns ={}
 
 	for key in diff_certainty.keys():
 		certainty_columns[key] = (np.sum(diff_certainty[key]) / len(diff_certainty[key])) * 2
 
-	import operator
 	return min(certainty_columns.iteritems(), key=operator.itemgetter(1))[0]
 
 
@@ -55,6 +25,25 @@ def go_to_next_column_round(column_id, dataSet):
 	if column_id == dataSet.shape[1]:
 		column_id = 0
 	return column_id
+
+def go_to_next_column_random(dataSet):
+	my_list = dataSet.get_applicable_columns()
+	id = np.random.randint(len(my_list))
+	return my_list[id]
+
+def go_to_next_column(dataSet, statistics,
+					  use_max_pred_change_column_selection,
+					  use_max_error_column_selection,
+					  use_min_certainty_column_selection,
+					  use_random_column_selection):
+	if use_min_certainty_column_selection:
+		return go_to_next_column_prob(statistics['certainty'])
+	if use_max_pred_change_column_selection:
+		return max(statistics['change'].iteritems(), key=operator.itemgetter(1))[0]
+	if use_max_error_column_selection:
+		return min(statistics['cross_val_f'].iteritems(), key=operator.itemgetter(1))[0]
+	if use_random_column_selection:
+		return go_to_next_column_random(dataSet)
 
 
 def load_model(dataSet, classifier):
@@ -141,7 +130,11 @@ def run(dataSet,
 			 use_cond_prob_only=False,
 		     use_boostclean_metadata=False,
 		     use_boostclean_metadata_only=False,
-             store_results=False
+             store_results=False,
+		     use_random_column_selection=False,
+		     use_max_pred_change_column_selection=False,
+             use_max_error_column_selection=False,
+			 use_min_certainty_column_selection=True
 			 ):
 
 	start_time = time.time()
@@ -321,6 +314,12 @@ def run(dataSet,
 
 		current_predictions = {}
 
+		statistics = {}
+		statistics['change'] = {}
+		statistics['certainty'] = {}
+		statistics['cross_val_f'] = {}
+
+
 
 
 		for round in range(label_iterations * dataSet.shape[1]):
@@ -350,7 +349,10 @@ def run(dataSet,
 
 					all_error_status[:, column_id] = dataSet.matrix_is_error[:, column_id]
 
-					column_id = go_to_next_column_round(column_id, dataSet)
+					if use_random_column_selection:
+						column_id = go_to_next_column_random(dataSet)
+					else:
+						column_id = go_to_next_column_round(column_id, dataSet)
 					continue
 
 				print("Number of errors in training: " + str(np.sum(train_target[column_id])))
@@ -371,9 +373,12 @@ def run(dataSet,
 			else:
 				if type(train[column_id]) == type(None):
 					if round < dataSet.shape[1] * number_of_round_robin_rounds:
-						column_id = go_to_next_column_round(column_id, dataSet)
+						if use_random_column_selection:
+							column_id = go_to_next_column_random(dataSet)
+						else:
+							column_id = go_to_next_column_round(column_id, dataSet)
 					else:
-						column_id = go_to_next_column_prob(id_next, diff_certainty)
+						column_id = go_to_next_column(dataSet, statistics, use_max_pred_change_column_selection, use_max_error_column_selection, use_min_certainty_column_selection, use_random_column_selection)
 					continue
 
 				# change column
@@ -602,6 +607,11 @@ def run(dataSet,
 				feature_array.append(change_0_to_1)
 				feature_array.append(change_1_to_0)
 
+
+			statistics['change'][column_id] = change_0_to_1 + change_1_to_0
+			statistics['certainty'][column_id] = diff_certainty[column_id]
+			statistics['cross_val_f'][column_id] = np.mean(eval_scores)
+
 			feature_vector = []
 
 			if column_id in feature_array_all:
@@ -642,10 +652,13 @@ def run(dataSet,
 			f.write(str(f1_score(target_run, res[column_id])) + "," + str(fp) + "," + str(fn) + "," + str(tp) + '\n')
 
 			if round < dataSet.shape[1] * number_of_round_robin_rounds:
-				column_id = go_to_next_column_round(column_id, dataSet)
+				if use_random_column_selection:
+					column_id = go_to_next_column_random(dataSet)
+				else:
+					column_id = go_to_next_column_round(column_id, dataSet)
 			else:
 				print ("start using prediction")
-				column_id = go_to_next_column_prob(id_next, diff_certainty)
+				column_id = go_to_next_column(dataSet, statistics, use_max_pred_change_column_selection, use_max_error_column_selection, use_min_certainty_column_selection, use_random_column_selection)
 
 			current_runtime = (time.time() - total_start_time)
 			print("iteration end: %s seconds ---" % current_runtime)

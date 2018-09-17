@@ -197,40 +197,22 @@ N_datasets = 7
 
 
 
+dataset = FlightHoloClean()#FlightHoloClean()#BlackOakDataSetUppercase()#HospitalHoloClean() #BlackOakDataSetUppercase()
 
-#log_folder = "unique_batch"
-#log_folder = "bart/fd1/20percent"
-#log_folder = "word_unigrams"
-#log_folder = "unigrams"
-#log_folder = "bigrams"
-#log_folder = "metadata"
-#log_folder = "unique_batch"
-#log_folder = "unigram_metadata_naivebayes"
-#log_folder = "unigram_metadata_linearsvm"
-#log_folder = "food"
-#log_folder = "deep_all"
-#log_folder = "hospital_random"
-#log_folder = "hospital_correlation"
-#log_folder = "hospital_lstm_meta"
-#log_folder = "flights_unigram_meta_corr_noshuffle"
-#log_folder = "hospital_row_shuffle"
-#log_folder = "address_corr_noshuffle"
-log_folder = "address_naivesbayes"
-
-#dataset = FoodHoloClean()
-#dataset = FlightHoloClean()#FlightHoloClean()#BlackOakDataSetUppercase()#HospitalHoloClean() #BlackOakDataSetUppercase()
-dataset = BlackOakDataSetUppercase()
-#dataset = HospitalHoloClean()
 #future_steps = 60 #BlackOak = 7, Flights = 9
-'''
-from ml.datasets.BartDataset.BartDataSet import BartDataset
-dataset = BartDataset(BlackOakDataSetUppercase(), "CityFD_20percent")
-'''
 
-from ml.datasets.HospitalDomainError.HospitalDomainError import HospitalDomainError
-#dataset = HospitalDomainError()
 
-future_steps = 20 # 60
+
+def getConfig(dataset):
+    path = None
+    future_steps = -1
+    if type(dataset) == type(FlightHoloClean()):
+        path = '/home/felix/phd/round_robin_part/flights'
+        future_steps = 20
+
+    return path, future_steps
+
+mypath, future_steps = getConfig(dataset)
 
 
 n = dataset.get_number_dirty_columns()
@@ -243,7 +225,8 @@ precision_list ={}
 
 
 for d in range(10):
-    file_path = "/home/felix/ExampleDrivenErrorDetection/progress_log/" + log_folder + "/log_progress_"+ dataset.name +"_" + str(d)  +".csv"
+    file_path = mypath + "/label_log_progress_" + dataset.name + "_" + str(
+        d) + ".csv"
     x, fp, fn, tp = read_csv1(file_path, None)
 
     certainty_sum = get_all_certainty_sum(x, feature_names)
@@ -259,7 +242,7 @@ for d in range(10):
     print "number dirty attributes: " + str(n)
 
 
-    runs = 41
+    runs = 71
     tensor_run = np.zeros((n, runs, 3))
 
     matrix_certainty_sum = np.zeros((n, runs))
@@ -340,5 +323,17 @@ print list(average_precision)
 print "labels"
 print labels
 
+
+latex = '\n\n\n'
+latex += "\\addplot+[mark=none] coordinates{"
+
+for c in range(len(average_best)):
+    if np.isnan(average_best[c]):
+        latex += "(" + str(labels[c]) + "," + str(0.0) + ")"
+    else:
+        latex += "(" + str(labels[c]) + "," + str(average_best[c]) + ")"
+latex += "};\n"
+
+print latex
 
 

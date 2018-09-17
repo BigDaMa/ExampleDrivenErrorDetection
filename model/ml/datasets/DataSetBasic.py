@@ -25,3 +25,15 @@ class DataSetBasic(object):
     def get_number_dirty_columns(self):
         errors_per_column = np.sum(self.matrix_is_error, axis=0)
         return len(np.where(errors_per_column > 0)[0])
+
+    def get_applicable_columns(self):
+        my_list = []
+        for col_i in range(self.shape[1]):
+            if len(np.where(self.matrix_is_error[:, col_i] == True)[0]) >= 2 and len(
+                    np.where(self.matrix_is_error[:, col_i] == False)[0]) >= 2:
+                my_list.append(col_i)
+        return my_list
+
+    def get_number_applicable_columns(self):
+        return len(self.get_applicable_columns())
+
