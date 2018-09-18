@@ -30,7 +30,7 @@ steps = 100
 N = 1
 
 
-dBoost_methods = [test_multiple_sizes_hist]#, test_multiple_sizes_gaussian, test_multiple_sizes_mixture]
+dBoost_methods = [test_multiple_sizes_mixture]
 
 for dataset in data_list:
     data = dataset()

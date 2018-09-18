@@ -7,9 +7,10 @@ from ml.datasets.BeersMohammad.Beers import Beers
 from ml.datasets.Citations.Citation import Citation
 from ml.datasets.salary_data.Salary import Salary
 
-from ml.tools.dboost.TestDBoost import run_gaussian_stat
-from ml.tools.dboost.TestDBoost import run_histogram_stat
-from ml.tools.dboost.TestDBoost import run_histogram_mixture
+from ml.tools.dboost.TestDBoost import run_params_mixture
+from ml.tools.dboost.TestDBoost import run_params_hist
+from ml.tools.dboost.TestDBoost import run_params_gaussian
+
 
 import time
 import numpy as np
@@ -19,6 +20,7 @@ import os
 
 mypath = Config.get("logging.folder") + "/out/server_dboost"
 mylist = [f for f in glob.glob(mypath + "/*.txt")]
+
 
 datasets = [FlightHoloClean(),
             Beers(),
@@ -30,7 +32,7 @@ datasets = [FlightHoloClean(),
             Salary()]
 
 
-N = 10
+N = 1
 
 path_folder = Config.get("logging.folder") + "/out/dboost_runtime"
 
@@ -38,7 +40,8 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 log_file = open(
-        path_folder + '/dboost_runtime'+ str(time.time()) + '.csv', 'w+')
+        path_folder + '/dboost_runtime' + str(time.time()) + '.csv', 'w+')
+
 
 for file_name in mylist:
     data_name = file_name.split('/')[-1].split('.')[0].split('_')[0]
@@ -46,16 +49,10 @@ for file_name in mylist:
     for d in range(len(datasets)):
         if datasets[d].name == data_name:
             dataset = datasets[d]
-
-    sample_file = "/tmp/data_sample.csv"
-
-    dataset.dirty_pd.to_csv(sample_file, index=False, encoding="utf8")
-
-    print file_name
+            break
 
     method = None
     parameter_dict = {}
-    parameter_dict['sample_file'] = sample_file
 
     with open(file_name) as config_file:
         counter = 0
@@ -65,32 +62,33 @@ for file_name in mylist:
 
                 if 'dBoost_test_multiple_sizes_mixture.txt' in file_name:
                     parameter_dict['threshold'] = float(data[1])
-                    parameter_dict['n_subpops'] = float(data[3])
+                    parameter_dict['n_subpops'] = int(data[3])
                     parameter_dict['statistical'] = float(data[5])
-                    method = run_histogram_mixture
-
+                    method = run_params_mixture
 
                 if 'dBoost_test_multiple_sizes_gaussian.txt' in file_name:
                     parameter_dict['gaussian'] = float(data[1])
                     parameter_dict['statistical'] = float(data[3])
-                    method = run_gaussian_stat
+                    method = run_params_gaussian
 
                 if 'dBoost_test_multiple_sizes_hist.txt' in file_name:
                     parameter_dict['peak'] = float(data[1])
                     parameter_dict['statistical'] = float(data[3])
                     parameter_dict['outlier'] = float(data[5])
-                    method = run_histogram_stat
+                    method = run_params_hist
+
 
                 break
             counter += 1
 
-    runtimes = []
-    for i_run in range(N):
-        ts = time.time()
-        method(**parameter_dict)
-        runtime = time.time() - ts
-        runtimes.append(runtime)
-    log_file.write(file_name + ": " + str(np.mean(runtimes)) + '\n\n')
+    if dataset != None:
+        runtimes = []
+        for i_run in range(N):
+            ts = time.time()
+            method(dataset, parameter_dict)
+            runtime = time.time() - ts
+            runtimes.append(runtime)
+        log_file.write(file_name + ": " + str(np.mean(runtimes)) + '\n\n')
 
 log_file.close()
 

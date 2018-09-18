@@ -22,7 +22,7 @@ def run_histogram_stat(peak, outlier, statistical, sample_file = "/tmp/data_samp
 
     os.system(command)
 
-def run_histogram_mixture(n_subpops, threshold, statistical, sample_file = "/tmp/data_sample.csv", result_file = "/tmp/dboostres.csv"):
+def run_mixture_stat(n_subpops, threshold, statistical, sample_file ="/tmp/data_sample.csv", result_file ="/tmp/dboostres.csv"):
     command = "python3 -W ignore " + Config.get("dboost.py") + " -F ','  --mixture " + str(
         n_subpops) + " " + str(threshold) + " --statistical " + str(statistical) + " " + sample_file + " > " + result_file
 
@@ -58,7 +58,7 @@ def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file
             print "Recall: " + str(run.calculate_total_recall())
 
             #remove result file:
-            os.remove(result_file)
+            #os.remove(result_file)
 
             if current_fscore >= best_fscore:
                 best_fscore = current_fscore
@@ -95,7 +95,7 @@ def search_histogram_stat(data, data_sample, data_sample_ground_truth,result_fil
                 print "Recall: " + str(run.calculate_total_recall())
 
                 #remove result file:
-                os.remove(result_file)
+                #os.remove(result_file)
 
                 if current_fscore >= best_fscore:
                     best_fscore = current_fscore
@@ -117,7 +117,7 @@ def search_mixture_stat(data, data_sample, data_sample_ground_truth,result_file,
     for p in n_subpops_s:
         for t in threshold_s:
             for s in statistical_range:
-                run_histogram_mixture(p, t, s)
+                run_mixture_stat(p, t, s)
 
                 our_sample_data = DataSetBasic(data.name + " random" + str(data_sample.shape[0]), data_sample, data_sample_ground_truth)
 
@@ -133,7 +133,7 @@ def search_mixture_stat(data, data_sample, data_sample_ground_truth,result_file,
                 print "Recall: " + str(run.calculate_total_recall())
 
                 #remove result file:
-                os.remove(result_file)
+                #os.remove(result_file)
 
                 if current_fscore >= best_fscore:
                     best_fscore = current_fscore
@@ -154,7 +154,7 @@ def grid_search_by_sample_gaussian(data, sample_size, steps):
 
     data_sample, random_index = sample(data.dirty_pd, n)
 
-    data_sample_ground_truth = data.matrix_is_error[random_index]
+    data_sample_ground_truth = data.matrix_is_error[random_index, :]
 
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
@@ -183,7 +183,7 @@ def grid_search_by_sample_hist(data, sample_size, steps):
 
     data_sample, random_index = sample(data.dirty_pd, n)
 
-    data_sample_ground_truth = data.matrix_is_error[random_index]
+    data_sample_ground_truth = data.matrix_is_error[random_index, :]
 
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
@@ -213,7 +213,7 @@ def grid_search_by_sample_mixture(data, sample_size, steps):
 
     data_sample, random_index = sample(data.dirty_pd, n)
 
-    data_sample_ground_truth = data.matrix_is_error[random_index]
+    data_sample_ground_truth = data.matrix_is_error[random_index, :]
 
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
@@ -242,7 +242,7 @@ def run_params_gaussian(data, params):
 
     data_sample, random_index = sample(data.dirty_pd, n)
 
-    data_sample_ground_truth = data.matrix_is_error[random_index]
+    data_sample_ground_truth = data.matrix_is_error[random_index, :]
 
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
@@ -269,7 +269,7 @@ def run_params_hist(data, params):
 
     data_sample, random_index = sample(data.dirty_pd, n)
 
-    data_sample_ground_truth = data.matrix_is_error[random_index]
+    data_sample_ground_truth = data.matrix_is_error[random_index, :]
 
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
@@ -299,7 +299,7 @@ def run_params_mixture(data, params):
 
     data_sample, random_index = sample(data.dirty_pd, n)
 
-    data_sample_ground_truth = data.matrix_is_error[random_index]
+    data_sample_ground_truth = data.matrix_is_error[random_index, :]
 
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
@@ -324,21 +324,18 @@ def run_params_mixture(data, params):
 
 
 def test_gaussian(data, sample_size, steps):
-    print "test"
     best_params = grid_search_by_sample_gaussian(data, sample_size, steps)
     best_fscore_all, precision, recall = run_params_gaussian(data, best_params)
     return best_fscore_all, precision, recall, best_params
 
 def test_hist(data, sample_size, steps):
     best_params = grid_search_by_sample_hist(data, sample_size, steps)
-
     best_fscore_all, precision, recall = run_params_hist(data, best_params)
     return best_fscore_all, precision, recall, best_params
 
 def test_mixture(data, sample_size, steps):
     best_params = grid_search_by_sample_mixture(data, sample_size, steps)
     best_fscore_all, precision, recall = run_params_mixture(data, best_params)
-
     return best_fscore_all, precision, recall, best_params
 
 def test_multiple_sizes(data, steps, N=3, sizes = [10, 100, 1000], run_algo_function = test_gaussian, log_file=None):
