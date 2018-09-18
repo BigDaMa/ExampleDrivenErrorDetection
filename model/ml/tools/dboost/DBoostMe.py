@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from ml.tools.Tool import Tool
+import os
 
 class DBoostMe(Tool):
     def __init__(self, dataSet, path_to_tool_result="/home/felix/SequentialPatternErrorDetection/dboost/outputDBoost-blackoak-gaus-new16875.csv"):
@@ -20,6 +21,9 @@ class DBoostMe(Tool):
         print outliers
 
         matrix_outliers = outliers.values
+
+        os.remove(path_to_tool_result)
+
 
         for i in range(len(matrix_outliers)):
             if int(matrix_outliers[i][0]) > 0:

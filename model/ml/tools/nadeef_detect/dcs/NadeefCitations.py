@@ -27,6 +27,7 @@ rules = []
 
 rules.append(UDF('article_jissue', 'value == null'))
 rules.append(UDF('article_jvolumn', 'value == null'))
+#rules.append(UDF('author_list', 'value == null')) # does not work
 
 #rules.append(FD(Set(['jounral_abbreviation']), 'journal_title'))
 rules.append(FD(Set(['jounral_abbreviation']), 'journal_issn'))
