@@ -15,6 +15,7 @@ import time
 import numpy as np
 import glob
 from ml.configuration.Config import Config
+import os
 
 mypath = Config.get("logging.folder") + "/out/server_dboost"
 mylist = [f for f in glob.glob(mypath + "/*.txt")]
@@ -30,6 +31,14 @@ datasets = [FlightHoloClean(),
 
 
 N = 10
+
+path_folder = Config.get("logging.folder") + "/out/dboost_runtime"
+
+if not os.path.exists(path_folder):
+    os.makedirs(path_folder)
+
+log_file = open(
+        path_folder + '/dboost_runtime'+ str(time.time()) + '.csv', 'w+')
 
 for file_name in mylist:
     data_name = file_name.split('/')[-1].split('.')[0].split('_')[0]
@@ -81,7 +90,9 @@ for file_name in mylist:
         method(**parameter_dict)
         runtime = time.time() - ts
         runtimes.append(runtime)
-    print file_name + ": " + str(np.mean(runtimes))
+    log_file.write(file_name + ": " + str(np.mean(runtimes)) + '\n\n')
+
+log_file.close()
 
 
 
