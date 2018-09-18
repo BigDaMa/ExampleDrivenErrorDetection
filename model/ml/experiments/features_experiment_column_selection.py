@@ -27,8 +27,8 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-
+#data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
+data_list = [Beers]
 
 parameters = []
 #parameters.append({'use_metadata': False, 'correlationFeatures': False}) #char unigrams
