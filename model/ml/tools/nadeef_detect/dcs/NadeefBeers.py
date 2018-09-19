@@ -27,7 +27,7 @@ data.dirty_pd.columns=my_list
 rules = []
 
 rules.append(UDF('ibu', 'value.equals("N/A")'))
-rules.append(UDF('ounces', 'value.length() > 4'))
+#rules.append(UDF('ounces', 'value.length() > 4'))
 rules.append(UDF('abv', '(value != null && !isNumeric(value))'))
 
 #FDs
