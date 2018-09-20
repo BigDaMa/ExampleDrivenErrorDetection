@@ -22,7 +22,7 @@ import os
 import time
 
 
-path_folder = Config.get("logging.folder") + "/out/column_selection"
+path_folder = Config.get("logging.folder") + "/out/column_selection_beers"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
