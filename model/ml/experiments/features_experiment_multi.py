@@ -32,16 +32,16 @@ data_list = [Beers]
 
 
 parameters = []
-#parameters.append({'use_metadata': False, 'correlationFeatures': False}) #char unigrams
-#parameters.append({'use_metadata': False, 'correlationFeatures': False, 'is_word': True}) #word unigrams
-#parameters.append({'use_metadata_only': True, 'correlationFeatures': False}) #metadata
-#parameters.append({'use_metadata': False, 'ngrams': 2, 'correlationFeatures': False}) #char unigrams + bigrams
-#parameters.append({'correlationFeatures': False}) #char unigrams + meta data
-#parameters.append({}) #char unigrams + meta data + correlation
+parameters.append({'use_metadata': False, 'correlationFeatures': False}) #char unigrams
+parameters.append({'use_metadata': False, 'correlationFeatures': False, 'is_word': True}) #word unigrams
+parameters.append({'use_metadata_only': True, 'correlationFeatures': False}) #metadata
+parameters.append({'use_metadata': False, 'ngrams': 2, 'correlationFeatures': False}) #char unigrams + bigrams
+parameters.append({'correlationFeatures': False}) #char unigrams + meta data
+parameters.append({}) #char unigrams + meta data + correlation
 parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100}) #char unigrams + meta data + correlation + word2vec
-#parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100}) #word2vec
-#parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_active_clean': True, 'use_activeclean_only': True}) #active clean
-#parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100, 'use_boostclean_metadata': True}) #boostclean
+parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100}) #word2vec
+parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_active_clean': True, 'use_activeclean_only': True}) #active clean
+parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100, 'use_boostclean_metadata': True}) #boostclean
 
 
 
@@ -49,16 +49,16 @@ parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size':
 
 #LSTM
 
-feature_names = [#'char_unigrams',
-                 #'word_unigrams',
-                 #'metadata',
-                 #'char unigrams and bigrams',
-                 #'char unigrams + meta data',
-                 #'char unigrams + meta data + correlation',
+feature_names = ['char_unigrams',
+                 'word_unigrams',
+                 'metadata',
+                 'char unigrams and bigrams',
+                 'char unigrams + meta data',
+                 'char unigrams + meta data + correlation',
                  'char unigrams + meta data + correlation + word2vec',
-                 #'word2vec',
-                 #'ActiveClean',
-                 #'BoostClean'
+                 'word2vec',
+                 'ActiveClean',
+                 'BoostClean'
                  ]
 
 #classifiers = [XGBoostClassifier, LinearSVMClassifier, NaiveBayesClassifier]
