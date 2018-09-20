@@ -134,7 +134,8 @@ def run(dataSet,
 		     use_random_column_selection=False,
 		     use_max_pred_change_column_selection=False,
              use_max_error_column_selection=False,
-			 use_min_certainty_column_selection=True
+			 use_min_certainty_column_selection=True,
+             visualize_models=False
 			 ):
 
 	start_time = time.time()
@@ -504,7 +505,8 @@ def run(dataSet,
 
 				all_error_status_test[:, column_id] = res_gen
 
-			#visualize_model(dataSet, column_id, classifier.model, feature_name_list, train, target_run, res)
+			if visualize_models:
+				visualize_model(dataSet, column_id, classifier.model, feature_name_list, train, target_run, res)
 
 			print ("current train shape: " + str(train[column_id].shape))
 

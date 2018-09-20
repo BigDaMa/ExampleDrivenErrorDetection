@@ -22,7 +22,7 @@ import os
 import time
 
 
-path_folder = Config.get("logging.folder") + "/out/model_beers"
+path_folder = Config.get("logging.folder") + "/out/features"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
@@ -38,11 +38,11 @@ parameters = []
 #parameters.append({'use_metadata': False, 'ngrams': 2, 'correlationFeatures': False}) #char unigrams + bigrams
 #parameters.append({'correlationFeatures': False}) #char unigrams + meta data
 #parameters.append({}) #char unigrams + meta data + correlation
-parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100}) #char unigrams + meta data + correlation + word2vec
 #parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100}) #word2vec
 #parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_active_clean': True, 'use_activeclean_only': True}) #active clean
 #parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100, 'use_boostclean_metadata': True}) #boostclean
 
+parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100, 'visualize_models': True}) #char unigrams + meta data + correlation + word2vec
 
 
 
@@ -79,7 +79,7 @@ for dataset in data_list:
 
             my_array.append(my_dict)
 
-pool = mp.Pool(processes=13)
+pool = mp.Pool(processes=1)
 results = pool.map(run_multi, my_array)
 
 for r_i in range(len(results)):
