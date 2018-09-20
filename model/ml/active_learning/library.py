@@ -6,8 +6,8 @@ from sets import Set
 
 import jinja2
 import numpy as np
-from eli5 import explain_weights
-from eli5 import show_weights
+#from eli5 import explain_weights
+#from eli5 import show_weights
 from eli5.formatters import format_as_text
 from scipy.sparse import hstack
 from scipy.sparse import vstack
