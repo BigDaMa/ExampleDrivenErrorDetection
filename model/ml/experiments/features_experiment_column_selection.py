@@ -28,7 +28,7 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [Beers]
+data_list = [Restaurant]
 
 parameters = []
 #parameters.append({'use_metadata': False, 'correlationFeatures': False}) #char unigrams
@@ -43,18 +43,18 @@ parameters = []
 #parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100, 'use_boostclean_metadata': True}) #boostclean
 
 
-parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100, 'number_of_round_robin_rounds': 10000, 'use_min_certainty_column_selection': False}) #round robin
-parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100, 'use_random_column_selection': True, 'use_min_certainty_column_selection': False}) #random
-parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100, 'use_max_pred_change_column_selection': True, 'use_min_certainty_column_selection': False}) #prediction change
-parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100, 'use_max_error_column_selection': True, 'use_min_certainty_column_selection': False}) #max error
+parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100, 'number_of_round_robin_rounds': 10000, 'use_min_certainty_column_selection': False, 'label_iterations': 12}) #round robin
+#parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100, 'use_random_column_selection': True, 'use_min_certainty_column_selection': False}) #random
+#parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100, 'use_max_pred_change_column_selection': True, 'use_min_certainty_column_selection': False}) #prediction change
+#parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100, 'use_max_error_column_selection': True, 'use_min_certainty_column_selection': False}) #max error
 
 
 #LSTM
 
 feature_names = ['round_robin',
-                 'random',
-                 'prediction_change',
-                 'max_error'
+                 #'random',
+                 #'prediction_change',
+                 #'max_error'
                  ]
 
 #classifiers = [XGBoostClassifier, LinearSVMClassifier, NaiveBayesClassifier]
