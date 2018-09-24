@@ -22,15 +22,19 @@ path_folder = Config.get("logging.folder") + "/out/katara"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
-data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Beers]
+path_folder_tmp = Config.get("logging.folder") + "/out/katara_tmp"
+if not os.path.exists(path_folder_tmp):
+    os.makedirs(path_folder_tmp)
+
+data_list = [FlightHoloClean]
 
 
 
 def run_katara(data):
     ts = time.time()
-    tmp_katara_out = "/tmp/katara_time_" + str(ts) + "_" + str(random.randint(1,100000)) + "_KATARA_" + ".txt"
+    tmp_katara_out = path_folder_tmp + "/katara_time_" + str(ts) + "_" + str(random.randint(1,100000)) + "_KATARA_" + ".txt"
 
-    dirty_dataset = '/tmp/dirty_dataset_' + str(ts) + '_' + str(random.randint(1, 100000)) + '.csv'
+    dirty_dataset = path_folder_tmp + '/dirty_dataset_' + str(ts) + '_' + str(random.randint(1, 100000)) + '.csv'
     dirty_df = data.dirty_pd.copy()
 
     for column_i in range(dirty_df.shape[1]):
