@@ -11,7 +11,6 @@ import random
 import time
 import csv
 import multiprocessing as mp
-
 from ml.configuration.Config import Config
 import numpy as np
 import os
@@ -23,16 +22,13 @@ path_folder = Config.get("logging.folder") + "/out/katara"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
-#data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Beers]
+data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Beers]
 
-#data_list = [Movies]
-
-data_list = [Salary]
 
 
 def run_katara(data):
     ts = time.time()
-    tmp_katara_out = "/tmp/katara_" + str(data.name) + "_time_" + str(ts) + "_" + str(random.randint(1,100000)) + "_KATARA_" + ".txt"
+    tmp_katara_out = "/tmp/katara_time_" + str(ts) + "_" + str(random.randint(1,100000)) + "_KATARA_" + ".txt"
 
     dirty_dataset = '/tmp/dirty_dataset_' + str(ts) + '_' + str(random.randint(1, 100000)) + '.csv'
     dirty_df = data.dirty_pd.copy()
@@ -60,7 +56,7 @@ for dataset in data_list:
     data = dataset()
     my_array.append(data)
 
-pool = mp.Pool(processes=20)
+pool = mp.Pool(processes=1)
 
 results = pool.map(run_katara, my_array)
 

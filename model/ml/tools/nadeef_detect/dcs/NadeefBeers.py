@@ -32,6 +32,7 @@ rules = []
 rules.append(UDF('ibu', 'value.equals("N/A")'))
 rules.append(UDF('abv', '(value != null && !isNumeric(value))'))
 rules.append(UDF('city', '((String)tuple.get("state") == null)'))
+rules.append(UDF('state', '(value == null)'))
 
 
 #FDs
