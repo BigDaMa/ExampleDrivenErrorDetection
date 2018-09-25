@@ -92,4 +92,4 @@ if __name__ == '__main__':
 
     f = Word2VecFeatures()
     f.fit(data.dirty_pd.values)
-    print f.transform(data.dirty_pd.values)
+    print(f.transform(data.dirty_pd.values))

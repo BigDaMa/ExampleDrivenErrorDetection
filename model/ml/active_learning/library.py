@@ -2,13 +2,12 @@ import operator
 import os
 import random
 import warnings
-from sets import Set
 
-import jinja2
+#import jinja2
 import numpy as np
 #from eli5 import explain_weights
 #from eli5 import show_weights
-from eli5.formatters import format_as_text
+#from eli5.formatters import format_as_text
 from scipy.sparse import hstack
 from scipy.sparse import vstack
 from sklearn.decomposition import TruncatedSVD
@@ -37,11 +36,11 @@ def create_user_start_data(feature_matrix, target, num_errors=2, return_ids=Fals
         else:
             return None, None
 
-    error_select_ids = range(len(error_ids))
+    error_select_ids = np.array(range(len(error_ids)))
     np.random.shuffle(error_select_ids)
     error_select_ids = error_select_ids[0:num_errors]
 
-    correct_select_ids = range(len(correct_ids))
+    correct_select_ids = np.array(range(len(correct_ids)))
     np.random.shuffle(correct_select_ids)
     correct_select_ids = correct_select_ids[0:num_errors]
 
@@ -52,7 +51,7 @@ def create_user_start_data(feature_matrix, target, num_errors=2, return_ids=Fals
     train = feature_matrix[list_ids, :]
     train_target = target[list_ids]
     print(train_target)
-    print list_ids
+    print(list_ids)
 
 
     if return_ids:
@@ -84,7 +83,7 @@ def create_next_part(feature_matrix, target, y_pred, n, data, column_id, user_er
         np.random.shuffle(sorted_ids)
 
     if False:#np.sum(diff) == 0.0: #fall back to outlier detection
-        print "tets"
+        print("tets")
         #get value frequencies
         '''
 
@@ -176,7 +175,7 @@ def create_next_part(feature_matrix, target, y_pred, n, data, column_id, user_er
 
         next_x = []
 
-        current_set = Set()
+        current_set = set()
         i = 0
         internal_id_list = []
         while len(current_set) < n and i < len(sorted_ids):
@@ -373,7 +372,7 @@ def calc_my_fscore(target, res, dataSet):
 
     total_f = float((2 * tp)) / float(((2 * tp) + fn + fp))
 
-    print "my total: " + str(total_f) + " sklearn: " + str(f1_score(t, pred))
+    print("my total: " + str(total_f) + " sklearn: " + str(f1_score(t, pred)))
 
     error_indices = np.where(np.sum(dataSet.matrix_is_error, axis=0) != 0)[0]
 
@@ -384,7 +383,7 @@ def calc_my_fscore(target, res, dataSet):
 
     total_f = float((2 * tp)) / float(((2 * tp) + fn + fp))
 
-    print "my part total: " + str(total_f) + " sklearn: " + str(f1_score(t_part, pred_part))
+    print("my part total: " + str(total_f) + " sklearn: " + str(f1_score(t_part, pred_part)))
 
 
 def print_stats_whole(target, res, label):
@@ -537,7 +536,7 @@ def visualize_model(dataSet, column_id, final_gb, feature_name_list, train, targ
         column_name = dataSet.clean_pd.columns[column_id]
 
         feature_name_list_err_corr = list(feature_name_list)
-        print "missing features: " + str(len(final_gb[column_id].feature_names)- len(feature_name_list))
+        print("missing features: " + str(len(final_gb[column_id].feature_names)- len(feature_name_list)))
 
         if len(final_gb[column_id].feature_names)- len(feature_name_list) > 0:
             for err_corr_id in range(dataSet.shape[1]):
@@ -589,7 +588,7 @@ def split_data_indices(dataSet, train_fraction, fold_number=0):
 
     for _, test_id in kf.split(range(dataSet.shape[0])):
         circular_queue.append(test_id)
-        print test_id
+        print(test_id)
 
 
     '''
@@ -6544,8 +6543,8 @@ def split_data_indices(dataSet, train_fraction, fold_number=0):
     for test_parts in range(test_N):
         test_indices.extend(circular_queue.pop())
 
-    print "train: " + str(len(train_indices))
-    print "test: " + str(len(test_indices))
+    print("train: " + str(len(train_indices)))
+    print("test: " + str(len(test_indices)))
 
 
     return train_indices, test_indices

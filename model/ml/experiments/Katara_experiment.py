@@ -45,7 +45,7 @@ def run_katara(data):
     start_time = time.time()
 
     command = "cd " + Config.get("abstractionlayer.folder") + "/\n" + "python2 cleaning_api.py " + dirty_dataset + " " + tmp_katara_out
-    print command
+    print(command)
     os.system(command)
 
     return_dict= {}

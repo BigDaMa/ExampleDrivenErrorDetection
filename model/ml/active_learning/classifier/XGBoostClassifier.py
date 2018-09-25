@@ -3,8 +3,35 @@ import xgboost as xgb
 from sklearn.model_selection import cross_val_score
 import numpy as np
 import matplotlib.pyplot as plt
+import time
+import multiprocessing as mp
 
 from xgboost import plot_tree
+
+
+def convert(data):
+    return xgb.DMatrix(data, nthread=-1)
+
+
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, l.shape[0], n):
+        yield l[i:i + n]
+
+def convert_in_parallel(data, jobs, model):
+    data_chunks = chunks(data, jobs)
+
+    pool = mp.Pool(processes=jobs)
+    results = pool.map(convert, data_chunks)
+
+    probability_predictions = []
+    for r in results:
+        probability_predictions.append(model.predict(r))
+    print(probability_predictions)
+
+
+
+
 
 class XGBoostClassifier(object):
     name = 'XGBoost'
@@ -19,6 +46,8 @@ class XGBoostClassifier(object):
 
         self.balance = balance
 
+        self.all_data = None
+
 
 
     def run_cross_validation(self, train, train_target, folds, column_id):
@@ -32,19 +61,19 @@ class XGBoostClassifier(object):
             'silent': 1,
             'seed': 0,
             'objective': 'binary:logistic',
-            'n_jobs': '20'
+            'n_jobs': 4
         }
 
         if self.balance:
             ratio = float(np.sum(train_target == False)) / np.sum(train_target == True)
-            print "weight ratio: " + str(ratio)
+            print("weight ratio: " + str(ratio))
             ind_params['scale_pos_weight'] = ratio
 
         optimized_GBM = GridSearchCV(xgb.XGBClassifier(**ind_params),
                                      cv_params,
                                      scoring='f1', cv=folds, n_jobs=1, verbose=0)
 
-        print train.shape
+        print(train.shape)
 
         optimized_GBM.fit(train, train_target)
 
@@ -58,7 +87,7 @@ class XGBoostClassifier(object):
     def train_predict_all(self, x, y, column_id, x_all, feature_names=None, column_names=None):
         if self.balance:
             ratio = float(np.sum(y == False)) / np.sum(y == True)
-            print "weight ratio: " + str(ratio)
+            print("weight ratio: " + str(ratio))
             self.params[column_id]['scale_pos_weight'] = ratio
 
         xgdmat = xgb.DMatrix(x, y, feature_names=feature_names)
@@ -67,7 +96,7 @@ class XGBoostClassifier(object):
 
         if feature_names != None:
             all_trees = self.model[column_id].get_dump()
-            print "number trees:" + str(len(all_trees))
+            print("number trees:" + str(len(all_trees)))
 
             plot_tree(self.model[column_id])
 
@@ -86,17 +115,40 @@ class XGBoostClassifier(object):
     def train_predict_all(self, x, y, column_id, x_all):
         if self.balance:
             ratio = float(np.sum(y == False)) / np.sum(y == True)
-            print "weight ratio: " + str(ratio)
+            print("weight ratio: " + str(ratio))
             self.params[column_id]['scale_pos_weight'] = ratio
 
-        xgdmat = xgb.DMatrix(x, y)
-        self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=3000, verbose_eval=False)
 
+        print("type: " + str(type(x_all)))
+
+        #if self.all_data == None:
+        #    self.all_data = xgb.DMatrix(x_all, nthread=-1)
+
+
+        s1= time.time()
+
+        xgdmat = xgb.DMatrix(x, y, nthread=-1)
+
+
+        s2=time.time()
+        self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=3000, verbose_eval=False)
+        s3 = time.time()
 
         # predict
-        all_records = xgb.DMatrix(x_all)
-        probability_prediction = self.model[column_id].predict(all_records)
+
+        s4 = time.time()
+        #all_data_real =xgb.DMatrix(x_all, nthread=-1)
+        #probability_prediction = self.model[column_id].predict(all_data_real)
+
+        probability_prediction =convert_in_parallel(x_all, 4, self.model[column_id])
+
         class_prediction = (probability_prediction > 0.5)
+        s5 = time.time()
+
+        print("load1: "+ str(s2 - s1))
+        print("train: " + str(s3 - s2))
+        print("load2: " + str(s4 - s3))
+        print("predict: " + str(s5 - s4))
 
         return probability_prediction, class_prediction
 
@@ -114,7 +166,7 @@ class XGBoostClassifier(object):
     def train_predict(self, x, y, column_id):
         if self.balance:
             ratio = float(np.sum(y == False)) / np.sum(y == True)
-            print "weight ratio: " + str(ratio)
+            print("weight ratio: " + str(ratio))
             self.params[column_id]['scale_pos_weight'] = ratio
         xgdmat = xgb.DMatrix(x, y)
         self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=3000, verbose_eval=False)

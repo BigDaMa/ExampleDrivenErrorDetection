@@ -92,7 +92,7 @@ class MetaDataFeatures:
                 new_feature, feature_name = feature_method(data, c)
                 feature_list.append(new_feature)
                 feature_name_list.append(str(columns[c]) + "_" + feature_name)
-                print "Finished " + feature_name + " -> " + str(new_feature.shape)
+                print("Finished " + feature_name + " -> " + str(new_feature.shape))
 
         metadata_features = hstack(feature_list)
 

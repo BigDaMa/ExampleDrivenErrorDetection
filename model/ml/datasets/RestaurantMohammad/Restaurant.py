@@ -18,4 +18,4 @@ class Restaurant(DataSet):
 
 
     def validate(self):
-        print "validate"
+        print("validate")

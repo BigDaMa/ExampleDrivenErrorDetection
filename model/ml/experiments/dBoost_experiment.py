@@ -23,14 +23,13 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-#data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Restaurant, Movies, Beers, Citation]
-data_list = [FlightHoloClean]
+data_list = [Beers]
 
 steps = 100
 N = 1
 
 
-dBoost_methods = [test_multiple_sizes_mixture]
+dBoost_methods = [test_multiple_sizes_mixture, test_multiple_sizes_gaussian, test_multiple_sizes_hist]
 
 for dataset in data_list:
     data = dataset()

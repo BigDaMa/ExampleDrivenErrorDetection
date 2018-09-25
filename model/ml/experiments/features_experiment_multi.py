@@ -1,6 +1,6 @@
 from ml.classes.active_learning_total_uncertainty_error_correlation_lib import run_multi
 from ml.classes.active_learning_total_uncertainty_error_correlation_lib import run
-import multiprocessing as mp
+#import multiprocessing as mp
 
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
@@ -28,7 +28,7 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [BlackOakDataSetUppercase]
+data_list = [FlightHoloClean]
 
 
 parameters = []
@@ -38,7 +38,7 @@ parameters = []
 #parameters.append({'use_metadata': False, 'ngrams': 2, 'correlationFeatures': False}) #char unigrams + bigrams
 #parameters.append({'correlationFeatures': False}) #char unigrams + meta data
 #parameters.append({}) #char unigrams + meta data + correlation
-parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100}) #char unigrams + meta data + correlation + word2vec
+parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100,    'correlationFeatures': False}) #char unigrams + meta data + correlation + word2vec
 #parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100}) #word2vec
 #parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_active_clean': True, 'use_activeclean_only': True}) #active clean
 #parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100, 'use_boostclean_metadata': True}) #boostclean
@@ -74,13 +74,16 @@ for dataset in data_list:
             my_dict = parameters[param_i].copy()
             my_dict['dataSet'] = data
             my_dict['classifier_model'] = classifier
-            my_dict['checkN'] = 10
+            my_dict['checkN'] = 1
             fnames.append(feature_names[param_i])
 
             my_array.append(my_dict)
 
-pool = mp.Pool(processes=13)
-results = pool.map(run_multi, my_array)
+#pool = mp.Pool(processes=1)
+#results = pool.map(run_multi, my_array)
+
+
+run(**my_array[0])
 
 for r_i in range(len(results)):
     r = results[r_i]

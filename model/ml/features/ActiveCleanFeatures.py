@@ -86,9 +86,9 @@ if __name__ == '__main__':
 
     f = ActiveCleanFeatures()
     f.fit(data.dirty_pd.values)
-    print f.transform(data.dirty_pd.values)
+    print(f.transform(data.dirty_pd.values))
 
     for f_n in f.get_feature_names():
-        print f_n
+        print(f_n)
 
-    print len(f.get_feature_names())
+    print(len(f.get_feature_names()))

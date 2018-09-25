@@ -44,7 +44,7 @@ class LinearSVMClassifier(object):
                                      cv_params,
                                      scoring='f1', cv=folds, n_jobs=4, verbose=0)
 
-        print train.shape
+        print(train.shape)
 
         if self.use_scale:
             self.scaler = StandardScaler(with_mean=False, copy=True)
@@ -96,7 +96,7 @@ class LinearSVMClassifier(object):
             self.model[column_id].fit(self.scaler.transform(x), y)
         else:
             self.model[column_id].fit(x, y)
-        print "run model"
+        print("run model")
 
         for data_i in range(len(x_all.data)):
             if not np.isfinite(x_all.data[data_i]):

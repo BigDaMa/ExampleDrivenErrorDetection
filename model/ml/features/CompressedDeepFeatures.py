@@ -21,6 +21,6 @@ def read_compressed_deep_features(compressed_folder = "/home/felix/SequentialPat
         else:
             features = np.hstack((features, loaded_features))
 
-    print features.shape
+    print(features.shape)
 
     return features

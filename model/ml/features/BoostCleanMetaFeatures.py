@@ -167,6 +167,6 @@ if __name__ == '__main__':
 
     f = BoostCleanMetaFeatures()
     f.fit(data.dirty_pd.values)
-    print f.transform(data.dirty_pd.values)
-    print f.get_feature_names(data)
-    print len(f.get_feature_names(data))
+    print(f.transform(data.dirty_pd.values))
+    print(f.get_feature_names(data))
+    print(len(f.get_feature_names(data)))

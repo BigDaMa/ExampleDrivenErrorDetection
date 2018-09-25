@@ -35,7 +35,7 @@ class BlackOakDataSetUppercase(DataSet):
         super(BlackOakDataSetUppercase, self).__init__(BlackOakDataSetUppercase.name, duplicated_dirty, duplicated_clean)
 
     def validate(self):
-        print "validate"
+        print("validate")
 
 
     def uppercase(self, df):

@@ -15,7 +15,7 @@ def go_to_next_column_prob(diff_certainty):
 	for key in diff_certainty.keys():
 		certainty_columns[key] = (np.sum(diff_certainty[key]) / len(diff_certainty[key])) * 2
 
-	return min(certainty_columns.iteritems(), key=operator.itemgetter(1))[0]
+	return min(certainty_columns.items(), key=operator.itemgetter(1))[0]
 
 
 
@@ -193,7 +193,7 @@ def run(dataSet,
 	for feature_index in range(len(feature_names_potential)):
 		if True: #not 'histogram' in feature_names_potential[feature_index]:
 			which_features_to_use.append(feature_index)
-	print which_features_to_use
+	print(which_features_to_use)
 
 	feature_names_potential = [i for j, i in enumerate(feature_names_potential) if j in which_features_to_use]
 
@@ -346,7 +346,7 @@ def run(dataSet,
 					certainty[column_id] = 1.0
 					#pred_potential[column_id] = -1.0
 
-					print "column " + str(column_id) + " is not applicable" + " errors: " + str(np.sum(dataSet.matrix_is_error[:,column_id]))
+					print("column " + str(column_id) + " is not applicable" + " errors: " + str(np.sum(dataSet.matrix_is_error[:,column_id])))
 
 					all_error_status[:, column_id] = dataSet.matrix_is_error[:, column_id]
 
@@ -409,7 +409,7 @@ def run(dataSet,
 				'''
 
 
-				print "id next: " + str(len(id_next[column_id]))
+				print("id next: " + str(len(id_next[column_id])))
 
 				train[column_id], train_target[column_id], train_chosen_ids[column_id] = add_data_next(
 												  train[column_id],
@@ -420,8 +420,8 @@ def run(dataSet,
 												  id_next[column_id])
 
 
-				print train_chosen_ids[column_id]
-				print "train: " + str(train[column_id].shape)
+				print(train_chosen_ids[column_id])
+				print("train: " + str(train[column_id].shape))
 
 
 				data_x_matrix = train[column_id].copy()
@@ -483,7 +483,7 @@ def run(dataSet,
 				train_chosen_ids[column_id],
 				check_this)
 
-			print "size x: " + str(len(x_next[column_id]))
+			print("size x: " + str(len(x_next[column_id])))
 
 
 			if column_id in res:
@@ -518,14 +518,14 @@ def run(dataSet,
 				print_stats_whole(dataSet.matrix_is_error[test_indices, :], all_error_status_test, "test general")
 
 			number_samples = 0
-			for key, value in train.iteritems():
+			for key, value in train.items():
 				if type(value) != type(None):
 					number_samples += value.shape[0]
 			print("total labels: " + str(number_samples) + " in %: " + str(
 				float(number_samples) / (dataSet.shape[0] * dataSet.shape[1])))
 
 			sum_certainty = 0.0
-			for key, value in certainty.iteritems():
+			for key, value in certainty.items():
 				if value != None:
 					sum_certainty += value
 			sum_certainty /= dataSet.shape[1]
@@ -566,7 +566,7 @@ def run(dataSet,
 					diff))
 
 			predicted_error_fraction = float(np.sum(y_pred[column_id] > 0.5)) / float(len(y_pred[column_id]))
-			print "predicted error fraction: " + str(predicted_error_fraction)
+			print("predicted error fraction: " + str(predicted_error_fraction))
 			feature_array.append(predicted_error_fraction)
 
 			for score in eval_scores:
@@ -576,7 +576,7 @@ def run(dataSet,
 			feature_array.append(np.std(eval_scores))
 
 			training_error_fraction = float(np.sum(train_target[column_id])) / float(len(train_target[column_id]))
-			print "training error fraction: " + str(training_error_fraction)
+			print("training error fraction: " + str(training_error_fraction))
 			feature_array.append(training_error_fraction)
 
 			hist_pred_change = []
@@ -591,7 +591,7 @@ def run(dataSet,
 
 			feature_array.append(np.mean(prediction_change_y_pred))
 			feature_array.append(np.std(prediction_change_y_pred))
-			print "Mean Squared certainty change: " + str(np.mean(prediction_change_y_pred))
+			print("Mean Squared certainty change: " + str(np.mean(prediction_change_y_pred)))
 
 			batch_certainties = diff_certainty[column_id][id_next[column_id]]
 			assert len(batch_certainties) == 10

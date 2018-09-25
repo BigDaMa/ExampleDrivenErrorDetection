@@ -43,12 +43,12 @@ class Salary(DataSet):
 
 
     def validate(self):
-        print "validate"
+        print("validate")
 
 if __name__ == '__main__':
     data = Salary()
 
-    print data.clean_pd.columns
+    print(data.clean_pd.columns)
 
-    print data.clean_pd.values[200,:]
-    print data.dirty_pd.values[200,:]
+    print(data.clean_pd.values[200,:])
+    print(data.dirty_pd.values[200,:])

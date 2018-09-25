@@ -20,11 +20,11 @@ class Beers(DataSet):
 
 
     def validate(self):
-        print "validate"
+        print("validate")
 
 
 if __name__ == '__main__':
     data = Beers()
 
-    print data.clean_pd.columns
-    print list(np.sum(data.matrix_is_error, axis=0) / float(data.shape[0]))
+    print(data.clean_pd.columns)
+    print(list(np.sum(data.matrix_is_error, axis=0) / float(data.shape[0])))

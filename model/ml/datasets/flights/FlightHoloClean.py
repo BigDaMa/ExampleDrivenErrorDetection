@@ -36,7 +36,7 @@ class FlightHoloClean(DataSet):
             mapColumns[columns[i]] = i
 
         pd_matrix = df.values
-        matrix = np.empty([df.shape[0] / len(columns), len(columns)], dtype=object)
+        matrix = np.empty([int(df.shape[0] / len(columns)), len(columns)], dtype=object)
 
         for i in range(len(pd_matrix)):
             row = int(pd_matrix[i][0]) - 1
@@ -48,4 +48,4 @@ class FlightHoloClean(DataSet):
 
 
     def validate(self):
-        print "validate"
+        print("validate")

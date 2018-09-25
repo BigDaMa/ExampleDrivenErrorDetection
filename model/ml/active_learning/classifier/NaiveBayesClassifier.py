@@ -40,7 +40,7 @@ class NaiveBayesClassifier(object):
                                      cv_params,
                                      scoring='f1', cv=folds, n_jobs=1, verbose=0)
 
-        print train.shape
+        print(train.shape)
 
         optimized_GBM.fit(self.scaler.transform(np.abs(train)), train_target)
 
