@@ -19,6 +19,9 @@ class XGBoostClassifier(object):
 
         self.balance = balance
 
+        self.x_alll = None
+        self.all_shape = None
+
 
 
     def run_cross_validation(self, train, train_target, folds, column_id):
@@ -32,7 +35,7 @@ class XGBoostClassifier(object):
             'silent': 1,
             'seed': 0,
             'objective': 'binary:logistic',
-            'n_jobs': '20'
+            'n_jobs': 20
         }
 
         if self.balance:
@@ -92,10 +95,13 @@ class XGBoostClassifier(object):
         xgdmat = xgb.DMatrix(x, y)
         self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=3000, verbose_eval=False)
 
+        if self.x_alll == None or self.all_shape != x_all.shape:
+            self.all_shape = x_all.shape
+            self.x_alll = xgb.DMatrix(x_all)
+
 
         # predict
-        all_records = xgb.DMatrix(x_all)
-        probability_prediction = self.model[column_id].predict(all_records)
+        probability_prediction = self.model[column_id].predict(self.x_alll)
         class_prediction = (probability_prediction > 0.5)
 
         return probability_prediction, class_prediction
