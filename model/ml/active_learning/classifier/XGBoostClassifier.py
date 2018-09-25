@@ -35,7 +35,7 @@ class XGBoostClassifier(object):
             'silent': 1,
             'seed': 0,
             'objective': 'binary:logistic',
-            'n_jobs': 20
+            'n_jobs': 4
         }
 
         if self.balance:
