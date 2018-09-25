@@ -95,8 +95,11 @@ class XGBoostClassifier(object):
         xgdmat = xgb.DMatrix(x, y)
         self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=3000, verbose_eval=False)
 
-        if self.x_alll == None or self.all_shape != x_all.shape:
+        if self.x_alll == None:
             self.all_shape = x_all.shape
+            self.x_alll = xgb.DMatrix(x_all)
+
+        if self.all_shape != x_all.shape:
             self.x_alll = xgb.DMatrix(x_all)
 
 
