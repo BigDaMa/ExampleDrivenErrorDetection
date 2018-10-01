@@ -431,7 +431,11 @@ def run(dataSet,
 						if column_number != column_id:
 							select_predictions = np.matrix(last_predictions).transpose()
 							data_x_matrix = hstack((data_x_matrix, select_predictions[train_chosen_ids[column_id], :])).tocsr()
-							x_all= hstack((x_all, select_predictions))
+							x_all= hstack((x_all, select_predictions)).tocsr()
+
+				print(type(x_all))
+
+
 
 				#print "len: " + str(len(train[column_id])) + " - " + str(len(train_target[column_id]))
 
