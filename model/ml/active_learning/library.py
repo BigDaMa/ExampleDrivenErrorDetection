@@ -6,8 +6,8 @@ from sets import Set
 
 import jinja2
 import numpy as np
-#from eli5 import explain_weights
-#from eli5 import show_weights
+from eli5 import explain_weights
+from eli5 import show_weights
 from eli5.formatters import format_as_text
 from scipy.sparse import hstack
 from scipy.sparse import vstack
@@ -537,13 +537,21 @@ def visualize_model(dataSet, column_id, final_gb, feature_name_list, train, targ
         column_name = dataSet.clean_pd.columns[column_id]
 
         feature_name_list_err_corr = list(feature_name_list)
-        print "missing features: " + str(len(final_gb[column_id].feature_names)- len(feature_name_list))
+        #print "missing features: " + str(len(final_gb[column_id].feature_names)- len(feature_name_list))
 
-        if len(final_gb[column_id].feature_names)- len(feature_name_list) > 0:
+        N = -1
+        try:
+            N = len(final_gb[column_id].feature_names)
+        except:
+            N = final_gb[column_id].n_features_
+
+
+        if N - len(feature_name_list) > 0:
             for err_corr_id in range(dataSet.shape[1]):
                 if dataSet.is_column_applicable(err_corr_id) and err_corr_id != column_id:
                     feature_name_list_err_corr.append("error_corr_" + str(dataSet.clean_pd.columns[err_corr_id]))
 
+        '''
         directory = Config.get("logging.folder") + '/out/html/' + dataSet.name
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -560,14 +568,17 @@ def visualize_model(dataSet, column_id, final_gb, feature_name_list, train, targ
         html = "<h1>" + str(column_name) + "</h1>"
         html += "<h2>number of labels: " + str(train[column_id].shape[0]) + "</h2>"
         html += "<h2>F-Score: " + str(f1_score(target_run, res[column_id])) + "</h2>"
-        html += str(table_content)
+        html += str(table_content.encode('utf-8'))
 
         with open(path, 'w') as webf:
             webf.write(html)
         webf.close()
         # webbrowser.open(url)
+        '''
     except jinja2.exceptions.UndefinedError:
-        print(format_as_text(explain_weights(final_gb[column_id], feature_names=feature_name_list)))
+        print(format_as_text(explain_weights(final_gb[column_id], feature_names=feature_name_list_err_corr)))
+
+    return feature_name_list_err_corr
 
 
 

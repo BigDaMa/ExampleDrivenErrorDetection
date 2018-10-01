@@ -135,7 +135,8 @@ def run(dataSet,
 		     use_max_pred_change_column_selection=False,
              use_max_error_column_selection=False,
 			 use_min_certainty_column_selection=True,
-             visualize_models=False
+             visualize_models=False,
+		     store_everything=False
 			 ):
 
 	start_time = time.time()
@@ -322,6 +323,11 @@ def run(dataSet,
 
 
 
+		feature_matrix_per_column = {}
+		feature_names_per_column = {}
+
+
+
 
 		for round in range(label_iterations * dataSet.shape[1]):
 			print("round: " + str(round))
@@ -453,9 +459,6 @@ def run(dataSet,
 
 			#todo check
 
-			#y_pred_current_prediction, res_new = classifier.train_predict_all(data_x_matrix, train_target[column_id], column_id, x_all,
-			#																  feature_name_list, dataSet.clean_pd.columns)
-
 			y_pred_current_prediction, res_new = classifier.train_predict_all(data_x_matrix,
 																			  train_target[column_id], column_id,
 																			  x_all)
@@ -464,6 +467,7 @@ def run(dataSet,
 
 
 			current_predictions[column_id] = y_pred_current_prediction
+
 
 			if column_id in y_pred:
 				prediction_change_y_pred = np.square(y_pred_current_prediction - y_pred[column_id])
@@ -506,9 +510,15 @@ def run(dataSet,
 				all_error_status_test[:, column_id] = res_gen
 
 			if visualize_models:
-				visualize_model(dataSet, column_id, classifier.model, feature_name_list, train, target_run, res)
+				feature_all_list = visualize_model(dataSet, column_id, classifier.model, feature_name_list, train, target_run, res)
 
-			print ("current train shape: " + str(train[column_id].shape))
+				classifier.train_predict_all1(data_x_matrix,
+																			  train_target[column_id], column_id,
+																			  x_all,
+																			  feature_all_list,
+																			  dataSet.clean_pd.columns)
+
+				print ("current train shape: " + str(train[column_id].shape))
 
 			print ("column: " + str(column_id))
 			print_stats(target_run, res[column_id])
@@ -534,6 +544,38 @@ def run(dataSet,
 			save_fscore.append(f1_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
 			save_precision.append(precision_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
 			save_recall.append(recall_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
+
+
+			if store_everything:
+				import pickle
+
+				# store feature_names for each column
+				feature_name_list_err_corr = list(feature_name_list)
+				if len(classifier.model[column_id].feature_names) - len(feature_name_list) > 0:
+					for err_corr_id in range(dataSet.shape[1]):
+						if dataSet.is_column_applicable(err_corr_id) and err_corr_id != column_id:
+							feature_name_list_err_corr.append(
+								"error_corr_" + str(dataSet.clean_pd.columns[err_corr_id]))
+				feature_names_per_column[column_id] = feature_name_list_err_corr
+
+				directory_store = Config.get("logging.folder") + '/out/store/' + dataSet.name
+				if not os.path.exists(directory_store):
+					os.makedirs(directory_store)
+
+				pickle.dump(feature_names_per_column, open(directory_store + '/feature_names.p', "wb"))
+
+				# store model for each column in dictionary
+				pickle.dump(classifier.model, open(directory_store + '/models.p', "wb"))
+
+				# store predictions for each column in dictionary
+				pickle.dump(current_predictions, open(directory_store + '/predictions.p', "wb"))
+
+				# store the whole feature matrix for each column
+				feature_matrix_per_column[column_id] = x_all.tocsr()
+				pickle.dump(feature_matrix_per_column, open(directory_store + '/feature_matrix.p', "wb"))
+
+
+
 
 			if store_results:
 				np.save(Config.get("logging.folder") + "/results/result" + dataSet.name + "_" + str(check_this) + "_" +  str(ts), all_error_status)

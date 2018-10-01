@@ -8,6 +8,7 @@ import pickle
 
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
 from ml.datasets.blackOak.BlackOakDataSetUppercase import BlackOakDataSetUppercase
+from ml.datasets.BeersMohammad.Beers import Beers
 
 
 class MyDialog(QDialog):
@@ -49,15 +50,19 @@ class Example(QWidget):
 
 
 
-        path = "/home/felix/SequentialPatternErrorDetection/explain_model/"
+        path = "/home/felix/phd/logs_ed2/out/store/"
 
         data_map={}
-        data_map[FlightHoloClean.name]="flights"
+        data_map[FlightHoloClean.name]=FlightHoloClean.name
         data_map[BlackOakDataSetUppercase.name] = "blackoak"
+        data_map[Beers.name] = "Beers"
 
 
-        self.classifier = pickle.load(open( path + data_map[self.data.name] + "/classifier.p", "rb"))
-        self.y_pred = pickle.load(open(path + data_map[self.data.name] + "/pedictions.p", "rb"))
+        print self.data.name
+        print data_map.keys()
+
+        self.classifier = pickle.load(open( path + data_map[self.data.name] + "/models.p", "rb"))
+        self.y_pred = pickle.load(open(path + data_map[self.data.name] + "/predictions.p", "rb"))
         self.feature_name_list = pickle.load(open(path + data_map[self.data.name] + "/feature_names.p", "rb"))
         self.feature_matrix = pickle.load(open(path + data_map[self.data.name] + "/feature_matrix.p", "rb"))
 
@@ -128,10 +133,10 @@ class Example(QWidget):
                 self.table.item(i, column).setBackground(QColor(255, 255, 255))
                 self.table.item(i, column).setTextColor(QColor(0, 0, 0))
 
-    def explain_prediction(self, x, model):
+    def explain_prediction(self, x, model, column):
         from eli5.explain import explain_prediction
         params = {}
-        params['feature_names'] = self.feature_name_list
+        params['feature_names'] = self.feature_name_list[column]
         params['top'] = 5
         expl = explain_prediction(model, x, **params)
         from eli5.formatters import format_as_text
@@ -169,7 +174,7 @@ class Example(QWidget):
     def selectCell(self, row, column):
         print("Row %d and Column %d was clicked" % (row, column))
 
-        self.dialogTextBrowser.textBrowser.setText(self.explain_prediction(self.feature_matrix[row,:], self.classifier[column]))
+        self.dialogTextBrowser.textBrowser.setText(self.explain_prediction(self.feature_matrix[column][row,:], self.classifier[column], column))
 
         self.dialogTextBrowser.exec_()
 
@@ -194,6 +199,7 @@ def main():
 
     #data = BlackOakDataSetUppercase()
     data = FlightHoloClean()
+    #data = Beers()
 
     ex = Example(data)
     sys.exit(app.exec_())

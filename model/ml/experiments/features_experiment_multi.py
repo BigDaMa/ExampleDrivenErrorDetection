@@ -14,6 +14,7 @@ from ml.datasets.salary_data.Salary import Salary
 from ml.active_learning.classifier.XGBoostClassifier import XGBoostClassifier
 from ml.active_learning.classifier.LinearSVMClassifier import LinearSVMClassifier
 from ml.active_learning.classifier.NaiveBayesClassifier import NaiveBayesClassifier
+from ml.active_learning.classifier.MyDecisionTreeClassifier import MyDecisionTreeClassifier
 
 import numpy as np
 
@@ -40,9 +41,13 @@ parameters = []
 #parameters.append({}) #char unigrams + meta data + correlation
 parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100}) #char unigrams + meta data + correlation + word2vec
 #parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100}) #word2vec
-parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_active_clean': True, 'use_activeclean_only': True}) #active clean
-parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100, 'use_boostclean_metadata': True}) #boostclean
+#parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_active_clean': True, 'use_activeclean_only': True}) #active clean
+#parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_word2vec': True, 'use_word2vec_only': True, 'w2v_size': 100, 'use_boostclean_metadata': True}) #boostclean
 
+
+
+
+#parameters.append({'use_tf_idf': False, 'visualize_models': True, 'store_everything': True, 'cross_validation_rounds': 1000}) #char unigrams + meta data + correlation + (no tf idf)
 
 
 
@@ -57,11 +62,12 @@ feature_names = [#'char_unigrams',
                  #'char unigrams + meta data + correlation',
                  'char unigrams + meta data + correlation + word2vec',
                  #'word2vec',
-                 'ActiveClean',
-                 'BoostClean'
+                 #'ActiveClean',
+                 #'BoostClean'
                  ]
 
 #classifiers = [XGBoostClassifier, LinearSVMClassifier, NaiveBayesClassifier]
+#classifiers = [XGBoostClassifier]
 classifiers = [XGBoostClassifier]
 
 fnames = []
@@ -74,13 +80,16 @@ for dataset in data_list:
             my_dict = parameters[param_i].copy()
             my_dict['dataSet'] = data
             my_dict['classifier_model'] = classifier
-            my_dict['checkN'] = 10
+            my_dict['checkN'] = 1 #10
             fnames.append(feature_names[param_i])
 
             my_array.append(my_dict)
 
-pool = mp.Pool(processes=13)
-results = pool.map(run_multi, my_array)
+#pool = mp.Pool(processes=1) #13
+#results = pool.map(run_multi, my_array)
+
+
+run(**my_array[0])
 
 for r_i in range(len(results)):
     r = results[r_i]

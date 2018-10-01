@@ -67,7 +67,7 @@ class MyDecisionTreeClassifier(object):
                                             filled=True, rounded=True,
                                             special_characters=True)
             graph = graphviz.Source(dot_data)
-            graph.render('out/' + str(column_id) + "_" + column_names[column_id])
+            graph.render('/tmp/' + str(column_id) + "_" + column_names[column_id])
 
 
             # predict

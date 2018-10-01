@@ -22,6 +22,8 @@ class XGBoostClassifier(object):
         self.x_alll = None
         self.all_shape = None
 
+        self.number_trees = 3000
+
 
 
     def run_cross_validation(self, train, train_target, folds, column_id):
@@ -58,14 +60,14 @@ class XGBoostClassifier(object):
 
         self.params[column_id] = our_params
 
-    def train_predict_all(self, x, y, column_id, x_all, feature_names=None, column_names=None):
+    def train_predict_all1(self, x, y, column_id, x_all, feature_names=None, column_names=None):
         if self.balance:
             ratio = float(np.sum(y == False)) / np.sum(y == True)
             print "weight ratio: " + str(ratio)
             self.params[column_id]['scale_pos_weight'] = ratio
 
         xgdmat = xgb.DMatrix(x, y, feature_names=feature_names)
-        self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=3000, verbose_eval=False)
+        self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=self.number_trees, verbose_eval=False)
 
 
         if feature_names != None:
@@ -76,7 +78,7 @@ class XGBoostClassifier(object):
 
             fig = plt.gcf()
             fig.set_size_inches(150, 100)
-            plt.savefig('out/' + str(column_id) + "_" + column_names[column_id] + '.pdf')
+            plt.savefig('/tmp/' + str(column_id) + "_" + column_names[column_id] + '.pdf')
 
 
         # predict
@@ -93,7 +95,7 @@ class XGBoostClassifier(object):
             self.params[column_id]['scale_pos_weight'] = ratio
 
         xgdmat = xgb.DMatrix(x, y)
-        self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=3000, verbose_eval=False)
+        self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=self.number_trees, verbose_eval=False)
 
         if self.x_alll == None:
             self.all_shape = x_all.shape
@@ -101,6 +103,10 @@ class XGBoostClassifier(object):
 
         if self.all_shape != x_all.shape:
             self.x_alll = xgb.DMatrix(x_all)
+
+
+
+        print ("all nonzeros:  " +  str(len(x_all.nonzero()[0])) + " size: " + str(x_all.shape))
 
 
         # predict
@@ -126,7 +132,7 @@ class XGBoostClassifier(object):
             print "weight ratio: " + str(ratio)
             self.params[column_id]['scale_pos_weight'] = ratio
         xgdmat = xgb.DMatrix(x, y)
-        self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=3000, verbose_eval=False)
+        self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=self.number_trees, verbose_eval=False)
         # predict
         probability_prediction = self.model[column_id].predict(self.X_train)
         class_prediction = (probability_prediction > 0.5)
