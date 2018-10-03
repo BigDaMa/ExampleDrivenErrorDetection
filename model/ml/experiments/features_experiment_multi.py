@@ -27,7 +27,7 @@ if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
-data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
+data_list = [Restaurant]
 
 
 
@@ -79,7 +79,7 @@ for dataset in data_list:
 
             my_array.append(my_dict)
 
-pool = mp.Pool(processes=13)
+pool = mp.Pool(processes=1)
 results = pool.map(run_multi, my_array)
 
 for r_i in range(len(results)):
