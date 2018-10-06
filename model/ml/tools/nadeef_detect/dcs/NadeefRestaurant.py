@@ -21,6 +21,11 @@ data = Restaurant()
 rules = []
 
 
+#not paper
+rules.append(UDF('categories', 'value != null && !value.contains("Restaurants")')
+#rules.append(UDF('ratingValue', 'value != null && value.length() > 1'))
+
+
 #FDs
 '''
 rules.append(FD(Set(["aka", 'extra_phones', 'name', 'streetAddress', 'website', 'phone', 'ratingValue']), "years_in_business"))
