@@ -551,7 +551,7 @@ def visualize_model(dataSet, column_id, final_gb, feature_name_list, train, targ
                 if dataSet.is_column_applicable(err_corr_id) and err_corr_id != column_id:
                     feature_name_list_err_corr.append("error_corr_" + str(dataSet.clean_pd.columns[err_corr_id]))
 
-        '''
+
         directory = Config.get("logging.folder") + '/out/html/' + dataSet.name
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -574,7 +574,7 @@ def visualize_model(dataSet, column_id, final_gb, feature_name_list, train, targ
             webf.write(html)
         webf.close()
         # webbrowser.open(url)
-        '''
+
     except jinja2.exceptions.UndefinedError:
         print(format_as_text(explain_weights(final_gb[column_id], feature_names=feature_name_list_err_corr)))
 
