@@ -28,10 +28,7 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-#data_list = [BlackOakDataSetUppercase, FlightHoloClean, HospitalHoloClean]
-
-data_list = [FlightHoloClean]
-
+data_list = [BlackOakDataSetUppercase, FlightHoloClean, HospitalHoloClean]
 
 
 parameters = []
@@ -48,7 +45,7 @@ parameters = []
 
 #parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size': 100, 'correlationFeatures': False}) #char unigrams + meta data + correlation + word2vec
 
-parameters.append({'use_lstm_only': True, 'use_lstm': True}) #LSTM
+parameters.append({'use_metadata_only': False, 'use_metadata': False, 'correlationFeatures': False, 'use_lstm_only': True, 'use_lstm': True}) #LSTM
 
 
 
@@ -82,15 +79,14 @@ for dataset in data_list:
             my_dict = parameters[param_i].copy()
             my_dict['dataSet'] = data
             my_dict['classifier_model'] = classifier
-            my_dict['checkN'] = 1
+            my_dict['checkN'] = 10
             fnames.append(feature_names[param_i])
 
             my_array.append(my_dict)
 
-#pool = mp.Pool(processes=1)
-#results = pool.map(run_multi, my_array)
+pool = mp.Pool(processes=13)
+results = pool.map(run_multi, my_array)
 
-run(**my_array[0])
 
 for r_i in range(len(results)):
     r = results[r_i]
