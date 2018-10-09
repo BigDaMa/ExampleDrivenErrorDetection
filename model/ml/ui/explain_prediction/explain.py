@@ -174,6 +174,13 @@ class Example(QWidget):
     def selectCell(self, row, column):
         print("Row %d and Column %d was clicked" % (row, column))
 
+        print("len: " + str(self.feature_matrix[column].shape[1]))
+        print("len2: " + str(len(self.classifier[column].feature_names)))
+
+        print("len: " + str(self.feature_matrix[column]))
+        print("len3: " + str(len(self.feature_name_list[column])))
+        print("len2: " + str(self.classifier[column].feature_names))
+
         self.dialogTextBrowser.textBrowser.setText(self.explain_prediction(self.feature_matrix[column][row,:], self.classifier[column], column))
 
         self.dialogTextBrowser.exec_()

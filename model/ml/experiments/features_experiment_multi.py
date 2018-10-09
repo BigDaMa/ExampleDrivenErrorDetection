@@ -29,7 +29,7 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [Restaurant]
+data_list = [FlightHoloClean]
 
 
 parameters = []
@@ -48,9 +48,16 @@ parameters = []
 
 
 #parameters.append({'use_tf_idf': False, 'visualize_models': True, 'store_everything': True, 'cross_validation_rounds': 1000}) #char unigrams + meta data + correlation + (no tf idf)
+#parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_active_clean': True, 'use_activeclean_only': True, 'visualize_models': True}) #active clean
 
-parameters.append({'use_metadata_only': False, 'correlationFeatures': False, 'use_metadata': False, 'use_active_clean': True, 'use_activeclean_only': True, 'visualize_models': True}) #active clean
-
+parameters.append({'use_word2vec': True,
+                   #'use_tf_idf': False,
+                   'use_word2vec_only': False,
+                   'w2v_size': 100,
+                   'visualize_models': True,
+                   #'store_everything': True,
+                   'cross_validation_rounds': 100,
+                   'label_iterations': 6}) #char unigrams + meta data + correlation + word2vec
 
 
 #LSTM
@@ -61,9 +68,9 @@ feature_names = [#'char_unigrams',
                  #'char unigrams and bigrams',
                  #'char unigrams + meta data',
                  #'char unigrams + meta data + correlation',
-                 #'char unigrams + meta data + correlation + word2vec',
+                 'char unigrams + meta data + correlation + word2vec',
                  #'word2vec',
-                 'ActiveClean',
+                 #'ActiveClean',
                  #'BoostClean'
                  ]
 

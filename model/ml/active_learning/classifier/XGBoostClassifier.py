@@ -66,7 +66,14 @@ class XGBoostClassifier(object):
             print "weight ratio: " + str(ratio)
             self.params[column_id]['scale_pos_weight'] = ratio
 
-        xgdmat = xgb.DMatrix(x, y, feature_names=feature_names)
+
+        features_new = []
+        for f_name in feature_names:
+            features_new.append(f_name.replace('_', '').replace('-','').encode('utf-8'))
+
+
+        xgdmat = xgb.DMatrix(x, y, feature_names=features_new)
+        #xgdmat = xgb.DMatrix(x, y)
         self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=self.number_trees, verbose_eval=False)
 
 
@@ -74,15 +81,21 @@ class XGBoostClassifier(object):
             all_trees = self.model[column_id].get_dump()
             print "number trees:" + str(len(all_trees))
 
-            plot_tree(self.model[column_id])
 
-            fig = plt.gcf()
-            fig.set_size_inches(150, 100)
-            plt.savefig('/tmp/' + str(column_id) + "_" + column_names[column_id] + '.pdf')
+            try:
+                plot_tree(self.model[column_id])
+
+                fig = plt.gcf()
+                fig.set_size_inches(150, 100)
+                plt.savefig('/tmp/' + str(column_id) + "_" + column_names[column_id] + '.pdf')
+            except:
+                pass
+
 
 
         # predict
-        all_records = xgb.DMatrix(x_all, feature_names=feature_names)
+        all_records = xgb.DMatrix(x_all, feature_names=features_new)
+        #all_records = xgb.DMatrix(x_all)
         probability_prediction = self.model[column_id].predict(all_records)
         class_prediction = (probability_prediction > 0.5)
 
