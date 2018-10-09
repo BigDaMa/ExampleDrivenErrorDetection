@@ -63,12 +63,12 @@ def load_model(dataSet, classifier):
 
 def add_lstm_features(data, use_lstm_only, all_matrix_train, feature_name_list):
 	lstm_path = ""
-	if dataSet.name == 'Flight HoloClean':
-		lstm_path = "/home/felix/SequentialPatternErrorDetection/deepfeatures/Flights/last/"
-	elif dataSet.name == 'HospitalHoloClean':
-		lstm_path = "/home/felix/SequentialPatternErrorDetection/deepfeatures/HospitalHoloClean/last/"
-	elif dataSet.name == 'BlackOakUppercase':
-		lstm_path = "/home/felix/SequentialPatternErrorDetection/deepfeatures/BlackOakUppercase/last/"
+	if data.name == 'Flight HoloClean':
+		lstm_path = Config.get('lstm.folder') + "/Flights/last/"
+	elif data.name == 'HospitalHoloClean':
+		lstm_path = Config.get('lstm.folder') + "/HospitalHoloClean/last/"
+	elif data.name == 'BlackOakUppercase':
+		lstm_path = Config.get('lstm.folder') + "/BlackOakUppercase/last/"
 	else:
 		raise Exception('We have no potential model for this dataset yet')
 
@@ -113,6 +113,7 @@ def run(dataSet,
 			 use_metadata = True,
 			 use_metadata_only = False,
 			 use_lstm=False,
+             use_lstm_only=False,
 			 user_error_probability=0.00,
 			 step_size=10,
 			 cross_validation_rounds=1,
@@ -221,7 +222,7 @@ def run(dataSet,
 																						 use_metadata_only)
 
 		if use_lstm:
-			all_matrix_train, all_matrix_test, feature_name_list = add_lstm_features(dataSet, False, all_matrix_train,
+			all_matrix_train, all_matrix_test, feature_name_list = add_lstm_features(dataSet, use_lstm_only, all_matrix_train,
 																					 feature_name_list)
 
 
