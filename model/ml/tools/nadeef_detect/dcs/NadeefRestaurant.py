@@ -22,7 +22,7 @@ rules = []
 
 
 #not paper
-rules.append(UDF('categories', 'value != null && !value.contains("Restaurants")')
+rules.append(UDF('categories', 'value != null && !value.contains("Restaurants")'))
 #rules.append(UDF('ratingValue', 'value != null && value.length() > 1'))
 
 
