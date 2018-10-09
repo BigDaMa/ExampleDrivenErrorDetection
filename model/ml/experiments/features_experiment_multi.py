@@ -28,7 +28,7 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list=[BlackOakDataSetUppercase]
+data_list = [BlackOakDataSetUppercase, FlightHoloClean, HospitalHoloClean]
 
 
 
@@ -80,12 +80,12 @@ for dataset in data_list:
             my_dict = parameters[param_i].copy()
             my_dict['dataSet'] = data
             my_dict['classifier_model'] = classifier
-            my_dict['checkN'] = 1
+            my_dict['checkN'] = 10
             fnames.append(feature_names[param_i])
 
             my_array.append(my_dict)
 
-pool = mp.Pool(processes=1)
+pool = mp.Pool(processes=13)
 results = pool.map(run_multi, my_array)
 
 for r_i in range(len(results)):
