@@ -34,8 +34,8 @@ rules.append(UDF('city', 'value != null && value.equals("NORTH")'))
 rules.append(UDF('city', 'value != null && value.equals("PALM")'))
 rules.append(UDF('city', 'value != null && value.equals("WEST")'))
 
-#rules.append(FD(Set(["ZIP"]), "State"))
-#rules.append(FD(Set(["Address"]), "State"))
+rules.append(FD(Set(["ZIP"]), "State"))
+rules.append(FD(Set(["Address"]), "State"))
 
 
 ts = time.time()
