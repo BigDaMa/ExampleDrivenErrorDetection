@@ -18,3 +18,7 @@ We are working hard to provide as much documentation as possible over the time. 
 To run the experiments, first, you need to set the paths in a configuration file with the name of your machine. Examples can be found here: ~/model/ml/configuration/resources/
 
 Then, you can adapt the file ~/model/ml/experiments/features_experiment_multi.py to run the experiments that you are interested in.
+
+
+## Scenario
+![ed2 dashboard](https://user-images.githubusercontent.com/5217389/47003848-77012800-d130-11e8-8765-5e9f9e3f0010.png)
