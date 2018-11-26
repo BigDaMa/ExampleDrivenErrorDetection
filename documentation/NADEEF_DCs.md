@@ -32,13 +32,6 @@ rules.append(FD(Set(["ZIP"]), "State"))
 rules.append(FD(Set(["Address"]), "State"))
 ```
 
-## Citations:
-```
-rules.append(UDF('article_jissue', 'value == null'))
-rules.append(UDF('article_jvolumn', 'value == null'))
-rules.append(FD(Set(['jounral_abbreviation']), 'journal_issn'))
-```
-
 ## Flights:
 ```
 rules.append(UDF('sched_dep_time', 'value == null || (value != null && value.length() > 10)'))
@@ -99,6 +92,13 @@ No constraints. For instance, the following FDs result in 0% F1-score:
 ```
 rules.append(FD(Set(["city"]), "state"))
 rules.append(FD(Set(["zipcode"]), "state"))
+```
+
+## Citations:
+```
+rules.append(UDF('article_jissue', 'value == null'))
+rules.append(UDF('article_jvolumn', 'value == null'))
+rules.append(FD(Set(['jounral_abbreviation']), 'journal_issn'))
 ```
 
 ## Salary:
