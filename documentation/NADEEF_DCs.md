@@ -44,6 +44,24 @@ rules.append(UDF('sched_dep_time', 'value == null || (value != null && value.len
 rules.append(UDF('act_dep_time', 'value == null || (value != null && value.length() > 10)'))
 rules.append(UDF('sched_arr_time', 'value == null || (value != null && value.length() > 10)'))
 rules.append(UDF('act_arr_time', 'value == null || (value != null && value.length() > 10)'))
+
+rules.append(FD(Set(["sched_arr_time", "sched_dep_time"]), "act_dep_time"))
+```
+Furthermore, among others, we tried the following functional dependencies but none of them increased the F1-score:
+```
+rules.append(FD(Set(["flight"]), "act_arr_time"))
+rules.append(FD(Set(["flight"]), "sched_arr_time"))
+rules.append(FD(Set(["flight"]), "act_dep_time"))
+rules.append(FD(Set(["flight"]), "sched_dep_time"))
+rules.append(FD(Set(["act_arr_time", "sched_arr_time"]), "act_dep_time"))
+rules.append(FD(Set(["act_arr_time", "sched_arr_time"]), "sched_dep_time"))
+rules.append(FD(Set(["act_arr_time", "act_dep_time"]), "sched_arr_time"))
+rules.append(FD(Set(["act_arr_time", "act_dep_time"]), "sched_dep_time"))
+rules.append(FD(Set(["act_arr_time", "sched_dep_time"]), "sched_arr_time"))
+rules.append(FD(Set(["act_arr_time", "sched_dep_time"]), "act_dep_time"))
+rules.append(FD(Set(["act_dep_time", "sched_arr_time"]), "act_arr_time"))
+rules.append(FD(Set(["act_dep_time", "sched_arr_time"]), "sched_dep_time"))
+rules.append(FD(Set(["sched_arr_time", "sched_dep_time"]), "act_arr_time"))
 ```
 
 ## Hospital:
