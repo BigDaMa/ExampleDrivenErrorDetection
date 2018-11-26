@@ -4,6 +4,7 @@ We leveraged both functional dependencies and denial constraints to detect error
 Here is the list of constraints that we leveraged for each dataset:
 
 ## Beers:
+The following denial constraints already achieve 100% F1-score:
 ```
 rules.append(UDF('ibu', 'value.equals("N/A")'))
 rules.append(UDF('abv', '(value != null && !isNumeric(value))'))
