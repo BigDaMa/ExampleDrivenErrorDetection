@@ -1,4 +1,4 @@
-# NADEEF contraints
+# NADEEF constraints
 
 We leveraged both functional dependencies and denial constraints to detect errors with NADEEF. 
 Here is the list of constraints that we leveraged for each dataset:
