@@ -94,7 +94,11 @@ rules.append(UDF('Duration', 'value != null && value.length() > 7'))
 ```
 
 ## Restaurants:
-No constraints
+No constraints. For instance, the following FDs result in 0% F1-score:
+```
+rules.append(FD(Set(["city"]), "state"))
+rules.append(FD(Set(["zipcode"]), "state"))
+```
 
 ## Salary:
 ```
