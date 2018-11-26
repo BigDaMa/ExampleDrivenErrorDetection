@@ -54,6 +54,18 @@ rules.append(UDF('phone_number', '(value != null && !isNumeric(value))'))
 rules.append(UDF('emergency_service', '!(value.equals("Yes") || value.equals("No"))'))
 rules.append(UDF('state', '!(value.equals("AL") || value.equals("AK"))'))
 ```
+Furthermore, among others, we tried the following functional dependencies but none of them increased the F1-score:
+```
+rules.append(FD(Set(["phone_number"]), "zip_code"))
+rules.append(FD(Set(["phone_number"]), "city"))
+rules.append(FD(Set(["phone_number"]), "state"))
+rules.append(FD(Set(["zip_code"]), "city"))
+rules.append(FD(Set(["zip_code"]), "state"))
+rules.append(FD(Set(["measure_code"]), "measure_name"))
+rules.append(FD(Set(["measure_code"]), "condition"))
+rules.append(FD(Set(["measure_code", "provider_number"]), "stateavg"))
+rules.append(FD(Set(["measure_code", "state"]), "stateavg"))
+```
 
 ## Movies:
 ```
