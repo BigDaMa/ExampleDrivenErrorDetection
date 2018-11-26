@@ -86,6 +86,12 @@ rules.append(UDF('RatingValue', 'value != null && value.length() != 3'))
 rules.append(UDF('Id', 'value != null && value.length() != 9'))
 rules.append(UDF('Duration', 'value != null && value.length() > 7'))
 ```
+Furthermore, among others, we tried the following functional dependencies but none of them increased the F1-score:
+```
+rules.append(FD(Set(["Cast", "Duration"]), "Actors")) #0
+rules.append(FD(Set(["Description", "Release_Date"]), "Country"))
+rules.append(FD(Set(["Name", "Year"]), "Language"))
+```
 
 ## Restaurants:
 No constraints. For instance, the following FDs result in 0% F1-score:
