@@ -2,6 +2,9 @@
 
 Traditional error detection approaches require user-defined parameters and rules. Thus, the user has to know both the error detection system and the data. However, we can also formulate error detection as a semi-supervised classification problem that only requires domain expertise. The challenges for such an approach are twofold: (1) to represent the data in a way that enables a classification model to identify various kinds of data errors, and (2) to pick the most promising data values for learning. In this paper, we address these challenges with our new example-driven error detection method (ED2). First, we discuss and identify the appropriate features to locate different kinds of data errors across different data types. Second, we present a new two-dimensional multi-classifier sampling strategy for active learning. The combined application of these techniques enables the convergence of the classification task with high detection accuracy. On several real-world datasets, ED2 requires, on average, only 1\% labels to outperform existing error detection approaches that are manually configured and tuned.
 
+## Datasets
+We provide the dirty and the clean version of a number of [datasets](../master/datasets).
+
 ## Additional Evaluations
 In addition to the charts provided in the paper, we provide additional evaluations on more datasets:
 
