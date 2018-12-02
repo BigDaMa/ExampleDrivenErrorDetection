@@ -18,11 +18,34 @@ if not os.path.exists(path_folder):
 
 data = Restaurant()
 
+
+
 rules = []
 
+rules.append(FD(Set(["extra_phones", "payment_method", "zipcode"]), "city"))
+
+'''
+rules.append(FD(Set(["city"]), "state"))
+rules.append(FD(Set(["zipcode"]), "state"))
+'''
+
+'''
+[restaurant2.csv.extra-phones,
+ restaurant2.csv.payment-method,
+ restaurant2.csv.zipCode]	restaurant2.csv.city
 
 
+[restaurant2.csv.aka,
+ restaurant2.csv.payment-method,
+ restaurant2.csv.zipCode]	restaurant2.csv.city
 
+[restaurant2.csv.payment-method,
+ restaurant2.csv.years-in-business,
+ restaurant2.csv.zipCode]	restaurant2.csv.city
+
+[restaurant2.csv.streetAddress,
+ restaurant2.csv.zipCode]	restaurant2.csv.city
+'''
 
 
 

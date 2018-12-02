@@ -94,10 +94,16 @@ rules.append(FD(Set(["Cast_1", 'Description', 'RatingValue', 'Director']), "Name
         '''
 
 
+
 rules.append(UDF('Year', 'value != null && value.length() != 4'))
 rules.append(UDF('RatingValue', 'value != null && value.length() != 3'))
 rules.append(UDF('Id', 'value != null && value.length() != 9'))
 rules.append(UDF('Duration', 'value != null && value.length() > 7'))
+
+
+#rules.append(FD(Set(["Cast", "Duration"]), "Actors")) #0
+#rules.append(FD(Set(["Description", "Release_Date"]), "Country"))
+#rules.append(FD(Set(["Name", "Year"]), "Language"))
 
 
 #FDs with best info gain did not bring anything
