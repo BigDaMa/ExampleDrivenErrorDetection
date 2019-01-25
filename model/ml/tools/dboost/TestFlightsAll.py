@@ -10,10 +10,10 @@ import time
 data = FlightHoloClean()
 
 steps = 100 #grid for search
-N = 1#10 # number runs
+N = 10 # number runs
 
 
-defined_range_labeled_cells = [100]#[20,40,60,80,100,120]
+defined_range_labeled_cells = [20,40,60,80,100,120]
 
 sizes = np.array(defined_range_labeled_cells, dtype=float) # in cells
 
