@@ -6,7 +6,7 @@ from ml.datasets.DataSet import DataSet
 
 
 class Movies(DataSet):
-
+    name = "Movies"
     def __init__(self):
         clean_df = pd.read_csv(Config.get("datapool.folder") + '/movies/rotten_tomatoes.csv', header=0, dtype=object, na_filter=False)
         dirty_df = pd.read_csv(Config.get("datapool.folder") + '/movies/dirty.csv', header=0, dtype=object, na_filter=False)

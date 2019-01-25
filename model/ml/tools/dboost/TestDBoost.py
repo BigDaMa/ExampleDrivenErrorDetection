@@ -52,6 +52,8 @@ def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file
             current_precision = run.calculate_total_precision()
             current_recall = run.calculate_total_recall()
 
+            run.write_detected_matrix('/tmp/dboost_gausian.npy')
+
             print "--gaussian " + str(g) + " --statistical " + str(s)
             print "Fscore: " + str(current_fscore)
             print "Precision: " + str(run.calculate_total_precision())
@@ -89,6 +91,8 @@ def search_histogram_stat(data, data_sample, data_sample_ground_truth,result_fil
                 current_precision = run.calculate_total_precision()
                 current_recall = run.calculate_total_recall()
 
+                run.write_detected_matrix('/tmp/dboost_hist.npy')
+
                 print "peak: " + str(p) + " outlier: " + str(o) + " --statistical " + str(s)
                 print "Fscore: " + str(current_fscore)
                 print "Precision: " + str(run.calculate_total_precision())
@@ -108,7 +112,13 @@ def search_histogram_stat(data, data_sample, data_sample_ground_truth,result_fil
     return best_params, best_fscore, precision, recall
 
 
-def search_mixture_stat(data, data_sample, data_sample_ground_truth,result_file, n_subpops_s, threshold_s, statistical_range):
+def search_mixture_stat(data,
+                        data_sample,
+                        data_sample_ground_truth,
+                        result_file,
+                        n_subpops_s,
+                        threshold_s,
+                        statistical_range):
     best_params = {}
     best_fscore = 0.0
     precision = 0.0
@@ -126,6 +136,8 @@ def search_mixture_stat(data, data_sample, data_sample_ground_truth,result_file,
                 current_fscore = run.calculate_total_fscore()
                 current_precision = run.calculate_total_precision()
                 current_recall = run.calculate_total_recall()
+
+                run.write_detected_matrix('/tmp/dboost_mixture.npy')
 
                 print "n_subpops: " + str(p) + " threshold: " + str(t) + " --statistical " + str(s)
                 print "Fscore: " + str(current_fscore)
@@ -238,11 +250,13 @@ def grid_search_by_sample_mixture(data, sample_size, steps):
 
 
 def run_params_gaussian(data, params):
-    n = data.shape[0]
+    #n = data.shape[0]
 
-    data_sample, random_index = sample(data.dirty_pd, n)
+    #data_sample, random_index = sample(data.dirty_pd, n)
+    data_sample = data.dirty_pd
 
-    data_sample_ground_truth = data.matrix_is_error[random_index, :]
+    #data_sample_ground_truth = data.matrix_is_error[random_index, :]
+    data_sample_ground_truth = data.matrix_is_error
 
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
@@ -265,11 +279,13 @@ def run_params_gaussian(data, params):
     return best_fscore, precision, recall
 
 def run_params_hist(data, params):
-    n = data.shape[0]
+    # n = data.shape[0]
 
-    data_sample, random_index = sample(data.dirty_pd, n)
+    # data_sample, random_index = sample(data.dirty_pd, n)
+    data_sample = data.dirty_pd
 
-    data_sample_ground_truth = data.matrix_is_error[random_index, :]
+    # data_sample_ground_truth = data.matrix_is_error[random_index, :]
+    data_sample_ground_truth = data.matrix_is_error
 
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
@@ -295,11 +311,13 @@ def run_params_hist(data, params):
 
 
 def run_params_mixture(data, params):
-    n = data.shape[0]
+    # n = data.shape[0]
 
-    data_sample, random_index = sample(data.dirty_pd, n)
+    # data_sample, random_index = sample(data.dirty_pd, n)
+    data_sample = data.dirty_pd
 
-    data_sample_ground_truth = data.matrix_is_error[random_index, :]
+    # data_sample_ground_truth = data.matrix_is_error[random_index, :]
+    data_sample_ground_truth = data.matrix_is_error
 
     sample_file = "/tmp/data_sample.csv"
     result_file = "/tmp/dboostres.csv"
@@ -344,6 +362,10 @@ def test_multiple_sizes(data, steps, N=3, sizes = [10, 100, 1000], run_algo_func
     avg_precision = []
     avg_recall = []
 
+    std_fscores = []
+    std_precision = []
+    std_recall = []
+
     for t in sizes:
         times = []
         fscore = []
@@ -378,15 +400,57 @@ def test_multiple_sizes(data, steps, N=3, sizes = [10, 100, 1000], run_algo_func
         avg_precision.append(np.mean(prec_list))
         avg_recall.append(np.mean(rec_list))
 
+        std_fscores.append(np.std(fscore))
+        std_precision.append(np.std(prec_list))
+        std_recall.append(np.std(rec_list))
+
     print "labelled rows: " + str(sizes)
     print "time: " + str(avg_times)
-    print "fscore: " + str(avg_fscores)
-    print "precision: " + str(avg_precision)
-    print "recall: " + str(avg_recall)
+    print "avg fscore: " + str(avg_fscores)
+    print "avg precision: " + str(avg_precision)
+    print "avg recall: " + str(avg_recall)
+
+    print "std fscore: " + str(std_fscores)
+    print "std precision: " + str(std_precision)
+    print "std recall: " + str(std_recall)
+
+    if log_file != None:
+        with open(log_file, "a") as myfile:
+            myfile.write("labelled rows: " + str(sizes) + '\n' + "time: " + str(avg_times)+ '\n' + "avg fscore: " +
+                         str(avg_fscores)+ '\n' + "avg precision: " + str(avg_precision)+ '\n' + "avg recall: " +
+                         str(avg_recall)+ '\n' + "std fscore: " + str(std_fscores)+ '\n' + "std precision: " +
+                         str(std_precision)+ '\n' + "std recall: " + str(std_recall)+ '\n')
+
+    return avg_times, avg_fscores, avg_precision, avg_recall, std_fscores, std_precision, std_recall
+
+
+
+def toLatex(defined_range_labeled_cells, avg_times, avg_fscores, avg_precision, avg_recall, std_fscores, std_precision, std_recall, log_file):
+    #chart
+    latex_str = "\n\\addplot+[mark=x] coordinates{"
+    for i in range(len(defined_range_labeled_cells)):
+        latex_str += '(' + str(defined_range_labeled_cells[i]) + ',' + str(avg_fscores[i]) +')'
+    latex_str += '};\n\n'
+
+    #table
+    table_str = ''
+    for i in range(len(defined_range_labeled_cells)):
+        table_str += 'labled cells: ' + str(defined_range_labeled_cells[i]) + '\n\n'
+        table_str += str(avg_precision[i]) + ' $\pm$ ' + str(std_precision) +  ' & ' \
+                     + str(avg_recall[i]) + ' $\pm$ ' + str(std_recall) + ' & ' \
+                     + str(avg_fscores[i]) + ' $\pm$ ' + str(std_fscores)  \
+                     + '&&' + '\n\n'
+
+    with open(log_file, "a") as myfile:
+        myfile.write(latex_str + table_str)
+
+
+
+
 
 
 def test_multiple_sizes_gaussian(data, steps, N=3, sizes = [10, 100, 1000], log_file=None):
-    test_multiple_sizes(data, steps, N, sizes, test_gaussian, log_file)
+    return test_multiple_sizes(data, steps, N, sizes, test_gaussian, log_file)
 
 def test_multiple_sizes_hist(data, steps, N=3, sizes = [10, 100, 1000], log_file=None):
     test_multiple_sizes(data, steps, N, sizes, test_hist, log_file)

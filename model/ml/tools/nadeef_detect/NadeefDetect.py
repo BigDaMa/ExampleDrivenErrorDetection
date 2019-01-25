@@ -191,11 +191,11 @@ class NadeefDetect:
             self.get_result(connection, cursor, name,result_path)
 
 
-            tool = NadeefParse(data, result_path, column_map)
+            self.tool = NadeefParse(data, result_path, column_map)
 
-            cur_fscore = tool.calculate_total_fscore()
-            cur_precision = tool.calculate_total_precision()
-            cur_recall = tool.calculate_total_recall()
+            cur_fscore = self.tool.calculate_total_fscore()
+            cur_precision = self.tool.calculate_total_precision()
+            cur_recall = self.tool.calculate_total_recall()
 
             fscore.append(cur_fscore)
             precision.append(cur_precision)

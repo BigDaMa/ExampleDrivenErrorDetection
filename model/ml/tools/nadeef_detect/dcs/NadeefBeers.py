@@ -43,3 +43,4 @@ rules.append(UDF('state', '(value == null)'))
 ts = time.time()
 log_file = path_folder + "/" + str(data.name) + "_time_" + str(ts) + "_Nadeef.txt"
 nadeef = NadeefDetect(data, rules, log_file=log_file)
+nadeef.tool.write_detected_matrix()

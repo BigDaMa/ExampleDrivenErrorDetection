@@ -23,6 +23,10 @@ class Tool(object):
         """validate whether we loaded the data set correctly"""
         return
 
+
+    def write_detected_matrix(self, output_path='/tmp/matrix_detected.npy'):
+        np.save(output_path, self.matrix_detected)
+
     def validate_positives(self):
         print "hello"
 

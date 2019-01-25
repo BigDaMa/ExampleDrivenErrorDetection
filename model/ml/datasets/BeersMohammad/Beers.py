@@ -5,6 +5,7 @@ from ml.configuration.Config import Config
 from ml.datasets.DataSet import DataSet
 
 class Beers(DataSet):
+    name = "Beers"
 
     def __init__(self):
         clean_df = pd.read_csv(Config.get("datapool.folder") + '/Beers_Mohammad/clean.csv', header=0, dtype=object, na_filter=False)

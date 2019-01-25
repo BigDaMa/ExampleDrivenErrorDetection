@@ -15,3 +15,5 @@ print "Recall: " + str(tool.calculate_total_recall())
 
 for c in range(data.shape[1]):
     print tool.calculate_fscore_by_column(c)
+
+tool.write_detected_matrix()

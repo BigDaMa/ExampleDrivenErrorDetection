@@ -2,33 +2,39 @@ import numpy as np
 
 from ml.datasets.flights.FlightHoloClean import FlightHoloClean
 from ml.tools.dboost.TestDBoost import test_multiple_sizes_gaussian
+from ml.tools.dboost.TestDBoost import toLatex
+from ml.configuration.Config import Config
+import os
 
 data = FlightHoloClean()
 
-''''
-steps = 100
-sizes = [10, 20, 30, 40, 50]
-N = 5
+steps = 100 #grid for search
+N = 10 # number runs
 
-test_multiple_sizes(data, steps, N, sizes)
-'''
 
-steps = 100
-N = 1
-labels = 216
+defined_range_labeled_cells = [20,40,60,80,100,120]
 
-nr_rows = int(float(labels) / data.shape[1])
-sizes = np.array([4000], dtype=float) # in cells
-#sizes = np.array([150], dtype=float) # in cells
+sizes = np.array(defined_range_labeled_cells, dtype=float) # in cells
 
 print sizes
 dirty_column_fraction = data.get_number_dirty_columns() / float(data.shape[1])
-sizes /= dirty_column_fraction
-sizes /= float(data.shape[1])
-print sizes
+sizes /= dirty_column_fraction #cells converted
+sizes /= float(data.shape[1]) #cells to rows
 row_sizes = np.array(sizes, dtype=int) # in rows
 
-log_file = "/home/felix/ExampleDrivenErrorDetection/log/dBoost/flights/Flights_gaus_new.txt"
+log_file = path_folder = Config.get("logging.folder") + "/out/dboost" + "/Flights_gaus_new.txt"
+
+if not os.path.exists(path_folder):
+    os.makedirs(path_folder)
 
 
-test_multiple_sizes_gaussian(data, steps, N, row_sizes, log_file)
+avg_times, avg_fscores, avg_precision, avg_recall, std_fscores, std_precision, std_recall = test_multiple_sizes_gaussian(data, steps, N, row_sizes, log_file)
+
+toLatex(defined_range_labeled_cells, avg_times, avg_fscores, avg_precision, avg_recall, std_fscores, std_precision, std_recall, log_file)
+
+
+
+
+
+
+
