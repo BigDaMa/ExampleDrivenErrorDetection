@@ -24,7 +24,7 @@ sizes /= float(data.shape[1]) #cells to rows
 row_sizes = np.array(sizes, dtype=int) # in rows
 
 path_folder = Config.get("logging.folder") + "/out/dboost"
-log_file = path_folder + "/Flights_gaus_new " + time.time() + ".txt"
+log_file = path_folder + "/Flights_gaus_new " + str(time.time()) + ".txt"
 
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
