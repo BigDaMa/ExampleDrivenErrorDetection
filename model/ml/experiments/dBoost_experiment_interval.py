@@ -31,7 +31,7 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Restaurant, Movies, Beers, Citation]
-data_list = [FlightHoloClean]
+data_list = [BlackOakDataSetUppercase, HospitalHoloClean, Restaurant, Movies, Beers]
 
 steps = 100
 N = 10
