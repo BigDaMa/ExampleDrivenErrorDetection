@@ -53,7 +53,7 @@ def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file
             current_recall = run.calculate_total_recall()
 
             if write_out:
-                run.write_detected_matrix(Config.get("logging.folder") + "/out/dboost" + '/dboost_gausian_gausian' + str(g) + '_stat_' + str(s) + '.npy')
+                run.write_detected_matrix(Config.get("logging.folder") + "/out/dboost" + '/dboost_gausian_' + data.name + '_gausian' + str(g) + '_stat_' + str(s) + '.npy')
 
             print "--gaussian " + str(g) + " --statistical " + str(s)
             print "Fscore: " + str(current_fscore)
@@ -73,7 +73,7 @@ def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file
     return best_params, best_fscore, precision, recall
 
 
-def search_histogram_stat(data, data_sample, data_sample_ground_truth,result_file, peak_s, outlier_s, statistical_range):
+def search_histogram_stat(data, data_sample, data_sample_ground_truth,result_file, peak_s, outlier_s, statistical_range, write_out=False):
     best_params = {}
     best_fscore = 0.0
     precision = 0.0
@@ -92,7 +92,10 @@ def search_histogram_stat(data, data_sample, data_sample_ground_truth,result_fil
                 current_precision = run.calculate_total_precision()
                 current_recall = run.calculate_total_recall()
 
-                run.write_detected_matrix('/tmp/dboost_hist.npy')
+                if write_out:
+                    run.write_detected_matrix(
+                        Config.get("logging.folder") + "/out/dboost" + '/dboost_histogram_' + data.name + '_peak' + str(
+                            p) + '_outlier_' + str(o) + '_stat_' + str(s) + '.npy')
 
                 print "peak: " + str(p) + " outlier: " + str(o) + " --statistical " + str(s)
                 print "Fscore: " + str(current_fscore)
@@ -119,7 +122,8 @@ def search_mixture_stat(data,
                         result_file,
                         n_subpops_s,
                         threshold_s,
-                        statistical_range):
+                        statistical_range,
+                        write_out=False):
     best_params = {}
     best_fscore = 0.0
     precision = 0.0
@@ -138,7 +142,10 @@ def search_mixture_stat(data,
                 current_precision = run.calculate_total_precision()
                 current_recall = run.calculate_total_recall()
 
-                run.write_detected_matrix('/tmp/dboost_mixture.npy')
+                if write_out:
+                    run.write_detected_matrix(
+                        Config.get("logging.folder") + "/out/dboost" + '/dboost_' + data.name + '_mixture_subpop' + str(
+                            p) + '_threshold_' + str(t) + '_stat_' + str(s) + '.npy')
 
                 print "n_subpops: " + str(p) + " threshold: " + str(t) + " --statistical " + str(s)
                 print "Fscore: " + str(current_fscore)
@@ -302,7 +309,7 @@ def run_params_hist(data, params):
 
     print "Run on all: "
     _, best_fscore, precision, recall = search_histogram_stat(data, data_sample, data_sample_ground_truth, result_file, peak_range, outlier_range,
-                                       statistical_range)
+                                       statistical_range, True)
 
     runtime = (time.time() - total_start_time)
 
@@ -333,7 +340,7 @@ def run_params_mixture(data, params):
 
     print "Run on all: "
     _, best_fscore, precision, recall = search_mixture_stat(data, data_sample, data_sample_ground_truth, result_file, n_subpops_range, threshold_range,
-                                       statistical_range)
+                                       statistical_range, True)
 
     runtime = (time.time() - total_start_time)
 
@@ -454,8 +461,8 @@ def test_multiple_sizes_gaussian(data, steps, N=3, sizes = [10, 100, 1000], log_
     return test_multiple_sizes(data, steps, N, sizes, test_gaussian, log_file)
 
 def test_multiple_sizes_hist(data, steps, N=3, sizes = [10, 100, 1000], log_file=None):
-    test_multiple_sizes(data, steps, N, sizes, test_hist, log_file)
+    return test_multiple_sizes(data, steps, N, sizes, test_hist, log_file)
 
 def test_multiple_sizes_mixture(data, steps, N=3, sizes = [10, 100, 1000], log_file=None):
-    test_multiple_sizes(data, steps, N, sizes, test_mixture, log_file)
+    return test_multiple_sizes(data, steps, N, sizes, test_mixture, log_file)
 
