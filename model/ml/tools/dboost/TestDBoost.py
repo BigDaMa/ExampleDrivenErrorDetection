@@ -444,9 +444,9 @@ def toLatex(defined_range_labeled_cells, avg_times, avg_fscores, avg_precision, 
     table_str = ''
     for i in range(len(defined_range_labeled_cells)):
         table_str += 'labled cells: ' + str(defined_range_labeled_cells[i]) + '\n\n'
-        table_str += str(avg_precision[i]) + ' $\pm$ ' + str(std_precision) +  ' & ' \
-                     + str(avg_recall[i]) + ' $\pm$ ' + str(std_recall) + ' & ' \
-                     + str(avg_fscores[i]) + ' $\pm$ ' + str(std_fscores)  \
+        table_str += str(avg_precision[i]) + ' $\pm$ ' + str(std_precision[i]) +  ' & ' \
+                     + str(avg_recall[i]) + ' $\pm$ ' + str(std_recall[i]) + ' & ' \
+                     + str(avg_fscores[i]) + ' $\pm$ ' + str(std_fscores[i])  \
                      + '&&' + '\n\n'
 
     with open(log_file, "a") as myfile:
