@@ -5,14 +5,15 @@ from ml.tools.dboost.TestDBoost import test_multiple_sizes_gaussian
 from ml.tools.dboost.TestDBoost import toLatex
 from ml.configuration.Config import Config
 import os
+import time
 
 data = FlightHoloClean()
 
 steps = 100 #grid for search
-N = 10 # number runs
+N = 1#10 # number runs
 
 
-defined_range_labeled_cells = [20,40,60,80,100,120]
+defined_range_labeled_cells = [100]#[20,40,60,80,100,120]
 
 sizes = np.array(defined_range_labeled_cells, dtype=float) # in cells
 
@@ -22,7 +23,8 @@ sizes /= dirty_column_fraction #cells converted
 sizes /= float(data.shape[1]) #cells to rows
 row_sizes = np.array(sizes, dtype=int) # in rows
 
-log_file = path_folder = Config.get("logging.folder") + "/out/dboost" + "/Flights_gaus_new.txt"
+path_folder = Config.get("logging.folder") + "/out/dboost"
+log_file = path_folder + "/Flights_gaus_new " + time.time() + ".txt"
 
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)

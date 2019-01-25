@@ -34,7 +34,7 @@ def sample(x, n):
     return x.ix[random_index], random_index
 
 
-def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file, gaussian_range, statistical_range):
+def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file, gaussian_range, statistical_range, write_out=False):
     best_params = {}
     best_fscore = 0.0
     precision = 0.0
@@ -52,7 +52,8 @@ def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file
             current_precision = run.calculate_total_precision()
             current_recall = run.calculate_total_recall()
 
-            run.write_detected_matrix('/tmp/dboost_gausian.npy')
+            if write_out:
+                run.write_detected_matrix(Config.get("logging.folder") + "/out/dboost" + '/dboost_gausian_gausian' + str(g) + '_stat_' + str(s) + '.npy')
 
             print "--gaussian " + str(g) + " --statistical " + str(s)
             print "Fscore: " + str(current_fscore)
@@ -270,7 +271,7 @@ def run_params_gaussian(data, params):
 
     print "Run on all: "
     _, best_fscore, precision, recall = search_gaussian_stat(data, data_sample, data_sample_ground_truth, result_file, gaussian_range,
-                                       statistical_range)
+                                       statistical_range, True)
 
     runtime = (time.time() - total_start_time)
 
