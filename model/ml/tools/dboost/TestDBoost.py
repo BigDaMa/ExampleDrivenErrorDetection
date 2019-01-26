@@ -34,7 +34,7 @@ def sample(x, n):
     return x.ix[random_index], random_index
 
 
-def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file, gaussian_range, statistical_range, write_out=False):
+def search_gaussian_stat(data, data_sample, data_sample_ground_truth,sample_file, result_file, gaussian_range, statistical_range, write_out=False):
     best_params = {}
     best_fscore = 0.0
     precision = 0.0
@@ -42,7 +42,7 @@ def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file
 
     for g in gaussian_range:
         for s in statistical_range:
-            run_gaussian_stat(g, s)
+            run_gaussian_stat(g, s, sample_file, result_file)
 
             our_sample_data = DataSetBasic(data.name + " random" + str(data_sample.shape[0]), data_sample, data_sample_ground_truth)
 
@@ -60,9 +60,6 @@ def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file
             print "Precision: " + str(run.calculate_total_precision())
             print "Recall: " + str(run.calculate_total_recall())
 
-            #remove result file:
-            #os.remove(result_file)
-
             if current_fscore >= best_fscore:
                 best_fscore = current_fscore
                 precision = current_precision
@@ -73,7 +70,7 @@ def search_gaussian_stat(data, data_sample, data_sample_ground_truth,result_file
     return best_params, best_fscore, precision, recall
 
 
-def search_histogram_stat(data, data_sample, data_sample_ground_truth,result_file, peak_s, outlier_s, statistical_range, write_out=False):
+def search_histogram_stat(data, data_sample, data_sample_ground_truth,sample_file, result_file, peak_s, outlier_s, statistical_range, write_out=False):
     best_params = {}
     best_fscore = 0.0
     precision = 0.0
@@ -82,7 +79,7 @@ def search_histogram_stat(data, data_sample, data_sample_ground_truth,result_fil
     for p in peak_s:
         for o in outlier_s:
             for s in statistical_range:
-                run_histogram_stat(p, o, s)
+                run_histogram_stat(p, o, s, sample_file, result_file)
 
                 our_sample_data = DataSetBasic(data.name + " random" + str(data_sample.shape[0]), data_sample, data_sample_ground_truth)
 
@@ -102,9 +99,6 @@ def search_histogram_stat(data, data_sample, data_sample_ground_truth,result_fil
                 print "Precision: " + str(run.calculate_total_precision())
                 print "Recall: " + str(run.calculate_total_recall())
 
-                #remove result file:
-                #os.remove(result_file)
-
                 if current_fscore >= best_fscore:
                     best_fscore = current_fscore
                     precision = current_precision
@@ -119,6 +113,7 @@ def search_histogram_stat(data, data_sample, data_sample_ground_truth,result_fil
 def search_mixture_stat(data,
                         data_sample,
                         data_sample_ground_truth,
+                        sample_file,
                         result_file,
                         n_subpops_s,
                         threshold_s,
@@ -132,7 +127,7 @@ def search_mixture_stat(data,
     for p in n_subpops_s:
         for t in threshold_s:
             for s in statistical_range:
-                run_mixture_stat(p, t, s)
+                run_mixture_stat(p, t, s, sample_file, result_file)
 
                 our_sample_data = DataSetBasic(data.name + " random" + str(data_sample.shape[0]), data_sample, data_sample_ground_truth)
 
@@ -152,9 +147,6 @@ def search_mixture_stat(data,
                 print "Precision: " + str(run.calculate_total_precision())
                 print "Recall: " + str(run.calculate_total_recall())
 
-                #remove result file:
-                #os.remove(result_file)
-
                 if current_fscore >= best_fscore:
                     best_fscore = current_fscore
                     precision = current_precision
@@ -166,7 +158,12 @@ def search_mixture_stat(data,
     return best_params, best_fscore, precision, recall
 
 
+def get_files(data_sample):
+    sample_file = "/tmp/data_sample_" + str(time.time()) + "_" + str(random.randint(0,1000)) + ".csv"
+    data_sample.to_csv(sample_file, index=False, encoding='utf8')
+    result_file = "/tmp/dboostres_" + str(time.time()) + "_" + str(random.randint(0,1000)) + ".csv"
 
+    return sample_file, result_file
 
 def grid_search_by_sample_gaussian(data, sample_size, steps):
 
@@ -176,19 +173,16 @@ def grid_search_by_sample_gaussian(data, sample_size, steps):
 
     data_sample_ground_truth = data.matrix_is_error[random_index, :]
 
-    sample_file = "/tmp/data_sample.csv"
-    result_file = "/tmp/dboostres.csv"
-
-    data_sample.to_csv(sample_file, index=False, encoding='utf8')
-
+    sample_file, result_file = get_files(data_sample)
 
     total_start_time = time.time()
 
     gaussian_range = [((4.0 - 0.0) / steps) * step for step in range(steps)]
     statistical_range = [0.5]
 
-    best_params, best_fscore_1, precision_1, recall_1 = search_gaussian_stat(data, data_sample, data_sample_ground_truth, result_file, gaussian_range, statistical_range)
+    best_params, best_fscore_1, precision_1, recall_1 = search_gaussian_stat(data, data_sample, data_sample_ground_truth, sample_file, result_file, gaussian_range, statistical_range)
 
+    os.remove(sample_file)
 
     runtime = (time.time() - total_start_time)
 
@@ -205,10 +199,7 @@ def grid_search_by_sample_hist(data, sample_size, steps):
 
     data_sample_ground_truth = data.matrix_is_error[random_index, :]
 
-    sample_file = "/tmp/data_sample.csv"
-    result_file = "/tmp/dboostres.csv"
-
-    data_sample.to_csv(sample_file, index=False, encoding="utf8")
+    sample_file, result_file = get_files(data_sample)
 
 
     total_start_time = time.time()
@@ -217,8 +208,9 @@ def grid_search_by_sample_hist(data, sample_size, steps):
     outlier_range = [0.001, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
     statistical_range = [0.5]
 
-    best_params, best_fscore_1, precision_1, recall_1 = search_histogram_stat(data, data_sample, data_sample_ground_truth, result_file, peak_range, outlier_range, statistical_range)
+    best_params, best_fscore_1, precision_1, recall_1 = search_histogram_stat(data, data_sample, data_sample_ground_truth, sample_file, result_file, peak_range, outlier_range, statistical_range)
 
+    os.remove(sample_file)
 
     runtime = (time.time() - total_start_time)
 
@@ -235,10 +227,7 @@ def grid_search_by_sample_mixture(data, sample_size, steps):
 
     data_sample_ground_truth = data.matrix_is_error[random_index, :]
 
-    sample_file = "/tmp/data_sample.csv"
-    result_file = "/tmp/dboostres.csv"
-
-    data_sample.to_csv(sample_file, index=False, encoding='utf8')
+    sample_file, result_file = get_files(data_sample)
 
 
     total_start_time = time.time()
@@ -247,12 +236,14 @@ def grid_search_by_sample_mixture(data, sample_size, steps):
     threshold_range = [0.01, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]
     statistical_range = [0.5]
 
-    best_params, best_fscore_1, precision_1, recall_1 = search_mixture_stat(data, data_sample, data_sample_ground_truth, result_file, n_subpops_range, threshold_range, statistical_range)
+    best_params, best_fscore_1, precision_1, recall_1 = search_mixture_stat(data, data_sample, data_sample_ground_truth, sample_file, result_file, n_subpops_range, threshold_range, statistical_range)
 
 
     runtime = (time.time() - total_start_time)
 
     print "grid search runtime: " + str(runtime)
+
+    os.remove(sample_file)
 
     return best_params
 
@@ -266,10 +257,7 @@ def run_params_gaussian(data, params):
     #data_sample_ground_truth = data.matrix_is_error[random_index, :]
     data_sample_ground_truth = data.matrix_is_error
 
-    sample_file = "/tmp/data_sample.csv"
-    result_file = "/tmp/dboostres.csv"
-
-    data_sample.to_csv(sample_file, index=False, encoding='utf8')
+    sample_file, result_file = get_files(data_sample)
 
     total_start_time = time.time()
 
@@ -277,12 +265,14 @@ def run_params_gaussian(data, params):
     statistical_range = [params['statistical']]
 
     print "Run on all: "
-    _, best_fscore, precision, recall = search_gaussian_stat(data, data_sample, data_sample_ground_truth, result_file, gaussian_range,
+    _, best_fscore, precision, recall = search_gaussian_stat(data, data_sample, data_sample_ground_truth, sample_file, result_file, gaussian_range,
                                        statistical_range, True)
 
     runtime = (time.time() - total_start_time)
 
     print "runtime for one run on all data: " + str(runtime)
+
+    os.remove(sample_file)
 
     return best_fscore, precision, recall
 
@@ -295,11 +285,7 @@ def run_params_hist(data, params):
     # data_sample_ground_truth = data.matrix_is_error[random_index, :]
     data_sample_ground_truth = data.matrix_is_error
 
-    sample_file = "/tmp/data_sample.csv"
-    result_file = "/tmp/dboostres.csv"
-
-    import csv
-    data_sample.to_csv(sample_file, index=False, encoding="utf8")
+    sample_file, result_file = get_files(data_sample)
 
     total_start_time = time.time()
 
@@ -308,12 +294,14 @@ def run_params_hist(data, params):
     statistical_range = [params['statistical']]
 
     print "Run on all: "
-    _, best_fscore, precision, recall = search_histogram_stat(data, data_sample, data_sample_ground_truth, result_file, peak_range, outlier_range,
+    _, best_fscore, precision, recall = search_histogram_stat(data, data_sample, data_sample_ground_truth, sample_file, result_file, peak_range, outlier_range,
                                        statistical_range, True)
 
     runtime = (time.time() - total_start_time)
 
     print "runtime for one run on all data: " + str(runtime)
+
+    os.remove(sample_file)
 
     return best_fscore, precision, recall
 
@@ -327,10 +315,7 @@ def run_params_mixture(data, params):
     # data_sample_ground_truth = data.matrix_is_error[random_index, :]
     data_sample_ground_truth = data.matrix_is_error
 
-    sample_file = "/tmp/data_sample.csv"
-    result_file = "/tmp/dboostres.csv"
-
-    data_sample.to_csv(sample_file, index=False, encoding="utf8")
+    sample_file, result_file = get_files(data_sample)
 
     total_start_time = time.time()
 
@@ -339,12 +324,14 @@ def run_params_mixture(data, params):
     statistical_range = [params['statistical']]
 
     print "Run on all: "
-    _, best_fscore, precision, recall = search_mixture_stat(data, data_sample, data_sample_ground_truth, result_file, n_subpops_range, threshold_range,
+    _, best_fscore, precision, recall = search_mixture_stat(data, data_sample, data_sample_ground_truth, sample_file, result_file, n_subpops_range, threshold_range,
                                        statistical_range, True)
 
     runtime = (time.time() - total_start_time)
 
     print "runtime for one run on all data: " + str(runtime)
+
+    os.remove(sample_file)
 
     return best_fscore, precision, recall
 
