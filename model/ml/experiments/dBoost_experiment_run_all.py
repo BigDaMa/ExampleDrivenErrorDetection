@@ -25,7 +25,8 @@ data_list = [FlightHoloClean, BlackOakDataSetUppercase, Movies, Beers]
 
 models = [run_gaussian_stat, run_histogram_stat, run_mixture_stat]
 
-pool = mp.Pool(processes=20)
+processes = 20
+
 
 
 def create_grid(model):
@@ -107,8 +108,9 @@ def create_runs(datasets, models=[run_gaussian_stat, run_histogram_stat, run_mix
 
 
 
-def run_and_evaluate(params):
+def run_and_evaluate_dBoost(params):
     model = params['model']
+
     final_file = generate_dBoost_result_file_name(model, params['data'], params['parameter_grid_dict'], params['keys'])
 
     if not os.path.isfile(final_file):
@@ -122,6 +124,7 @@ def run_and_evaluate(params):
         run = DBoostMe(params['data'], result_file)
         run.write_detected_matrix(final_file)
 
+
 def clean_up(datasets):
     for dataset in datasets:
         d = dataset()
@@ -131,6 +134,7 @@ def clean_up(datasets):
 
 my_array = create_runs(data_list, models)
 
-results = pool.map(run_and_evaluate, my_array)
+pool = mp.Pool(processes=processes)
+results = pool.map(run_and_evaluate_dBoost, my_array)
 
 clean_up(data_list)
