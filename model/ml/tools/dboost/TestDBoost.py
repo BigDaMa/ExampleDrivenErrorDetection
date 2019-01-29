@@ -11,20 +11,19 @@ from ml.tools.dboost.DBoostMe import DBoostMe
 
 def run_gaussian_stat(gaussian, statistical, sample_file = "/tmp/data_sample.csv", result_file = "/tmp/dboostres.csv"):
     command = "python3 " + Config.get("dboost.py") + " -F ','  --gaussian " + str(
-        gaussian) + " --statistical " + str(statistical) + " " + sample_file + " > " + result_file
-
+        gaussian) + " --statistical " + str(statistical) + " '" + sample_file + "' > '" + result_file + "'"
     os.system(command)
 
 
 def run_histogram_stat(peak, outlier, statistical, sample_file = "/tmp/data_sample.csv", result_file = "/tmp/dboostres.csv"):
     command = "python3 " + Config.get("dboost.py") + " -F ','  --histogram " + str(
-        peak) + " " + str(outlier) + " --statistical " + str(statistical) + " " + sample_file + " > " + result_file
+        peak) + " " + str(outlier) + " --statistical " + str(statistical) + " '" + sample_file + "' > '" + result_file + "'"
 
     os.system(command)
 
 def run_mixture_stat(n_subpops, threshold, statistical, sample_file ="/tmp/data_sample.csv", result_file ="/tmp/dboostres.csv"):
     command = "python3 -W ignore " + Config.get("dboost.py") + " -F ','  --mixture " + str(
-        n_subpops) + " " + str(threshold) + " --statistical " + str(statistical) + " " + sample_file + " > " + result_file
+        n_subpops) + " " + str(threshold) + " --statistical " + str(statistical) + " '" + sample_file + "' > '" + result_file + "'"
 
     os.system(command)
 
