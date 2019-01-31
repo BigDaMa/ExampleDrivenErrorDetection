@@ -79,7 +79,7 @@ class Word2VecFeatures():
             for row_i in range(words.shape[0]):
                 try:
                     final_matrix[row_i, column_i * self.vector_size:(column_i + 1) * self.vector_size] = self.model[words[row_i, column_i]]
-                except KeyError:
+                except:
                     pass
 
         return final_matrix

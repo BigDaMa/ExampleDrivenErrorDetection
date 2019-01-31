@@ -87,6 +87,31 @@ def add_lstm_features(data, use_lstm_only, all_matrix_train, feature_name_list):
 	return all_matrix_train, all_matrix_test, feature_name_list
 
 
+def augment_features_with_predictions(data_x_matrix, all_matrix_train, current_predictions, column_id, train_chosen_ids):
+	x_all = all_matrix_train.copy()
+	for column_number, last_predictions in current_predictions.iteritems():
+		if column_number != column_id:
+			select_predictions = np.matrix(last_predictions).transpose()
+			try:
+				data_x_matrix = hstack((data_x_matrix, select_predictions[train_chosen_ids[column_id], :])).tocsr()
+				x_all = hstack((x_all, select_predictions)).tocsr()
+			except:
+				data_x_matrix = np.hstack((data_x_matrix, select_predictions[train_chosen_ids[column_id], :]))
+				x_all= np.hstack((x_all, select_predictions))
+	return data_x_matrix, x_all
+
+
+def augment_features_with_predictions_test(all_matrix_test, current_predictions_test, column_id):
+	x_all = all_matrix_test.copy()
+	for column_number, last_predictions in current_predictions_test.iteritems():
+		if column_number != column_id:
+			select_predictions = np.matrix(last_predictions).transpose()
+			try:
+				x_all = hstack((x_all, select_predictions)).tocsr()
+			except:
+				x_all= np.hstack((x_all, select_predictions))
+	return x_all
+
 
 
 def run_multi( params):
@@ -136,7 +161,8 @@ def run(dataSet,
 		     use_max_pred_change_column_selection=False,
              use_max_error_column_selection=False,
 			 use_min_certainty_column_selection=True,
-             visualize_models=False
+             visualize_models=False,
+		     output_detection_result=0
 			 ):
 
 	start_time = time.time()
@@ -145,6 +171,12 @@ def run(dataSet,
 	all_fscore = []
 	all_precision = []
 	all_recall = []
+
+	all_fscore_test = []
+	all_precision_test = []
+	all_recall_test = []
+
+
 	all_time = []
 
 	use_change_features = True
@@ -289,10 +321,13 @@ def run(dataSet,
 		save_precision = []
 		save_recall = []
 
+		save_fscore_test = []
+		save_precision_test = []
+		save_recall_test = []
+
 
 		save_labels = []
 		save_certainty = []
-		save_fscore_general = []
 		save_time = []
 
 		our_params = {}
@@ -315,6 +350,8 @@ def run(dataSet,
 		diff_certainty = {}
 
 		current_predictions = {}
+		current_predictions_test = {}
+
 
 		statistics = {}
 		statistics['change'] = {}
@@ -349,7 +386,7 @@ def run(dataSet,
 
 					print "column " + str(column_id) + " is not applicable" + " errors: " + str(np.sum(dataSet.matrix_is_error[:,column_id]))
 
-					all_error_status[:, column_id] = dataSet.matrix_is_error[:, column_id]
+					all_error_status[:, column_id] = dataSet.matrix_is_error[train_indices, column_id]
 
 					if use_random_column_selection:
 						column_id = go_to_next_column_random(dataSet)
@@ -371,6 +408,10 @@ def run(dataSet,
 
 				data_x_matrix = train[column_id].copy()
 				x_all = all_matrix_train.copy()
+				if type(all_matrix_test) != type(None):
+					x_all_test = all_matrix_test.copy()
+				else:
+					x_all_test = None
 
 			else:
 				if type(train[column_id]) == type(None):
@@ -425,21 +466,14 @@ def run(dataSet,
 				print "train: " + str(train[column_id].shape)
 
 
+				##todo: the same for test
 				data_x_matrix = train[column_id].copy()
-				x_all = all_matrix_train.copy()
+				x_all = all_matrix_train
+				x_all_test = all_matrix_test
 				if correlationFeatures:
-					for column_number, last_predictions in current_predictions.iteritems():
-						if column_number != column_id:
-							select_predictions = np.matrix(last_predictions).transpose()
-							try:
-								data_x_matrix = hstack((data_x_matrix, select_predictions[train_chosen_ids[column_id], :])).tocsr()
-								x_all= hstack((x_all, select_predictions)).tocsr()
-							except:
-								data_x_matrix = np.hstack((data_x_matrix, select_predictions[train_chosen_ids[column_id], :]))
-								x_all= np.hstack((x_all, select_predictions))
-
-				print(type(x_all))
-
+					data_x_matrix, x_all = augment_features_with_predictions(data_x_matrix, all_matrix_train, current_predictions, column_id, train_chosen_ids)
+					if type(None) != type(all_matrix_test):
+						x_all_test = augment_features_with_predictions_test(all_matrix_test, current_predictions_test, column_id)
 
 
 				#print "len: " + str(len(train[column_id])) + " - " + str(len(train_target[column_id]))
@@ -465,14 +499,15 @@ def run(dataSet,
 			#y_pred_current_prediction, res_new = classifier.train_predict_all(data_x_matrix, train_target[column_id], column_id, x_all,
 			#																  feature_name_list, dataSet.clean_pd.columns)
 
-			y_pred_current_prediction, res_new = classifier.train_predict_all(data_x_matrix,
+			y_pred_current_prediction, res_new, y_pred_current_prediction_test, res_new_test = classifier.train_predict_all(data_x_matrix,
 																			  train_target[column_id], column_id,
-																			  x_all)
+																			  x_all, x_all_test)
 
 
 
 
 			current_predictions[column_id] = y_pred_current_prediction
+			current_predictions_test[column_id] = y_pred_current_prediction_test
 
 			if column_id in y_pred:
 				prediction_change_y_pred = np.square(y_pred_current_prediction - y_pred[column_id])
@@ -507,12 +542,15 @@ def run(dataSet,
 
 			res[column_id] = res_new
 			all_error_status[:, column_id] = res[column_id]
+
+			print ("resnew shape: " + str(res_new.shape) + " - allerror status" + str(all_error_status.shape))
+
 			print("train & predict: %s seconds ---" % (time.time() - start_time))
 
-			if all_matrix_test != None:
-				y_pred_test, res_gen = classifier.predict(column_id)
 
-				all_error_status_test[:, column_id] = res_gen
+
+			if all_matrix_test != None:
+				all_error_status_test[:, column_id] = res_new_test
 
 			if visualize_models:
 				visualize_model(dataSet, column_id, classifier.model, feature_name_list, train, target_run, res)
@@ -544,14 +582,23 @@ def run(dataSet,
 			save_precision.append(precision_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
 			save_recall.append(recall_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
 
+			save_fscore_test.append(
+				f1_score(dataSet.matrix_is_error[test_indices, :].flatten(), all_error_status_test.flatten()))
+			save_precision_test.append(
+				precision_score(dataSet.matrix_is_error[test_indices, :].flatten(), all_error_status_test.flatten()))
+			save_recall_test.append(
+				recall_score(dataSet.matrix_is_error[test_indices, :].flatten(), all_error_status_test.flatten()))
+
+
+
+			if output_detection_result>0 and output_detection_result == number_samples:
+				np.save('/tmp/ed2_results.npy', all_error_status)
+
 			if store_results:
 				np.save(Config.get("logging.folder") + "/results/result" + dataSet.name + "_" + str(check_this) + "_" +  str(ts), all_error_status)
 
 
 
-			if all_matrix_test != None:
-				save_fscore_general.append(
-					f1_score(dataSet.matrix_is_error[test_indices, :].flatten(), all_error_status_test.flatten()))
 			save_labels.append(number_samples)
 			save_certainty.append(sum_certainty)
 
@@ -676,7 +723,6 @@ def run(dataSet,
 			save_time.append(current_runtime)
 
 		print (save_fscore)
-		print (save_fscore_general)
 		print (save_labels)
 		print (save_certainty)
 		print (save_time)
@@ -685,14 +731,25 @@ def run(dataSet,
 		all_fscore.append(save_fscore)
 		all_precision.append(save_precision)
 		all_recall.append(save_recall)
+
+		all_fscore_test.append(save_fscore_test)
+		all_precision_test.append(save_precision_test)
+		all_recall_test.append(save_recall_test)
+
 		all_time.append(save_time)
 
 
 	return_dict = {}
 	return_dict['labels'] = save_labels
+
 	return_dict['fscore'] = all_fscore
 	return_dict['precision'] = all_precision
 	return_dict['recall'] = all_recall
+
+	return_dict['fscore_test'] = all_fscore_test
+	return_dict['precision_test'] = all_precision_test
+	return_dict['recall_test'] = all_recall_test
+
 	return_dict['time'] = all_time
 
 	return return_dict

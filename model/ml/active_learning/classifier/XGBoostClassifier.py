@@ -120,18 +120,32 @@ class XGBoostClassifier(object):
         params_text['show_feature_values'] = True
         return format_as_text(expl, **params_text)
 
-    def train_predict(self, x, y, column_id):
+    def train_predict_all(self, x, y, column_id, x_all, x_all_test):
         if self.balance:
             ratio = float(np.sum(y == False)) / np.sum(y == True)
             print "weight ratio: " + str(ratio)
             self.params[column_id]['scale_pos_weight'] = ratio
+
         xgdmat = xgb.DMatrix(x, y)
         self.model[column_id] = xgb.train(self.params[column_id], xgdmat, num_boost_round=3000, verbose_eval=False)
-        # predict
-        probability_prediction = self.model[column_id].predict(self.X_train)
+
+        # predict all train
+        all_records = xgb.DMatrix(x_all)
+        probability_prediction = self.model[column_id].predict(all_records)
         class_prediction = (probability_prediction > 0.5)
 
-        return probability_prediction, class_prediction
+        #predict all test
+        probability_prediction_test = None
+        class_prediction_test = None
+        if type(None) != type(x_all_test):
+            all_records_test = xgb.DMatrix(x_all_test)
+            probability_prediction_test = self.model[column_id].predict(all_records_test)
+            class_prediction_test = (probability_prediction_test > 0.5)
+
+
+
+
+        return probability_prediction, class_prediction, probability_prediction_test, class_prediction_test
 
     def predict(self, column_id):
         probability_prediction = self.model[column_id].predict(self.X_test)
