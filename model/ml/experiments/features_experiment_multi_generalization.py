@@ -22,7 +22,7 @@ import os
 import time
 
 
-path_folder = Config.get("logging.folder") + "/out/features_lstm"
+path_folder = Config.get("logging.folder") + "/out/generalization"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
