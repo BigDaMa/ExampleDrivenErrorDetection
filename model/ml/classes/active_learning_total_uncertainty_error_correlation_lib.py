@@ -582,12 +582,12 @@ def run(dataSet,
 			save_precision.append(precision_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
 			save_recall.append(recall_score(dataSet.matrix_is_error[train_indices, :].flatten(), all_error_status.flatten()))
 
-			save_fscore_test.append(
-				f1_score(dataSet.matrix_is_error[test_indices, :].flatten(), all_error_status_test.flatten()))
-			save_precision_test.append(
-				precision_score(dataSet.matrix_is_error[test_indices, :].flatten(), all_error_status_test.flatten()))
-			save_recall_test.append(
-				recall_score(dataSet.matrix_is_error[test_indices, :].flatten(), all_error_status_test.flatten()))
+			#save_fscore_test.append(
+			#	f1_score(dataSet.matrix_is_error[test_indices, :].flatten(), all_error_status_test.flatten()))
+			#save_precision_test.append(
+			#	precision_score(dataSet.matrix_is_error[test_indices, :].flatten(), all_error_status_test.flatten()))
+			#save_recall_test.append(
+			#	recall_score(dataSet.matrix_is_error[test_indices, :].flatten(), all_error_status_test.flatten()))
 
 
 
