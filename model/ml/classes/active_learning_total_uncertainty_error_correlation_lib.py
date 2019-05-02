@@ -650,7 +650,6 @@ def run(dataSet,
 			print "Mean Squared certainty change: " + str(np.mean(prediction_change_y_pred))
 
 			batch_certainties = diff_certainty[column_id][id_next[column_id]]
-			assert len(batch_certainties) == 10
 			for batch_certainty in batch_certainties:
 				feature_array.append(batch_certainty)
 
