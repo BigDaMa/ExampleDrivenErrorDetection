@@ -106,7 +106,7 @@ for dataset in data_list:
 
 #results = [run(**my_array[0])]
 pool = mp.Pool(processes=10)
-#results = pool.map(run_multi, my_array)
+results = pool.map(run_multi, my_array)
 
 
 
