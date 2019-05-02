@@ -98,15 +98,15 @@ for dataset in data_list:
             my_dict['classifier_model'] = classifier
             my_dict['checkN'] = 1
             my_dict['label_iterations'] = 10
-            my_dict['step_size'] = 25
+            my_dict['step_size'] = 50
             fnames.append(feature_names[param_i])
 
             my_array.append(my_dict)
 
 
-#results = [run(**my_array[0])]
-pool = mp.Pool(processes=3)
-results = pool.map(run_multi, my_array)
+results = [run(**my_array[0])]
+#pool = mp.Pool(processes=3)
+#results = pool.map(run_multi, my_array)
 
 
 
