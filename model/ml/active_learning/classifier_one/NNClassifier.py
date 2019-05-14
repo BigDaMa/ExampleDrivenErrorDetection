@@ -29,9 +29,11 @@ class NNClassifier(object):
         def create_baseline():
             model = Sequential()
 
-            model.add(Dense(units=512, activation='relu', input_dim=new_x.shape[1]))
+            ##model.add(Dense(units=512, activation='relu', input_dim=new_x.shape[1]))#best
             #model.add(Dense(units=256, activation='relu', input_dim=new_x.shape[1]))
             # model.add(Dense(units=128, activation='relu'))
+            model.add(Dense(units=256, activation='relu'))
+            model.add(Dense(units=128, activation='relu'))
             model.add(Dense(units=1, activation='sigmoid'))
 
             model.compile(loss='binary_crossentropy',
