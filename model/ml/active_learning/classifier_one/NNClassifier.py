@@ -1,6 +1,7 @@
 from sklearn.svm import SVC
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.layers import Dropout
 from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
 import keras
@@ -20,8 +21,9 @@ class NNClassifier(object):
 
         self.all_data = X_train.todense()
 
-        config = tf.ConfigProto(device_count={"CPU": 20})
-        keras.backend.tensorflow_backend.set_session(tf.Session(config=config))
+        from sklearn.preprocessing import StandardScaler
+        self.sc = StandardScaler()
+        self.all_data = self.sc.fit_transform(self.all_data)
 
 
     def run_cross_validation(self, train, train_target, folds):
@@ -30,14 +32,16 @@ class NNClassifier(object):
     def train_predict_all(self, x, y):
 
         new_x = x.todense()
+
+        new_x = self.sc.transform(new_x)
+
         def create_baseline():
             model = Sequential()
 
-            ##model.add(Dense(units=512, activation='relu', input_dim=new_x.shape[1]))#best
+            model.add(Dropout(0.8, input_shape=(new_x.shape[1],)))
+            model.add(Dense(units=512, activation='relu', input_dim=new_x.shape[1]))#best
             #model.add(Dense(units=256, activation='relu', input_dim=new_x.shape[1]))
             # model.add(Dense(units=128, activation='relu'))
-            model.add(Dense(units=256, activation='relu'))
-            model.add(Dense(units=128, activation='relu'))
             model.add(Dense(units=1, activation='sigmoid'))
 
             model.compile(loss='binary_crossentropy',

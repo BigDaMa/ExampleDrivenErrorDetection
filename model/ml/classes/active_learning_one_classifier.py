@@ -147,7 +147,7 @@ def create_next_part(y_pred, batchsize):
     diff = np.absolute(y_pred - 0.5)
     sorted_ids = np.argsort(diff)
 
-    if np.sum(diff) == 0.0:
+    if np.sum(diff) == 0.0 or np.sum(diff) == len(diff) * 0.5:
          np.random.shuffle(sorted_ids)
 
     print(diff[sorted_ids][0:100])
@@ -320,7 +320,7 @@ def run(dataSet,
 		print(all_matrix_train.shape)
 		print("test" + str(len(feature_name_list)))
 
-		'''
+
 		if use_metadata:
 			all_matrix_train, all_matrix_test, feature_name_list = add_metadata_features(dataSet, train_indices,
 																						 test_indices, all_matrix_train,
@@ -372,7 +372,7 @@ def run(dataSet,
 																									  all_matrix_test,
 																									  feature_name_list,
 																							          use_boostclean_metadata_only)
-		'''
+
 
 		print("features: %s seconds ---" % (time.time() - start_time))
 
