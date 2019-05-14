@@ -3,7 +3,8 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
-from keras import backend as K
+import keras
+import tensorflow as tf
 
 class NNClassifier(object):
     name = 'NN'
@@ -19,9 +20,8 @@ class NNClassifier(object):
 
         self.all_data = X_train.todense()
 
-        my_conf = K.tf.ConfigProto(intra_op_parallelism_threads=20,inter_op_parallelism_threads=20)
-        K.set_session(K.tf.Session(config=my_conf))
-
+        config = tf.ConfigProto(device_count={"CPU": 20})
+        keras.backend.tensorflow_backend.set_session(tf.Session(config=config))
 
 
     def run_cross_validation(self, train, train_target, folds):
