@@ -30,7 +30,7 @@ from ml.datasets.hospital.HospitalMoreCol import HospitalMoreCol
 
 
 
-path_folder = Config.get("logging.folder") + "/out/one_classifier_with_little_dropout"
+path_folder = Config.get("logging.folder") + "/out/one_classifier_with_no_dropout"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 

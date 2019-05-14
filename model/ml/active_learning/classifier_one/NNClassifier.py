@@ -38,7 +38,7 @@ class NNClassifier(object):
         def create_baseline():
             model = Sequential()
 
-            model.add(Dropout(0.2, input_shape=(new_x.shape[1],)))
+            #model.add(Dropout(0.2, input_shape=(new_x.shape[1],)))
             model.add(Dense(units=512, activation='relu', input_dim=new_x.shape[1]))#best
             #model.add(Dense(units=256, activation='relu', input_dim=new_x.shape[1]))
             # model.add(Dense(units=128, activation='relu'))
