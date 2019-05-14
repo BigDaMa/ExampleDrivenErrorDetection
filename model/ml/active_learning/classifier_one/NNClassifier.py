@@ -3,6 +3,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
+from keras import backend as K
 
 class NNClassifier(object):
     name = 'NN'
@@ -17,6 +18,9 @@ class NNClassifier(object):
         self.name = NNClassifier.name
 
         self.all_data = X_train.todense()
+
+        my_conf = K.tf.ConfigProto(intra_op_parallelism_threads=20,inter_op_parallelism_threads=20)
+        K.set_session(K.tf.Session(config=my_conf))
 
 
 
