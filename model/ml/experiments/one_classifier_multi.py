@@ -13,6 +13,7 @@ from ml.datasets.salary_data.Salary import Salary
 
 from ml.active_learning.classifier_one.XGBoostClassifier import XGBoostClassifier
 from ml.active_learning.classifier_one.LinearSVMClassifier import LinearSVMClassifier
+from ml.active_learning.classifier_one.NewNNClassifier import NewNNClassifier
 from ml.active_learning.classifier_one.NNClassifier import NNClassifier
 
 import numpy as np
@@ -30,13 +31,13 @@ from ml.datasets.hospital.HospitalMoreCol import HospitalMoreCol
 
 
 
-path_folder = Config.get("logging.folder") + "/out/one_classifier_with_no_dropout"
+path_folder = Config.get("logging.folder") + "/out/one_classifier_Soccer"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [HospitalMoreCol]
+data_list = [Soccer]
 
 
 parameters = []
@@ -86,7 +87,7 @@ feature_names = [#'char_unigrams',
                  ]
 
 #classifiers = [XGBoostClassifier, LinearSVMClassifier, NaiveBayesClassifier]
-classifiers = [NNClassifier]
+classifiers = [NewNNClassifier]
 
 fnames = []
 my_array = []

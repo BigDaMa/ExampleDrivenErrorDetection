@@ -321,6 +321,7 @@ def run(dataSet,
 		print("test" + str(len(feature_name_list)))
 
 
+
 		if use_metadata:
 			all_matrix_train, all_matrix_test, feature_name_list = add_metadata_features(dataSet, train_indices,
 																						 test_indices, all_matrix_train,
@@ -332,6 +333,7 @@ def run(dataSet,
 																					 feature_name_list)
 
 
+
 		if use_word2vec:
 			w2v_features = Word2VecFeatures(vector_size=w2v_size)
 			all_matrix_train, all_matrix_test, feature_name_list = w2v_features.add_word2vec_features(dataSet, train_indices,
@@ -340,6 +342,7 @@ def run(dataSet,
 																						 all_matrix_test,
 																						 feature_name_list,
 																						 use_word2vec_only)
+
 
 
 		if use_active_clean:
@@ -389,7 +392,7 @@ def run(dataSet,
 			one_hot_part[:, column_i] = 1
 
 			feature_matrix_per_column.append(hstack((feature_matrix, one_hot_part)).tocsr())
-			feature_name_list.append('column_id_' + str(column_i) + '_' + dataSet.clean_pd.columns[column_i])
+			feature_name_list.append('?column_id_' + str(column_i) + '_' + dataSet.clean_pd.columns[column_i])
 
 			for row in range(dataSet.shape[0]):
 				debugging_ids.append((row, column_i))
@@ -434,9 +437,7 @@ def run(dataSet,
 		print(ground_truth_array)
 		assert len(ground_truth_array) == all_columns_feature_matrix.shape[0]
 
-		pickle.dump(all_columns_feature_matrix, open("/tmp/X.p", "w+b"))
 		pickle.dump(ground_truth_array, open("/tmp/y.p", "w+b"))
-
 		classifier = classifier_model(all_columns_feature_matrix, None, feature_names=feature_name_list)
 
 		for run in range(40):
@@ -458,7 +459,7 @@ def run(dataSet,
 			save_precision.append(precision_score(ground_truth_array, class_prediction))
 			save_recall.append(recall_score(ground_truth_array, class_prediction))
 
-			generate_html(dataSet, class_prediction)
+			#generate_html(dataSet, class_prediction)
 
 			#per column score
 			for col_i in range(dataSet.shape[1]):

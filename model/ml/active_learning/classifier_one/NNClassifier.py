@@ -6,6 +6,7 @@ from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
 import keras
 import tensorflow as tf
+import pickle
 
 class NNClassifier(object):
     name = 'NN'
@@ -24,6 +25,8 @@ class NNClassifier(object):
         from sklearn.preprocessing import StandardScaler
         self.sc = StandardScaler()
         self.all_data = self.sc.fit_transform(self.all_data)
+
+        pickle.dump(self.all_data, open("/tmp/X.p", "w+b"))
 
 
     def run_cross_validation(self, train, train_target, folds):
@@ -50,7 +53,7 @@ class NNClassifier(object):
 
             return model
 
-        self.model = KerasClassifier(build_fn=create_baseline, epochs=500, batch_size=5, verbose=0)
+        self.model = KerasClassifier(build_fn=create_baseline, epochs=500, batch_size=5, verbose=1)
         self.model.fit(new_x, y)
 
         probability_prediction_all = self.model.predict_proba(self.all_data)

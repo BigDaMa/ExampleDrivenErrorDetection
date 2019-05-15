@@ -449,7 +449,7 @@ def create_features(dataSet, train_indices, test_indices, ngrams=2, runSVD=False
                 feature_list_test.append(feature_matrix_test)
 
             listed_tuples = sorted(pipeline.named_steps['vect'].vocabulary_.items(), key=operator.itemgetter(1))
-            feature_name_list.extend([str(dataSet.clean_pd.columns[column_id]) + "_letter_" + tuple_dict_sorted[0] + "_" for tuple_dict_sorted in listed_tuples])
+            feature_name_list.extend([str(dataSet.clean_pd.columns[column_id]) + "_letter_" + tuple_dict_sorted[0]  for tuple_dict_sorted in listed_tuples])
         except ValueError:
             pass
 

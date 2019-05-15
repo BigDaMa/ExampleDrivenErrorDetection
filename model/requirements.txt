@@ -9,3 +9,5 @@ jinja2
 scipy
 eli5
 psycopg2
+keras
+tensorflow
