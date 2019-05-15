@@ -437,7 +437,7 @@ def run(dataSet,
 		print(ground_truth_array)
 		assert len(ground_truth_array) == all_columns_feature_matrix.shape[0]
 
-		pickle.dump(ground_truth_array, open("/tmp/y.p", "w+b"))
+		#pickle.dump(ground_truth_array, open("/tmp/y.p", "w+b"))
 		classifier = classifier_model(all_columns_feature_matrix, None, feature_names=feature_name_list)
 
 		for run in range(40):

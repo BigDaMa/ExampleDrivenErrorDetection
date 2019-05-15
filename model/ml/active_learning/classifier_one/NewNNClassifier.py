@@ -34,7 +34,7 @@ class NewNNClassifier(object):
         self.sc = StandardScaler()
         self.all_data = self.sc.fit_transform(self.all_data)#
 
-        pickle.dump(self.all_data, open("/tmp/X.p", "w+b"))
+        #pickle.dump(self.all_data, open("/tmp/X.p", "w+b"))
 
 
         print(feature_names)
