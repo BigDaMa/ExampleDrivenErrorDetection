@@ -440,7 +440,7 @@ def run(dataSet,
 		#pickle.dump(ground_truth_array, open("/tmp/y.p", "w+b"))
 		classifier = classifier_model(all_columns_feature_matrix, None, feature_names=feature_name_list)
 
-		for run in range(40):
+		for run in range(label_iterations):
 
 			classifier.run_cross_validation(labeled_data, labeled_target, 10)
 			save_labels.append(len(labeled_target))
