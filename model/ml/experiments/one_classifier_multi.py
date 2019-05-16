@@ -31,7 +31,7 @@ from ml.datasets.hospital.HospitalMoreCol import HospitalMoreCol
 
 
 
-path_folder = Config.get("logging.folder") + "/out/one_classifier_Flight"
+path_folder = Config.get("logging.folder") + "/out/one_classifier_Soccer"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
@@ -101,7 +101,7 @@ for dataset in data_list:
             my_dict['classifier_model'] = classifier
             my_dict['checkN'] = 1
             my_dict['label_iterations'] = 20
-            my_dict['step_size'] = 10
+            my_dict['step_size'] = 50
             fnames.append(feature_names[param_i])
 
             my_array.append(my_dict)
