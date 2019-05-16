@@ -11,10 +11,8 @@ from keras.models import Model
 from keras.layers import concatenate
 
 from keras.wrappers.scikit_learn import KerasClassifier
-import numpy as np
-import keras
-import tensorflow as tf
-from keras.backend import tensorflow_backend as K
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MaxAbsScaler
 import pickle
 
 class NewNNClassifier(object):
@@ -34,9 +32,8 @@ class NewNNClassifier(object):
         self.all_data = X_train
         print('after dense')
 
-        from sklearn.preprocessing import StandardScaler
-        self.sc = StandardScaler()
-        #self.all_data = self.sc.fit_transform(self.all_data)#
+        self.sc = MaxAbsScaler()
+        self.all_data = self.sc.fit_transform(self.all_data)
 
         print('after scaling')
 
@@ -89,8 +86,7 @@ class NewNNClassifier(object):
     def train_predict_all(self, x, y):
 
         #new_x = x.todense()
-        #new_x = self.sc.transform(new_x)
-        new_x = x
+        new_x = self.sc.transform(x)
 
 
 
