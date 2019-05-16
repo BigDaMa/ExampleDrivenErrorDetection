@@ -36,7 +36,7 @@ class NewNNClassifier(object):
 
         from sklearn.preprocessing import StandardScaler
         self.sc = StandardScaler()
-        self.all_data = self.sc.fit_transform(self.all_data)#
+        #self.all_data = self.sc.fit_transform(self.all_data)#
 
         print('after scaling')
 
@@ -89,8 +89,8 @@ class NewNNClassifier(object):
     def train_predict_all(self, x, y):
 
         #new_x = x.todense()
-
-        new_x = self.sc.transform(new_x)
+        #new_x = self.sc.transform(new_x)
+        new_x = x
 
 
 
