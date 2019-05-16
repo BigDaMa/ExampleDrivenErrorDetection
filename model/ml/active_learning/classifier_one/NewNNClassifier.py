@@ -87,67 +87,66 @@ class NewNNClassifier(object):
 
         new_x = self.sc.transform(new_x)
 
-        with tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=10)) as sess:
-            K.set_session(sess)
-
-            def create_baseline():
-                # define two sets of inputs
-                inputs = []
-                rep_models = []
-
-                dimensionality_reduction = 1
-
-                for my_list in self.id_list:
-                    current_input = Input(shape=(len(my_list),))
-                    inputs.append(current_input)
-                    current_output = Dense(8, activation="relu")(current_input)
-                    current_output = Dense(dimensionality_reduction, activation="relu")(current_output)
-                    current_output = Model(inputs=current_input, outputs=current_output)
-                    rep_models.append(current_output)
-
-                # combine the output of the two branches
-                combined_list = [m.output for m in rep_models]
-                onehot_input = Input(shape=(len(self.one_hot_column_ids),))
-                combined_list.append(onehot_input)
-                metadata_input = Input(shape=(len(self.metadata_ids),))
-                combined_list.append(metadata_input)
-                combined = concatenate(combined_list)
-
-                # apply a FC layer and then a regression prediction on the
-                # combined outputs
-                z = Dense(dimensionality_reduction * len(rep_models) + len(self.one_hot_column_ids) + len(self.metadata_ids), activation="relu")(combined)
-                z = Dense(1, activation="sigmoid")(z)
-
-                # our model will accept the inputs of the two branches and
-                # then output a single value
-                final_inputs = [m.input for m in rep_models]
-                final_inputs.append(onehot_input)
-                final_inputs.append(metadata_input)
-                model = Model(inputs=final_inputs, outputs=z)
-
-                model.compile(loss='binary_crossentropy',
-                              optimizer='adam',
-                              metrics=['accuracy'])
 
 
-                return model
+        def create_baseline():
+            # define two sets of inputs
+            inputs = []
+            rep_models = []
 
+            dimensionality_reduction = 1
 
-            input_matrices = []
             for my_list in self.id_list:
-                input_matrices.append(new_x[:, my_list])
-            input_matrices.append(new_x[:, self.one_hot_column_ids])
-            input_matrices.append(new_x[:, self.metadata_ids])
+                current_input = Input(shape=(len(my_list),))
+                inputs.append(current_input)
+                current_output = Dense(8, activation="relu")(current_input)
+                current_output = Dense(dimensionality_reduction, activation="relu")(current_output)
+                current_output = Model(inputs=current_input, outputs=current_output)
+                rep_models.append(current_output)
 
-            self.model = KerasClassifier(build_fn=create_baseline, epochs=500, batch_size=5, verbose=1)
-            self.model.fit(input_matrices, y)
+            # combine the output of the two branches
+            combined_list = [m.output for m in rep_models]
+            onehot_input = Input(shape=(len(self.one_hot_column_ids),))
+            combined_list.append(onehot_input)
+            metadata_input = Input(shape=(len(self.metadata_ids),))
+            combined_list.append(metadata_input)
+            combined = concatenate(combined_list)
 
-            probability_prediction_all = self.model.predict_proba(self.all_input_matrices)
+            # apply a FC layer and then a regression prediction on the
+            # combined outputs
+            z = Dense(dimensionality_reduction * len(rep_models) + len(self.one_hot_column_ids) + len(self.metadata_ids), activation="relu")(combined)
+            z = Dense(1, activation="sigmoid")(z)
 
-            if self.model.classes_[1] == True:
-                probability_prediction = probability_prediction_all[:, 1]
-            else:
-                probability_prediction = probability_prediction_all[:, 0]
-            class_prediction = probability_prediction > 0.5
+            # our model will accept the inputs of the two branches and
+            # then output a single value
+            final_inputs = [m.input for m in rep_models]
+            final_inputs.append(onehot_input)
+            final_inputs.append(metadata_input)
+            model = Model(inputs=final_inputs, outputs=z)
 
-            return probability_prediction, class_prediction
+            model.compile(loss='binary_crossentropy',
+                          optimizer='adam',
+                          metrics=['accuracy'])
+
+
+            return model
+
+
+        input_matrices = []
+        for my_list in self.id_list:
+            input_matrices.append(new_x[:, my_list])
+        input_matrices.append(new_x[:, self.one_hot_column_ids])
+        input_matrices.append(new_x[:, self.metadata_ids])
+
+        self.model = KerasClassifier(build_fn=create_baseline, epochs=500, batch_size=5, verbose=1)
+        self.model.fit(input_matrices, y)
+
+        probability_prediction_all = self.model.predict_proba(self.all_input_matrices)
+
+        if self.model.classes_[1] == True:
+            probability_prediction = probability_prediction_all[:, 1]
+        else:
+            probability_prediction = probability_prediction_all[:, 0]
+        class_prediction = probability_prediction > 0.5
+
+        return probability_prediction, class_prediction
