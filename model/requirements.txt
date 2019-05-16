@@ -11,3 +11,5 @@ eli5
 psycopg2
 keras
 tensorflow
+gensim
+usaddress

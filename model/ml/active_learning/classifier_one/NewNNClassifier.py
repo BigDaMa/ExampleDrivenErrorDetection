@@ -29,11 +29,15 @@ class NewNNClassifier(object):
 
         self.name = NewNNClassifier.name
 
-        self.all_data = X_train.todense()
+        print('before dense')
+        #self.all_data = X_train.todense()
+        print('after dense')
 
         from sklearn.preprocessing import StandardScaler
         self.sc = StandardScaler()
         self.all_data = self.sc.fit_transform(self.all_data)#
+
+        print('after scaling')
 
         #pickle.dump(self.all_data, open("/tmp/X.p", "w+b"))
 
@@ -83,7 +87,7 @@ class NewNNClassifier(object):
 
     def train_predict_all(self, x, y):
 
-        new_x = x.todense()
+        #new_x = x.todense()
 
         new_x = self.sc.transform(new_x)
 
