@@ -31,6 +31,7 @@ class NewNNClassifier(object):
 
         print('before dense')
         #self.all_data = X_train.todense()
+        self.all_data = X_train
         print('after dense')
 
         from sklearn.preprocessing import StandardScaler
