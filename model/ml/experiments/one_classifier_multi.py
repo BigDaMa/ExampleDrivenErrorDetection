@@ -31,13 +31,13 @@ from ml.datasets.hospital.HospitalMoreCol import HospitalMoreCol
 
 
 
-path_folder = Config.get("logging.folder") + "/out/one_classifier_Soccer"
+path_folder = Config.get("logging.folder") + "/out/one_classifier_Hosp"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [Soccer]
+data_list = [HospitalMoreCol]
 
 
 parameters = []
