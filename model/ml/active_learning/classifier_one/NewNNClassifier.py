@@ -28,12 +28,11 @@ class NewNNClassifier(object):
         self.name = NewNNClassifier.name
 
         print('before dense')
-        #self.all_data = X_train.todense()
-        self.all_data = X_train
+        all_data = X_train.todense()
         print('after dense')
 
-        self.sc = MaxAbsScaler()
-        self.all_data = self.sc.fit_transform(self.all_data)
+        self.sc = StandardScaler()
+        all_data = self.sc.fit_transform(all_data)
 
         print('after scaling')
 
@@ -73,9 +72,9 @@ class NewNNClassifier(object):
 
         self.all_input_matrices = []
         for my_list in self.id_list:
-            self.all_input_matrices.append(self.all_data[:, my_list])
-        self.all_input_matrices.append(self.all_data[:, self.one_hot_column_ids])
-        self.all_input_matrices.append(self.all_data[:, self.metadata_ids])
+            self.all_input_matrices.append(all_data[:, my_list])
+        self.all_input_matrices.append(all_data[:, self.one_hot_column_ids])
+        self.all_input_matrices.append(all_data[:, self.metadata_ids])
 
 
 
@@ -85,8 +84,8 @@ class NewNNClassifier(object):
 
     def train_predict_all(self, x, y):
 
-        #new_x = x.todense()
-        new_x = self.sc.transform(x)
+        new_x = x.todense()
+        new_x = self.sc.transform(new_x)
 
 
 
