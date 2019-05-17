@@ -31,13 +31,13 @@ from ml.datasets.hospital.HospitalMoreCol import HospitalMoreCol
 
 
 
-path_folder = Config.get("logging.folder") + "/out/one_classifier_Hosp"
+path_folder = Config.get("logging.folder") + "/out/one_classifier_Adult_new"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [HospitalMoreCol]
+data_list = [Adult]
 
 
 parameters = []
@@ -100,7 +100,7 @@ for dataset in data_list:
             my_dict['dataSet'] = data
             my_dict['classifier_model'] = classifier
             my_dict['checkN'] = 1
-            my_dict['label_iterations'] = 40
+            my_dict['label_iterations'] = 60
             my_dict['step_size'] = 50
             fnames.append(feature_names[param_i])
 
