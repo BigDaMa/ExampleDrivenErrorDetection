@@ -21,14 +21,19 @@ from ml.configuration.Config import Config
 import os
 import time
 
+from ml.datasets.adult.Adult import Adult
+from ml.datasets.soccer.Soccer import Soccer
+from ml.datasets.hospital.HospitalMoreCol import HospitalMoreCol
 
-path_folder = Config.get("logging.folder") + "/out/column_selection_beers"
+
+
+path_folder = Config.get("logging.folder") + "/out/column_selection_adult"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [Restaurant]
+data_list = [Adult]
 
 parameters = []
 #parameters.append({'use_metadata': False, 'correlationFeatures': False}) #char unigrams
@@ -75,7 +80,7 @@ for dataset in data_list:
 
             my_array.append(my_dict)
 
-pool = mp.Pool(processes=13)
+pool = mp.Pool(processes=10)
 results = pool.map(run_multi, my_array)
 
 
