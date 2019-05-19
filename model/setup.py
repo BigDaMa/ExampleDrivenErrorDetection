@@ -20,6 +20,7 @@ setup(
     license=license,
     package_data={'config': ['ml/configuration/resources']},
     include_package_data=True,
+    install_requires=['matplotlib', 'numpy', 'pandas', 'sklearn', 'xgboost', 'seaborn', 'graphviz', 'jinja2', 'scipy', 'eli5', 'psycopg2', 'keras', 'tensorflow', 'usaddress'],
     packages=find_packages(exclude=('tests', 'docs'))
 )
 
