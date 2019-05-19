@@ -56,7 +56,7 @@ parameters.append({'use_word2vec': True, 'use_word2vec_only': False, 'w2v_size':
 
 #LSTM
 
-feature_names = ['min_certainty'
+feature_names = ['min_certainty',
                  'round_robin',
                  'random',
                  'prediction_change',
