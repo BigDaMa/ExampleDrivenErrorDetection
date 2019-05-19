@@ -112,6 +112,17 @@ rules.append(FD(Set(['jounral_abbreviation']), 'journal_issn'))
 rules.append(UDF('totalpay', 'Double.parseDouble(value) < 0'))
 ```
 
+## Adults:
+```
+rules.append(UDF('income', '!(value.equals("LessThan50K") || value.equals("MoreThan50K"))'))
+```
+
+## Soccer:
+```
+rules.append(UDF('season', '(value != null && !isNumeric(value))'))
+rules.append(UDF('season', '(value != null && value.length()!=4)'))
+```
+
 
 
 
