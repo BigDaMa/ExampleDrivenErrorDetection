@@ -33,7 +33,7 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [Adult]
+data_list = [Soccer, HospitalMoreCol]
 
 parameters = []
 #parameters.append({'use_metadata': False, 'correlationFeatures': False}) #char unigrams
@@ -81,7 +81,7 @@ for dataset in data_list:
 
             my_array.append(my_dict)
 
-pool = mp.Pool(processes=10)
+pool = mp.Pool(processes=5)
 results = pool.map(run_multi, my_array)
 
 
