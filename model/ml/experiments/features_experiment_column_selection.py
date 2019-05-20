@@ -27,13 +27,13 @@ from ml.datasets.hospital.HospitalMoreCol import HospitalMoreCol
 
 
 
-path_folder = Config.get("logging.folder") + "/out/column_selection_adult"
+path_folder = Config.get("logging.folder") + "/out/column_selection_batchsize50"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [Soccer, HospitalMoreCol]
+data_list = [Soccer, HospitalMoreCol, Adult]
 
 parameters = []
 #parameters.append({'use_metadata': False, 'correlationFeatures': False}) #char unigrams
@@ -77,6 +77,8 @@ for dataset in data_list:
             my_dict['dataSet'] = data
             my_dict['classifier_model'] = classifier
             my_dict['checkN'] = 10
+            my_dict['label_iterations'] = 3
+            my_dict['step_size'] = 50
             fnames.append(feature_names[param_i])
 
             my_array.append(my_dict)
