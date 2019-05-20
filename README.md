@@ -16,6 +16,13 @@ In addition to the charts provided in the paper, we provide additional evaluatio
 We are working hard to provide as much documentation as possible over the time. We start here:
 1) [Constraints that we used to run NADEEF](../master/documentation/NADEEF_DCs.md)
 
+## Setup
+```
+cd model
+sudo apt-get install libpq-dev python-dev python-tk
+sudo python setup.py install
+```
+
 
 ## Using ED2
 To run the experiments, first, you need to set the paths in a configuration file with the name of your machine. Examples can be found here: ~/model/ml/configuration/resources/
