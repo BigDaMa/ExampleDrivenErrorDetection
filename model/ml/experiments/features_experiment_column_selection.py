@@ -27,7 +27,7 @@ from ml.datasets.hospital.HospitalMoreCol import HospitalMoreCol
 
 
 
-path_folder = Config.get("logging.folder") + "/out/column_selection_batchsize50"
+path_folder = Config.get("logging.folder") + "/out/column_selection_batchsize50_run"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
@@ -76,14 +76,14 @@ for dataset in data_list:
             my_dict = parameters[param_i].copy()
             my_dict['dataSet'] = data
             my_dict['classifier_model'] = classifier
-            my_dict['checkN'] = 10
+            my_dict['checkN'] = 1
             my_dict['label_iterations'] = 3
             my_dict['step_size'] = 50
             fnames.append(feature_names[param_i])
 
             my_array.append(my_dict)
 
-pool = mp.Pool(processes=10)
+pool = mp.Pool(processes=1)
 results = pool.map(run_multi, my_array)
 
 
