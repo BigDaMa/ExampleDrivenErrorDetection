@@ -36,7 +36,7 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [HospitalMoreCol]
+data_list = [Adult]
 
 
 parameters = []
@@ -107,7 +107,7 @@ for dataset in data_list:
 
 
 #results = [run(**my_array[0])]
-pool = mp.Pool(processes=10)
+pool = mp.Pool(processes=1)
 results = pool.map(run_multi, my_array)
 
 
