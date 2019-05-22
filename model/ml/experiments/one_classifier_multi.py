@@ -107,9 +107,8 @@ for dataset in data_list:
             my_array.append(my_dict)
 
 
-results = [run(**my_array[0])]
-#pool = mp.Pool(processes=10)
-#results = pool.map(run_multi, my_array)
+pool = mp.Pool(processes=1)
+results = pool.map(run_multi, my_array)
 
 
 
