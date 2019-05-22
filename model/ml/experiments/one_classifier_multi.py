@@ -31,13 +31,13 @@ from ml.datasets.hospital.HospitalMoreCol import HospitalMoreCol
 
 
 
-path_folder = Config.get("logging.folder") + "/out/one_classifier_Soccer_new"
+path_folder = Config.get("logging.folder") + "/out/one_classifier_xgboost_run"
 if not os.path.exists(path_folder):
     os.makedirs(path_folder)
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [Soccer]
+data_list = [Soccer, HospitalMoreCol, Adult]
 
 
 parameters = []
@@ -87,7 +87,7 @@ feature_names = [#'char_unigrams',
                  ]
 
 #classifiers = [XGBoostClassifier, LinearSVMClassifier, NaiveBayesClassifier]
-classifiers = [NewNNClassifier]
+classifiers = [XGBoostClassifier]
 
 fnames = []
 my_array = []
@@ -100,7 +100,7 @@ for dataset in data_list:
             my_dict['dataSet'] = data
             my_dict['classifier_model'] = classifier
             my_dict['checkN'] = 1
-            my_dict['label_iterations'] = 80
+            my_dict['label_iterations'] = 40 #adults
             my_dict['step_size'] = 50
             fnames.append(feature_names[param_i])
 

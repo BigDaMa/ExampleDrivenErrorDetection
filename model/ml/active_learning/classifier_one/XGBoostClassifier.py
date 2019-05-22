@@ -82,6 +82,7 @@ class XGBoostClassifier(object):
 
         return probability_prediction, class_prediction
 
+    '''
     def explain_prediction(self, x, column_id, feature_names):
         from eli5.explain import explain_prediction
         params = {}
@@ -92,6 +93,7 @@ class XGBoostClassifier(object):
         params_text = {}
         params_text['show_feature_values'] = True
         return format_as_text(expl, **params_text)
+    '''
 
 
     def predict(self, column_id):
