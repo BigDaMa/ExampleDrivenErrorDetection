@@ -442,7 +442,8 @@ def run(dataSet,
 
 		for run in range(label_iterations):
 
-			classifier.run_cross_validation(labeled_data, labeled_target, 7)
+			if run <= 1:
+				classifier.run_cross_validation(labeled_data, labeled_target, 7)
 			save_labels.append(len(labeled_target))
 
 			probability_prediction, class_prediction = classifier.train_predict_all(labeled_data, labeled_target)
