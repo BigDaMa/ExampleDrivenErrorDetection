@@ -15,8 +15,8 @@ class XGBoostClassifier(object):
 
         self.name = XGBoostClassifier.name
 
-        self.X_train = xgb.DMatrix(X_train)
-        self.X_test = xgb.DMatrix(X_test)
+        self.X_train = X_train
+        #self.X_test = xgb.DMatrix(X_test)
 
         self.balance = balance
         self.feature_names = feature_names
@@ -68,17 +68,23 @@ class XGBoostClassifier(object):
             print "weight ratio: " + str(ratio)
             self.params['scale_pos_weight'] = ratio
 
-        xgdmat = xgb.DMatrix(x, y)
-        self.model = xgb.train(self.params, xgdmat, num_boost_round=3000, verbose_eval=False)
+        #xgdmat = xgb.DMatrix(x, y)
+        #self.model = xgb.train(self.params, xgdmat, num_boost_round=3000, verbose_eval=False)
+
+        self.model = xgb.XGBClassifier(**self.params)
+        self.model.fit(x, y)
 
         #feature_importances = self.model.get_score(importance_type='gain')
         #sorted_x = sorted(feature_importances.items(), key=operator.itemgetter(1))
         #print(sorted_x)
 
+        probability_prediction_all = self.model.predict_proba(self.X_train)
 
-        # predict
-        probability_prediction = self.model.predict(self.X_train)
-        class_prediction = (probability_prediction > 0.5)
+        if self.model.classes_[1] == True:
+            probability_prediction = probability_prediction_all[:, 1]
+        else:
+            probability_prediction = probability_prediction_all[:, 0]
+        class_prediction = probability_prediction > 0.5
 
         return probability_prediction, class_prediction
 
