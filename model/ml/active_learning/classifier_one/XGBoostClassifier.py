@@ -15,7 +15,7 @@ class XGBoostClassifier(object):
 
         self.name = XGBoostClassifier.name
 
-        self.X_train = xgb.DMatrix(X_train, feature_names=feature_names)
+        self.X_train = xgb.DMatrix(X_train)
         self.X_test = xgb.DMatrix(X_test)
 
         self.balance = balance
@@ -68,12 +68,12 @@ class XGBoostClassifier(object):
             print "weight ratio: " + str(ratio)
             self.params['scale_pos_weight'] = ratio
 
-        xgdmat = xgb.DMatrix(x, y, feature_names=self.feature_names)
+        xgdmat = xgb.DMatrix(x, y)
         self.model = xgb.train(self.params, xgdmat, num_boost_round=3000, verbose_eval=False)
 
-        feature_importances = self.model.get_score(importance_type='gain')
-        sorted_x = sorted(feature_importances.items(), key=operator.itemgetter(1))
-        print(sorted_x)
+        #feature_importances = self.model.get_score(importance_type='gain')
+        #sorted_x = sorted(feature_importances.items(), key=operator.itemgetter(1))
+        #print(sorted_x)
 
 
         # predict
