@@ -37,7 +37,7 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [HospitalMoreCol]
+data_list = [Adult]
 
 
 parameters = []
