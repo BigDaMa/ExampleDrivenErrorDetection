@@ -170,7 +170,7 @@ def create_unique_next_part(y_pred, batchsize, dataset):
         n_id = sorted_ids[id_counter]
         row_id = n_id % dataset.shape[0]
         col_id = (n_id - row_id) / dataset.shape[0]
-        my_key = (dataset.values[row_id, col_id], diff[sorted_ids][id_counter])
+        my_key = (dataset.values[row_id, col_id], col_id)
 
         if not my_key in unique_set:
             unique_set.add(my_key)
