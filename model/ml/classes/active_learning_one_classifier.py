@@ -154,6 +154,31 @@ def create_next_part(y_pred, batchsize):
 
     return sorted_ids[0:batchsize]
 
+def create_unique_next_part(y_pred, batchsize, dataset):
+    diff = np.absolute(y_pred - 0.5)
+    sorted_ids = np.argsort(diff)
+
+    if np.sum(diff) == 0.0 or np.sum(diff) == len(diff) * 0.5:
+         np.random.shuffle(sorted_ids)
+
+    print(diff[sorted_ids][0:batchsize])
+
+    new_ids = []
+    id_counter = 0
+    unique_set = set()
+    while len(new_ids) < batchsize and id_counter < len(sorted_ids):
+        n_id = sorted_ids[id_counter]
+        row_id = n_id % dataset.shape[0]
+        col_id = (n_id - row_id) / dataset.shape[0]
+        my_key = (dataset.values[row_id, col_id], diff[sorted_ids][id_counter])
+
+        if not my_key in unique_set:
+            unique_set.add(my_key)
+            new_ids.append(n_id)
+
+        id_counter += 1
+    return new_ids
+
 def generate_html(data, detection_result):
     my_html = '<table style="width:100%">'
 
@@ -474,7 +499,8 @@ def run(dataSet,
 			current_runtime = (time.time() - total_start_time)
 			save_time.append(current_runtime)
 
-			new_ids = create_next_part(probability_prediction, step_size)
+			#new_ids = create_next_part(probability_prediction, step_size)
+			new_ids = create_unique_next_part(probability_prediction, step_size, dataSet.dirty_pd)
 			new_labels = []
 			for n_id in new_ids:
 				row_id = n_id % dataSet.shape[0]
