@@ -37,7 +37,7 @@ if not os.path.exists(path_folder):
 
 
 #data_list = [FlightHoloClean, BlackOakDataSetUppercase, HospitalHoloClean, Movies, Restaurant, Citation, Beers, Salary]
-data_list = [Adult]
+data_list = [HospitalMoreCol]
 
 
 parameters = []
@@ -100,7 +100,7 @@ for dataset in data_list:
             my_dict['dataSet'] = data
             my_dict['classifier_model'] = classifier
             my_dict['checkN'] = 1
-            my_dict['label_iterations'] = 13#9#40 #adults
+            my_dict['label_iterations'] = 40#13#9#40 #adults
             my_dict['step_size'] = 50
             fnames.append(feature_names[param_i])
 
