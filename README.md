@@ -5,7 +5,7 @@ Traditional error detection approaches require user-defined parameters and rules
 ## Citing
 For further details refer to the [paper]()  - and of course if any of this code was helpful for your research, please consider citing it:
 ```
-    @inproceedings{neutatz2019ed2,
+@inproceedings{neutatz2019ed2,
   title={{ED2:} {A} {C}ase for {A}ctive {L}earning in {E}rror {D}etection},
   author={Neutatz, Felix and Mahdavi, Mohammad and Abedjan, Ziawasch},
   booktitle={{CIKM}},
